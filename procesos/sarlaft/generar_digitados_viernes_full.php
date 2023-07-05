@@ -2,22 +2,20 @@
 ini_set('memory_limit', '-1');
 set_time_limit(0);
 header("Content-Type: text/html;charset=utf-8");
-require "includes.php";
+
+require_once dirname(dirname(dirname(__FILE__))) . "/includes.php";
+require_once PATH_COMPOSER . DS . 'vendor' . DS . 'autoload.php';
 require_once PATH_CLASS.DS.'_conexion.php';
-require_once PATH_PHPEXCEL.DS.'Classes'.DS.'PHPExcel.php';
+
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 dataDigitadosColpatria();
-function dataDigitadosColpatria(){
+function dataDigitadosColpatria()
+{
 	$conn = new Conexion();
-	/*header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
-	header("Content-Description: File Transfer");
-	header("Content-Encoding: UTF-8");
-	header("Content-Type: text/csv; charset=UTF-8");
-	header("Expires: 0");
-	header("Pragma: public");
-	echo "\xEF\xBB\xBF"; // UTF-8 BOM*/
 
-	$header = array(
+	$header = [
 		'TIPO PERSONA', 
 		'DOCUMENTO CLIENTE', 
 		'NOMBRE CLIENTE', 
@@ -228,10 +226,8 @@ function dataDigitadosColpatria(){
 		'FIRMA', 
 		'DIGITADOR', 
 		'ESTADO'
-	);
-	$name = 'finleco_digitados_hasta_'.date('Ymd').'.xlsx';
-	/*$fh = fopen(PATH_SARLAFT.DS.'finleco_digitados_hasta_'.date('Ymd').'.txt', 'a');
-	fputcsv($fh, $header, "\t");*/
+	];
+	$name = 'finleco_digitados_hasta_' . date('Ymd') . '.xlsx';
 
 	$hoy = date('Y-m-d');
 	$SQL = <<< SQL
@@ -434,304 +430,301 @@ function dataDigitadosColpatria(){
 	 WHERE (fo.date_created BETWEEN '2019-05-01 00:00:00' AND '2019-05-31 23:59:59')
 	   AND fo.status = 1
 SQL;
-	if($conn->consultar($SQL)){
-		if($conn->getNumeroRegistros() > 0){
-			$objPHPExcel = new PHPExcel();
+	if (!$conn->consultar($SQL)) exit;
 
-			// Set document properties
-			$objPHPExcel->getProperties()->setCreator("FinlecoBPO Group")
-				->setLastModifiedBy("FinlecoBPO Group")
-				->setTitle("Reporte de clientes digitados en aplicativo")
-				->setSubject("Clientes digitados")
-				->setDescription("Reporte con el listado de clientes que fueron digitados en el proceso de sarlaf")
-				->setKeywords("Reporte de clientes digitados")
-				->setCategory("Reportes de clientes");
+	if ($conn->getNumeroRegistros() <= 0) exit;
 
-			// Add some data
-			$objPHPExcel->setActiveSheetIndex(0);
-			$objPHPExcel->getActiveSheet()->setTitle("Todo");
-			$objPHPExcel->getActiveSheet()->fromArray($header, null, 'A1');
-			$cont = 2;
-			/*while($dat = $conn->sacarRegistro('str')){
-				$objPHPExcel->getActiveSheet()->fromArray($dat, null, 'A'.$cont);
-				$objPHPExcel->getActiveSheet()->getStyle('B'.$cont)->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_NUMBER);
-				$cont++;
-			}*/
-			//exit;
-            while($dat = $conn->sacarRegistro('str')){
-            	$idData = $dat['idData'];
-				$acci = getAccionistas($idData);
-				$recl = getReclamaciones($idData);
-				$prod = getProductos($idData);
+	
+	$spreadsheet = new Spreadsheet();
+	$spreadsheet->getProperties()
+		->setCreator('FinlecoBPO Group')
+		->setLastModifiedBy('FinlecoBPO Group')
+		->setTitle('Reporte de clientes digitados en aplicativo')
+		->setSubject('Clientes digitados')
+		->setDescription('Reporte con el listado de clientes que fueron digitados en el proceso de sarlaf')
+		->setKeywords('Reporte de clientes digitados')
+		->setCategory('Reportes de clientes');
 
-				$formularioId = $dat['formularioId'];
-				$socio1 = "";
-				$socio2 = "";
-				$socio3 = "";
-				if($formularioId != '15'){
-					$socio1 = $dat['socio1'];
-					$socio2 = $dat['socio2'];
-					$socio3 = $dat['socio3'];
-				}
+	$spreadsheet->setActiveSheetIndex(0);
+	$spreadsheet->getActiveSheet()->setTitle('Todo');
+	$spreadsheet->getActiveSheet()->fromArray($header, NULL, 'A1');
+	$cont = 2;
+	/*while($dat = $conn->sacarRegistro('str')){
+		$objPHPExcel->getActiveSheet()->fromArray($dat, null, 'A'.$cont);
+		$objPHPExcel->getActiveSheet()->getStyle('B'.$cont)->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_NUMBER);
+		$cont++;
+	}*/
+	$conn2 = new Conexion();
+	while($dat = $conn->sacarRegistro('str')){
+		$idData = $dat['idData'];
+		$acci = getAccionistas($idData, $conn2);
+		$recl = getReclamaciones($idData, $conn2);
+		$prod = getProductos($idData, $conn2);
 
-				if(is_null($dat['fecha_envio']) || empty($dat['fecha_envio']) || $dat['fecha_envio'] == '0000-00-00')
-					$dat['fecha_envio'] = "2013-06-12";
-				else
-					$dat['fecha_envio'] = $dat['fecha_envio'];
+		$formularioId = $dat['formularioId'];
+		$socio1 = "";
+		$socio2 = "";
+		$socio3 = "";
+		if($formularioId != '15'){
+			$socio1 = $dat['socio1'];
+			$socio2 = $dat['socio2'];
+			$socio3 = $dat['socio3'];
+		}
 
-				if(is_null($dat['fecha_recibido']) || empty($dat['fecha_recibido']) || $dat['fecha_recibido'] == '0000-00-00')
-					$dat['fecha_recibido'] = "2013-06-12";
-				else
-					$dat['fecha_recibido'] = $dat['fecha_recibido'];
+		if(is_null($dat['fecha_envio']) || empty($dat['fecha_envio']) || $dat['fecha_envio'] == '0000-00-00')
+			$dat['fecha_envio'] = "2013-06-12";
+		else
+			$dat['fecha_envio'] = $dat['fecha_envio'];
 
-				if($dat['date_created'] == "")
-					$dat['date_created'] = "SD";
+		if(is_null($dat['fecha_recibido']) || empty($dat['fecha_recibido']) || $dat['fecha_recibido'] == '0000-00-00')
+			$dat['fecha_recibido'] = "2013-06-12";
+		else
+			$dat['fecha_recibido'] = $dat['fecha_recibido'];
 
-				if($dat['detalleactividadeconomicappal'] == "")
-					$dat['detalleactividadeconomicappal'] = "NA";
+		if($dat['date_created'] == "")
+			$dat['date_created'] = "SD";
 
-				if($dat['actividadeconomicaempresa'] == "")
-					$dat['actividadeconomicaempresa'] = "NA";
+		if($dat['detalleactividadeconomicappal'] == "")
+			$dat['detalleactividadeconomicappal'] = "NA";
 
-				if($dat['detalletipoactividad'] == "")
-					$dat['detalletipoactividad'] = "NA";
+		if($dat['actividadeconomicaempresa'] == "")
+			$dat['actividadeconomicaempresa'] = "NA";
 
-				if($dat['nombreempresa'] == "")
-					$dat['nombreempresa'] = "NA";
+		if($dat['detalletipoactividad'] == "")
+			$dat['detalletipoactividad'] = "NA";
 
-				if($dat['nomenclatura'] == "")
-					$dat['nomenclatura'] = "NA";
+		if($dat['nombreempresa'] == "")
+			$dat['nombreempresa'] = "NA";
 
-				$ultimoestado = getEstadoInformacion($dat['clienteId'], $dat['regimen_id']);
+		if($dat['nomenclatura'] == "")
+			$dat['nomenclatura'] = "NA";
 
-				$row = array(
-					trim(preg_replace("/\s+/", " ", $dat['persontype'])), 
-					trim(preg_replace("/\s+/", " ", $dat['document'])), 
-					trim(preg_replace("/\s+/", " ", $dat['firstname'])), 
-					trim(preg_replace("/\s+/", " ", $dat['tipodocumento_cli'])), 
-					trim(preg_replace("/\s+/", " ", $dat['log_planilla'])), 
-					trim(preg_replace("/\s+/", " ", $dat['log_lote'])), 
-					trim(preg_replace("/\s+/", " ", $dat['formulario'])), 
-					trim(preg_replace("/\s+/", " ", $dat['fecharadicado'])),//date('d/m/Y', PHPExcel_Shared_Date::ExcelToPHP($dat['fecharadicado'])))), 
-					trim(preg_replace("/\s+/", " ", $dat['fecha_envio'])), 
-					trim(preg_replace("/\s+/", " ", $dat['fecha_recibido'])), 
-					trim(preg_replace("/\s+/", " ", $dat['fechasolicitud'])), 
-					trim(preg_replace("/\s+/", " ", $dat['date_created'])), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['ciudad'])), 'ciu'), 
-					trim(preg_replace("/\s+/", " ", $dat['sucursal'])), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['area'])), 'str'), 
-					trim(preg_replace("/\s+/", " ", $dat['oficial'])), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['tipo_solicitud'])), 'str'), 
-					trim(preg_replace("/\s+/", " ", $dat['clasecliente'])), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['cual_clasecliente'])), 'str'), 
-					trim(preg_replace("/\s+/", " ", $dat['primerapellido'])), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['segundoapellido'])), 'str'), 
-					trim(preg_replace("/\s+/", " ", $dat['nombres'])), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['sexo'])), 'str'), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['tipodocumento'])), 'str'), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['documento'])), 'tel'), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['fechaexpedicion'])), 'fec'), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['lugarexpedicion'])), 'ciu'), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['fechanacimiento'])), 'fec'), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['lugarnacimiento'])), 'ciu'), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['paisnacimiento'])), 'str'), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['nacionalidad_otra'])), 'str'), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['numerohijos'])), 'num'), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['estadocivil'])), 'str'), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['correoelectronico'])), 'str'), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['celular'])), 'tel'), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['telefonoresidencia'])), 'tel'), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['direccionresidencia'])), 'str'), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['ciudadresidencia'])), 'ciu'), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['nombreempresa'])), 'str'), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['direccionempresa'])), 'str'), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['nomenclatura'])), 'str'), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['telefonolaboral'])), 'tel'), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['ciudadempresa'])), 'ciu'), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['celularoficinappal'])), 'tel'), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['tipoempresaemp'])), 'str'), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['tipoempresaemp_cual'])), 'str'), 
-					trim(preg_replace("/\s+/", " ", $dat['recursos_publicos'])), 
-					trim(preg_replace("/\s+/", " ", $dat['poder_publico'])), 
-					trim(preg_replace("/\s+/", " ", $dat['reconocimiento_publico'])), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['reconocimiento_cual'])), 'str'), 
-					trim(preg_replace("/\s+/", " ", $dat['servidor_publico'])), 
-					trim(preg_replace("/\s+/", " ", $dat['expuesta_politica'])), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['cargo_politica'])), 'str'), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['cargo_politica_ini'])), 'fec'), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['cargo_politica_fin'])), 'fec'), 
-					trim(preg_replace("/\s+/", " ", $dat['expuesta_publica'])), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['publica_nombre'])), 'str'), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['publica_cargo'])), 'str'), 
-					trim(preg_replace("/\s+/", " ", $dat['repre_internacional'])), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['internacional_indique'])), 'str'), 
-					trim(preg_replace("/\s+/", " ", $dat['tributarias_otro_pais'])), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['tributarias_paises'])), 'str'), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['tipoactividad'])), 'str'), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['ciiu'])), 'str'), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['profesion'])), 'str'), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['cargo'])), 'str'), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['ocupacion'])), 'str'), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['detalleocupacion'])), 'str'), 
-					trim(preg_replace("/\s+/", " ", $dat['actividadeconomicaempresa'])), /**/
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['ciiu_otro'])), 'str'), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['direccionoficinappal'])), 'str'), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['nomenclatura_emp'])), 'str'), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['telefonoficinappal'])), 'tel'), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['detalletipoactividad'])), 'str'), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['ingresosmensuales'])), 'num'), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['totalactivos'])), 'num'), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['totalpasivos'])), 'num'), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['egresosmensuales'])), 'num'), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['patrimonio'])), 'num'), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['otrosingresos'])), 'num'), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['conceptosotrosingresos'])), 'str'), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['nivelestudios'])), 'str'), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['tipovivienda'])), 'str'), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['estrato'])), 'num'), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['razonsocial'])), 'str'), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['nit'])), 'num'), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['digitochequeo'])), 'num'), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['tipoempresajur'])), 'str'), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['tipoempresajur_otra'])), 'str'), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['actividadeconomica'])), 'str'), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['detalleactividadeconomicappal'])), 'str'), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['ciiu_'])), 'str'), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['direccionoficinappal'])), 'str'), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['ciudadoficina'])), 'ciu'), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['telefonoficina'])), 'tel'), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['faxoficina'])), 'tel'), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['correoelectronico_otro'])), 'str'), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['celularoficina'])), 'tel'), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['direccionsucursal'])), 'str'), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['ciudadsucursal'])), 'ciu'), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['nomenclatura_emp2'])), 'str'), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['telefonosucursal'])), 'tel'), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['faxsucursal'])), 'tel'), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['ingresosmensualesemp'])), 'num'), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['activosemp'])), 'num'), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['pasivosemp'])), 'num'), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['egresosmensualesemp'])), 'num'), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['patrimonio'])), 'num'), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['otrosingresosemp'])), 'num'), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['concepto_otrosingresosemp'])), 'str'), 
-					CleanDat(((isset($acci[0][1])) ? $acci[0][1] : ''), 'str'), 
-					CleanDat(((isset($acci[0][2])) ? $acci[0][2] : $socio1), 'tel'), 
-					CleanDat(((isset($acci[0][3])) ? $acci[0][3] : ''), 'str'), 
-					CleanDat(((isset($acci[0][4])) ? $acci[0][4] : ''), 'num'), 
-					CleanDat(((isset($acci[0][5])) ? $acci[0][5] : ''), 'str'), 
-					CleanDat(((isset($acci[0][6])) ? $acci[0][6] : ''), 'str'), 
-					CleanDat(((isset($acci[0][7])) ? $acci[0][7] : ''), 'str'), 
-					CleanDat(((isset($acci[0][8])) ? $acci[0][8] : ''), 'str'),  
-					CleanDat(((isset($acci[1][1])) ? $acci[1][1] : ''), 'str'), 
-					CleanDat(((isset($acci[1][2])) ? $acci[1][2] : $socio2), 'tel'), 
-					CleanDat(((isset($acci[1][3])) ? $acci[1][3] : ''), 'str'), 
-					CleanDat(((isset($acci[1][4])) ? $acci[1][4] : ''), 'num'), 
-					CleanDat(((isset($acci[1][5])) ? $acci[1][5] : ''), 'str'), 
-					CleanDat(((isset($acci[1][6])) ? $acci[1][6] : ''), 'str'), 
-					CleanDat(((isset($acci[1][7])) ? $acci[1][7] : ''), 'str'), 
-					CleanDat(((isset($acci[1][8])) ? $acci[1][8] : ''), 'str'), 
-					CleanDat(((isset($acci[2][1])) ? $acci[2][1] : ''), 'str'), 
-					CleanDat(((isset($acci[2][2])) ? $acci[2][2] : $socio3), 'tel'), 
-					CleanDat(((isset($acci[2][3])) ? $acci[2][3] : ''), 'str'), 
-					CleanDat(((isset($acci[2][4])) ? $acci[2][4] : ''), 'num'), 
-					CleanDat(((isset($acci[2][5])) ? $acci[2][5] : ''), 'str'), 
-					CleanDat(((isset($acci[2][6])) ? $acci[2][6] : ''), 'str'), 
-					CleanDat(((isset($acci[2][7])) ? $acci[2][7] : ''), 'str'), 
-					CleanDat(((isset($acci[2][8])) ? $acci[2][8] : ''), 'str'), 
-					CleanDat(((isset($acci[3][1])) ? $acci[3][1] : ''), 'str'), 
-					CleanDat(((isset($acci[3][2])) ? $acci[3][2] : ''), 'tel'), 
-					CleanDat(((isset($acci[3][3])) ? $acci[3][3] : ''), 'str'), 
-					CleanDat(((isset($acci[3][4])) ? $acci[3][4] : ''), 'num'), 
-					CleanDat(((isset($acci[3][5])) ? $acci[3][5] : ''), 'str'), 
-					CleanDat(((isset($acci[3][6])) ? $acci[3][6] : ''), 'str'), 
-					CleanDat(((isset($acci[3][7])) ? $acci[3][7] : ''), 'str'), 
-					CleanDat(((isset($acci[3][8])) ? $acci[3][8] : ''), 'str'), 
-					CleanDat(((isset($acci[4][1])) ? $acci[4][1] : ''), 'str'), 
-					CleanDat(((isset($acci[4][2])) ? $acci[4][2] : ''), 'tel'), 
-					CleanDat(((isset($acci[4][3])) ? $acci[4][3] : ''), 'str'), 
-					CleanDat(((isset($acci[4][4])) ? $acci[4][4] : ''), 'num'), 
-					CleanDat(((isset($acci[4][5])) ? $acci[4][5] : ''), 'str'), 
-					CleanDat(((isset($acci[4][6])) ? $acci[4][6] : ''), 'str'), 
-					CleanDat(((isset($acci[4][7])) ? $acci[4][7] : ''), 'str'), 
-					CleanDat(((isset($acci[4][8])) ? $acci[4][8] : ''), 'str'), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['origen_fondos'])), 'str'), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['procedencia_fondos'])), 'str'), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['monedaextranjera'])), 'str'), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['tipotransacciones'])), 'str'), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['tipotransacciones_cual'])), 'str'), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['otras_operaciones'])), 'str'), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['productos_exterior'])), 'str'), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['cuentas_monedaextranjera'])), 'str'), 
-					CleanDat(((isset($prod[0][1])) ? $prod[0][1] : ''), 'str'), 
-					CleanDat(((isset($prod[0][2])) ? $prod[0][2] : ''), 'tel'), 
-					CleanDat(((isset($prod[0][3])) ? $prod[0][3] : ''), 'str'), 
-					CleanDat(((isset($prod[0][4])) ? $prod[0][4] : ''), 'tel'), 
-					CleanDat(((isset($prod[0][6])) ? $prod[0][6] : ''), 'str'), 
-					CleanDat(((isset($prod[0][5])) ? $prod[0][5] : ''), 'str'), 
-					CleanDat(((isset($prod[0][7])) ? $prod[0][7] : ''), 'tel'), 
-					CleanDat(((isset($prod[1][1])) ? $prod[1][1] : ''), 'str'), 
-					CleanDat(((isset($prod[1][2])) ? $prod[1][2] : ''), 'tel'), 
-					CleanDat(((isset($prod[1][3])) ? $prod[1][3] : ''), 'str'), 
-					CleanDat(((isset($prod[1][4])) ? $prod[1][4] : ''), 'tel'), 
-					CleanDat(((isset($prod[1][6])) ? $prod[1][6] : ''), 'str'), 
-					CleanDat(((isset($prod[1][5])) ? $prod[1][5] : ''), 'str'), 
-					CleanDat(((isset($prod[1][7])) ? $prod[1][7] : ''), 'tel'), 
-					CleanDat(((isset($prod[2][1])) ? $prod[2][1] : ''), 'str'), 
-					CleanDat(((isset($prod[2][2])) ? $prod[2][2] : ''), 'tel'), 
-					CleanDat(((isset($prod[2][3])) ? $prod[2][3] : ''), 'str'), 
-					CleanDat(((isset($prod[2][4])) ? $prod[2][4] : ''), 'tel'), 
-					CleanDat(((isset($prod[2][6])) ? $prod[2][6] : ''), 'str'), 
-					CleanDat(((isset($prod[2][5])) ? $prod[2][5] : ''), 'str'), 
-					CleanDat(((isset($prod[2][7])) ? $prod[2][7] : ''), 'tel'), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['reclamaciones'])), 'str'), 
-					CleanDat(((isset($recl[0][1])) ? $recl[0][1] : ''), 'tel'), 
-					CleanDat(((isset($recl[0][2])) ? $recl[0][2] : ''), 'str'), 
-					CleanDat(((isset($recl[0][3])) ? $recl[0][3] : ''), 'str'), 
-					CleanDat(((isset($recl[0][4])) ? $recl[0][4] : ''), 'tel'), 
-					CleanDat(((isset($recl[0][5])) ? $recl[0][5] : ''), 'str'), 
-					CleanDat(((isset($recl[1][1])) ? $recl[1][1] : ''), 'tel'), 
-					CleanDat(((isset($recl[1][2])) ? $recl[1][2] : ''), 'str'), 
-					CleanDat(((isset($recl[1][3])) ? $recl[1][3] : ''), 'str'), 
-					CleanDat(((isset($recl[1][4])) ? $recl[1][4] : ''), 'tel'), 
-					CleanDat(((isset($recl[1][5])) ? $recl[1][5] : ''), 'str'), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['auto_correo'])), 'str'), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['auto_sms'])), 'str'), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['firma'])), 'str'), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['huella'])), 'str'), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['lugarentrevista'])), 'str'), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['resultadoentrevista'])), 'str'), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['fechaentrevista'])), 'fec'), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['horaentrevista'])), 'num'), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['observacionesentrevista'])), 'str'), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['nombreintermediario'])), 'str'), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['clave_inter'])), 'tel'), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['firma_entrevista'])), 'str'), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['verificacion_ciudad'])), 'ciu'), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['verificacion_fecha'])), 'fec'), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['verificacion_hora'])), 'tel'), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['verificacion_nombre'])), 'str'), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['verificacion_observacion'])), 'str'), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['verificacion_firma'])), 'str'), 
-					CleanDat(trim(preg_replace("/\s+/", " ", $dat['usuario_digitador'])), 'str'), 
-					$ultimoestado
-				);
-                //fputcsv($fh, $row, "\t");
-				$objPHPExcel->getActiveSheet()->fromArray($row, null, 'A'.$cont);
-				
-				$cont++;
-            }
-            $objPHPExcel->getActiveSheet()->getStyle('H')->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_DATE_YYYYMMDD2);
-			$objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
-			$objWriter->save(PATH_SARLAFT.DS.$name);
-            // Close the file
-            //fclose($fh);
-            // Make sure nothing else is sent, our file is done
-            exit();
-        }
-    }
+		$ultimoestado = getEstadoInformacion($dat['clienteId'], $dat['regimen_id'], $conn2);
+
+		$row = [
+			trim(preg_replace("/\s+/", " ", $dat['persontype'])), 
+			trim(preg_replace("/\s+/", " ", $dat['document'])), 
+			trim(preg_replace("/\s+/", " ", $dat['firstname'])), 
+			trim(preg_replace("/\s+/", " ", $dat['tipodocumento_cli'])), 
+			trim(preg_replace("/\s+/", " ", $dat['log_planilla'])), 
+			trim(preg_replace("/\s+/", " ", $dat['log_lote'])), 
+			trim(preg_replace("/\s+/", " ", $dat['formulario'])), 
+			trim(preg_replace("/\s+/", " ", $dat['fecharadicado'])),//date('d/m/Y', PHPExcel_Shared_Date::ExcelToPHP($dat['fecharadicado'])))), 
+			trim(preg_replace("/\s+/", " ", $dat['fecha_envio'])), 
+			trim(preg_replace("/\s+/", " ", $dat['fecha_recibido'])), 
+			trim(preg_replace("/\s+/", " ", $dat['fechasolicitud'])), 
+			trim(preg_replace("/\s+/", " ", $dat['date_created'])), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['ciudad'])), 'ciu'), 
+			trim(preg_replace("/\s+/", " ", $dat['sucursal'])), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['area'])), 'str'), 
+			trim(preg_replace("/\s+/", " ", $dat['oficial'])), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['tipo_solicitud'])), 'str'), 
+			trim(preg_replace("/\s+/", " ", $dat['clasecliente'])), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['cual_clasecliente'])), 'str'), 
+			trim(preg_replace("/\s+/", " ", $dat['primerapellido'])), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['segundoapellido'])), 'str'), 
+			trim(preg_replace("/\s+/", " ", $dat['nombres'])), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['sexo'])), 'str'), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['tipodocumento'])), 'str'), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['documento'])), 'tel'), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['fechaexpedicion'])), 'fec'), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['lugarexpedicion'])), 'ciu'), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['fechanacimiento'])), 'fec'), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['lugarnacimiento'])), 'ciu'), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['paisnacimiento'])), 'str'), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['nacionalidad_otra'])), 'str'), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['numerohijos'])), 'num'), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['estadocivil'])), 'str'), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['correoelectronico'])), 'str'), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['celular'])), 'tel'), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['telefonoresidencia'])), 'tel'), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['direccionresidencia'])), 'str'), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['ciudadresidencia'])), 'ciu'), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['nombreempresa'])), 'str'), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['direccionempresa'])), 'str'), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['nomenclatura'])), 'str'), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['telefonolaboral'])), 'tel'), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['ciudadempresa'])), 'ciu'), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['celularoficinappal'])), 'tel'), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['tipoempresaemp'])), 'str'), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['tipoempresaemp_cual'])), 'str'), 
+			trim(preg_replace("/\s+/", " ", $dat['recursos_publicos'])), 
+			trim(preg_replace("/\s+/", " ", $dat['poder_publico'])), 
+			trim(preg_replace("/\s+/", " ", $dat['reconocimiento_publico'])), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['reconocimiento_cual'])), 'str'), 
+			trim(preg_replace("/\s+/", " ", $dat['servidor_publico'])), 
+			trim(preg_replace("/\s+/", " ", $dat['expuesta_politica'])), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['cargo_politica'])), 'str'), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['cargo_politica_ini'])), 'fec'), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['cargo_politica_fin'])), 'fec'), 
+			trim(preg_replace("/\s+/", " ", $dat['expuesta_publica'])), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['publica_nombre'])), 'str'), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['publica_cargo'])), 'str'), 
+			trim(preg_replace("/\s+/", " ", $dat['repre_internacional'])), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['internacional_indique'])), 'str'), 
+			trim(preg_replace("/\s+/", " ", $dat['tributarias_otro_pais'])), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['tributarias_paises'])), 'str'), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['tipoactividad'])), 'str'), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['ciiu'])), 'str'), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['profesion'])), 'str'), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['cargo'])), 'str'), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['ocupacion'])), 'str'), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['detalleocupacion'])), 'str'), 
+			trim(preg_replace("/\s+/", " ", $dat['actividadeconomicaempresa'])), /**/
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['ciiu_otro'])), 'str'), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['direccionoficinappal'])), 'str'), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['nomenclatura_emp'])), 'str'), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['telefonoficinappal'])), 'tel'), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['detalletipoactividad'])), 'str'), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['ingresosmensuales'])), 'num'), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['totalactivos'])), 'num'), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['totalpasivos'])), 'num'), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['egresosmensuales'])), 'num'), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['patrimonio'])), 'num'), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['otrosingresos'])), 'num'), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['conceptosotrosingresos'])), 'str'), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['nivelestudios'])), 'str'), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['tipovivienda'])), 'str'), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['estrato'])), 'num'), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['razonsocial'])), 'str'), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['nit'])), 'num'), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['digitochequeo'])), 'num'), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['tipoempresajur'])), 'str'), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['tipoempresajur_otra'])), 'str'), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['actividadeconomica'])), 'str'), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['detalleactividadeconomicappal'])), 'str'), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['ciiu_'])), 'str'), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['direccionoficinappal'])), 'str'), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['ciudadoficina'])), 'ciu'), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['telefonoficina'])), 'tel'), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['faxoficina'])), 'tel'), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['correoelectronico_otro'])), 'str'), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['celularoficina'])), 'tel'), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['direccionsucursal'])), 'str'), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['ciudadsucursal'])), 'ciu'), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['nomenclatura_emp2'])), 'str'), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['telefonosucursal'])), 'tel'), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['faxsucursal'])), 'tel'), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['ingresosmensualesemp'])), 'num'), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['activosemp'])), 'num'), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['pasivosemp'])), 'num'), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['egresosmensualesemp'])), 'num'), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['patrimonio'])), 'num'), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['otrosingresosemp'])), 'num'), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['concepto_otrosingresosemp'])), 'str'), 
+			CleanDat(((isset($acci[0][1])) ? $acci[0][1] : ''), 'str'), 
+			CleanDat(((isset($acci[0][2])) ? $acci[0][2] : $socio1), 'tel'), 
+			CleanDat(((isset($acci[0][3])) ? $acci[0][3] : ''), 'str'), 
+			CleanDat(((isset($acci[0][4])) ? $acci[0][4] : ''), 'num'), 
+			CleanDat(((isset($acci[0][5])) ? $acci[0][5] : ''), 'str'), 
+			CleanDat(((isset($acci[0][6])) ? $acci[0][6] : ''), 'str'), 
+			CleanDat(((isset($acci[0][7])) ? $acci[0][7] : ''), 'str'), 
+			CleanDat(((isset($acci[0][8])) ? $acci[0][8] : ''), 'str'),  
+			CleanDat(((isset($acci[1][1])) ? $acci[1][1] : ''), 'str'), 
+			CleanDat(((isset($acci[1][2])) ? $acci[1][2] : $socio2), 'tel'), 
+			CleanDat(((isset($acci[1][3])) ? $acci[1][3] : ''), 'str'), 
+			CleanDat(((isset($acci[1][4])) ? $acci[1][4] : ''), 'num'), 
+			CleanDat(((isset($acci[1][5])) ? $acci[1][5] : ''), 'str'), 
+			CleanDat(((isset($acci[1][6])) ? $acci[1][6] : ''), 'str'), 
+			CleanDat(((isset($acci[1][7])) ? $acci[1][7] : ''), 'str'), 
+			CleanDat(((isset($acci[1][8])) ? $acci[1][8] : ''), 'str'), 
+			CleanDat(((isset($acci[2][1])) ? $acci[2][1] : ''), 'str'), 
+			CleanDat(((isset($acci[2][2])) ? $acci[2][2] : $socio3), 'tel'), 
+			CleanDat(((isset($acci[2][3])) ? $acci[2][3] : ''), 'str'), 
+			CleanDat(((isset($acci[2][4])) ? $acci[2][4] : ''), 'num'), 
+			CleanDat(((isset($acci[2][5])) ? $acci[2][5] : ''), 'str'), 
+			CleanDat(((isset($acci[2][6])) ? $acci[2][6] : ''), 'str'), 
+			CleanDat(((isset($acci[2][7])) ? $acci[2][7] : ''), 'str'), 
+			CleanDat(((isset($acci[2][8])) ? $acci[2][8] : ''), 'str'), 
+			CleanDat(((isset($acci[3][1])) ? $acci[3][1] : ''), 'str'), 
+			CleanDat(((isset($acci[3][2])) ? $acci[3][2] : ''), 'tel'), 
+			CleanDat(((isset($acci[3][3])) ? $acci[3][3] : ''), 'str'), 
+			CleanDat(((isset($acci[3][4])) ? $acci[3][4] : ''), 'num'), 
+			CleanDat(((isset($acci[3][5])) ? $acci[3][5] : ''), 'str'), 
+			CleanDat(((isset($acci[3][6])) ? $acci[3][6] : ''), 'str'), 
+			CleanDat(((isset($acci[3][7])) ? $acci[3][7] : ''), 'str'), 
+			CleanDat(((isset($acci[3][8])) ? $acci[3][8] : ''), 'str'), 
+			CleanDat(((isset($acci[4][1])) ? $acci[4][1] : ''), 'str'), 
+			CleanDat(((isset($acci[4][2])) ? $acci[4][2] : ''), 'tel'), 
+			CleanDat(((isset($acci[4][3])) ? $acci[4][3] : ''), 'str'), 
+			CleanDat(((isset($acci[4][4])) ? $acci[4][4] : ''), 'num'), 
+			CleanDat(((isset($acci[4][5])) ? $acci[4][5] : ''), 'str'), 
+			CleanDat(((isset($acci[4][6])) ? $acci[4][6] : ''), 'str'), 
+			CleanDat(((isset($acci[4][7])) ? $acci[4][7] : ''), 'str'), 
+			CleanDat(((isset($acci[4][8])) ? $acci[4][8] : ''), 'str'), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['origen_fondos'])), 'str'), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['procedencia_fondos'])), 'str'), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['monedaextranjera'])), 'str'), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['tipotransacciones'])), 'str'), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['tipotransacciones_cual'])), 'str'), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['otras_operaciones'])), 'str'), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['productos_exterior'])), 'str'), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['cuentas_monedaextranjera'])), 'str'), 
+			CleanDat(((isset($prod[0][1])) ? $prod[0][1] : ''), 'str'), 
+			CleanDat(((isset($prod[0][2])) ? $prod[0][2] : ''), 'tel'), 
+			CleanDat(((isset($prod[0][3])) ? $prod[0][3] : ''), 'str'), 
+			CleanDat(((isset($prod[0][4])) ? $prod[0][4] : ''), 'tel'), 
+			CleanDat(((isset($prod[0][6])) ? $prod[0][6] : ''), 'str'), 
+			CleanDat(((isset($prod[0][5])) ? $prod[0][5] : ''), 'str'), 
+			CleanDat(((isset($prod[0][7])) ? $prod[0][7] : ''), 'tel'), 
+			CleanDat(((isset($prod[1][1])) ? $prod[1][1] : ''), 'str'), 
+			CleanDat(((isset($prod[1][2])) ? $prod[1][2] : ''), 'tel'), 
+			CleanDat(((isset($prod[1][3])) ? $prod[1][3] : ''), 'str'), 
+			CleanDat(((isset($prod[1][4])) ? $prod[1][4] : ''), 'tel'), 
+			CleanDat(((isset($prod[1][6])) ? $prod[1][6] : ''), 'str'), 
+			CleanDat(((isset($prod[1][5])) ? $prod[1][5] : ''), 'str'), 
+			CleanDat(((isset($prod[1][7])) ? $prod[1][7] : ''), 'tel'), 
+			CleanDat(((isset($prod[2][1])) ? $prod[2][1] : ''), 'str'), 
+			CleanDat(((isset($prod[2][2])) ? $prod[2][2] : ''), 'tel'), 
+			CleanDat(((isset($prod[2][3])) ? $prod[2][3] : ''), 'str'), 
+			CleanDat(((isset($prod[2][4])) ? $prod[2][4] : ''), 'tel'), 
+			CleanDat(((isset($prod[2][6])) ? $prod[2][6] : ''), 'str'), 
+			CleanDat(((isset($prod[2][5])) ? $prod[2][5] : ''), 'str'), 
+			CleanDat(((isset($prod[2][7])) ? $prod[2][7] : ''), 'tel'), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['reclamaciones'])), 'str'), 
+			CleanDat(((isset($recl[0][1])) ? $recl[0][1] : ''), 'tel'), 
+			CleanDat(((isset($recl[0][2])) ? $recl[0][2] : ''), 'str'), 
+			CleanDat(((isset($recl[0][3])) ? $recl[0][3] : ''), 'str'), 
+			CleanDat(((isset($recl[0][4])) ? $recl[0][4] : ''), 'tel'), 
+			CleanDat(((isset($recl[0][5])) ? $recl[0][5] : ''), 'str'), 
+			CleanDat(((isset($recl[1][1])) ? $recl[1][1] : ''), 'tel'), 
+			CleanDat(((isset($recl[1][2])) ? $recl[1][2] : ''), 'str'), 
+			CleanDat(((isset($recl[1][3])) ? $recl[1][3] : ''), 'str'), 
+			CleanDat(((isset($recl[1][4])) ? $recl[1][4] : ''), 'tel'), 
+			CleanDat(((isset($recl[1][5])) ? $recl[1][5] : ''), 'str'), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['auto_correo'])), 'str'), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['auto_sms'])), 'str'), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['firma'])), 'str'), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['huella'])), 'str'), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['lugarentrevista'])), 'str'), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['resultadoentrevista'])), 'str'), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['fechaentrevista'])), 'fec'), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['horaentrevista'])), 'num'), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['observacionesentrevista'])), 'str'), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['nombreintermediario'])), 'str'), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['clave_inter'])), 'tel'), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['firma_entrevista'])), 'str'), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['verificacion_ciudad'])), 'ciu'), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['verificacion_fecha'])), 'fec'), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['verificacion_hora'])), 'tel'), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['verificacion_nombre'])), 'str'), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['verificacion_observacion'])), 'str'), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['verificacion_firma'])), 'str'), 
+			CleanDat(trim(preg_replace("/\s+/", " ", $dat['usuario_digitador'])), 'str'), 
+			$ultimoestado
+		];
+		$spreadsheet->getActiveSheet()->fromArray($row, null, 'A' . $cont);
+		
+		$cont++;
+	}
+	$conn2->desconectar();
+	$spreadsheet->getActiveSheet()->getStyle('H')->getNumberFormat()->setFormatCode('yyyy-mm-dd');
+	$writer = new Xlsx($spreadsheet);
+	$writer->save(PATH_SARLAFT . DS . $name);
+	exit;
 }
-function getEstadoInformacion($id_client, $regimen_id = '2') {
+function getEstadoInformacion($id_client, $regimen_id = '2', $conn)
+{
 	$intervalo = 365;
 	$anios = 1;
 	if($regimen_id == '1')
@@ -740,7 +733,6 @@ function getEstadoInformacion($id_client, $regimen_id = '2') {
 		$intervalo = 730;
 		$anios = 2;
 	}
-	$conn = new Conexion();
 	$query = <<< SQL
 	SELECT MAX(a.d) + INTERVAL $intervalo DAY AS date, (MAX(a.d) + INTERVAL $intervalo DAY) >= NOW() AS valid
 	  FROM (
@@ -773,20 +765,18 @@ function getEstadoInformacion($id_client, $regimen_id = '2') {
 		        )
 		    ) AS a
 SQL;
-	if($conn->consultar($query)){
-		if($conn->getNumeroRegistros() > 0){
-			$data = $conn->sacarRegistro('str');
-			if($data['valid'])
-				return "Vigente hasta " . date("Y-m-d", strtotime($data['date']));
-			else
-				return "Desactualizado";
-			
-		}
-	}
+	if (!$conn->consultar($query)) return "Desactualizado";
+
+	if ($conn->getNumeroRegistros() <= 0) return "Desactualizado";
+
+	$data = $conn->sacarRegistro('str');
+	
+	return $data['valid'] 
+		? "Vigente hasta " . date("Y-m-d", strtotime($data['date']))
+		: "Desactualizado";
 }
-function getAccionistas($idData){
-	$conn = new Conexion();
-	$data = array();
+function getAccionistas($idData, $conn)
+{
 	$SQL = "SELECT da.id,
 				   ptd.description AS tipo_id, 
 				   da.identificacion,
@@ -799,19 +789,17 @@ function getAccionistas($idData){
 			  FROM data_socios AS da
 			 INNER JOIN param_tipodocumento AS ptd ON(ptd.id = da.tipo_id)
 			 WHERE data_id = '$idData'";
-	if($conn->consultar($SQL)){
-		if($conn->getNumeroRegistros() > 0){
-			while ($dat = $conn->sacarRegistro('num')) {
-				$data[] = $dat;
-			}
-		}
+	if ($conn->consultar($SQL)) return [];
+
+	if ($conn->getNumeroRegistros() > 0) return [];
+
+	$data = [];
+	while ($dat = $conn->sacarRegistro('num')) {
+		$data[] = $dat;
 	}
-	$conn->desconectar();
 	return $data;
 }
-function getReclamaciones($idData){
-	$conn = new Conexion();
-	$data = array();
+function getReclamaciones($idData, $conn){
 	$SQL = "SELECT id,
 				   rec_ano,
 				   rec_ramo,
@@ -820,19 +808,18 @@ function getReclamaciones($idData){
 				   rec_resultado
 			  FROM data_reclamaciones 
 			 WHERE data_id = '$idData'";
-	if($conn->consultar($SQL)){
-		if($conn->getNumeroRegistros() > 0){
-			while ($dat = $conn->sacarRegistro('num')) {
-				$data[] = $dat;
-			}
-		}
+	if (!$conn->consultar($SQL)) return [];
+
+	if ($conn->getNumeroRegistros() <= 0) return [];
+
+	$data = [];
+	while ($dat = $conn->sacarRegistro('num')) {
+		$data[] = $dat;
 	}
-	$conn->desconectar();
 	return $data;
 }
-function getProductos($idData){
-	$conn = new Conexion();
-	$data = array();
+function getProductos($idData, $conn)
+{
 	$SQL = "SELECT id, 
 				   tipo, 
 				   identificacion_producto, 
@@ -843,14 +830,14 @@ function getProductos($idData){
 				   moneda 
 			  FROM data_productos 
 			 WHERE data_id = '$idData'";
-	if($conn->consultar($SQL)){
-		if($conn->getNumeroRegistros() > 0){
-			while ($dat = $conn->sacarRegistro('num')) {
-				$data[] = $dat;
-			}
-		}
+	if ($conn->consultar($SQL)) return [];
+
+	if ($conn->getNumeroRegistros() > 0) return [];
+
+	$data = [];
+	while ($dat = $conn->sacarRegistro('num')) {
+		$data[] = $dat;
 	}
-	$conn->desconectar();
 	return $data;
 }
 function CleanDat($dat, $tipo){
@@ -878,4 +865,3 @@ function CleanDat($dat, $tipo){
 	}
 	return $dat;
 }
-?>
