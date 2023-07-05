@@ -3,7 +3,7 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 require 'includes.php';
-require_once PATH_MAILER.DS.'class.phpmailer.php';
+require_once PATH_COMPOSER . DS . 'vendor' . DS . 'autoload.php';
 //enviarMailCreacion();
 echo htmlentities("JOSE YOVANI D' ALEMAN URIBE");
 echo "<br>";

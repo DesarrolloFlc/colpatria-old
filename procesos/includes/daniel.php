@@ -7,10 +7,6 @@ require_once PATH_COMPOSER . DS . 'vendor' . DS . 'autoload.php';
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-require PATH_MAILER2.DS.'src/Exception.php';
-require PATH_MAILER2.DS.'src/PHPMailer.php';
-require PATH_MAILER2.DS.'src/SMTP.php';
-
 $mail = new PHPMailer(true);                              // Passing `true` enables exception
 
 $body = "<p>DANIEL, usted ha creado un nuevo radicado en Doc Finder, a continuaci&oacute;n se presentan los detalles del caso.</p><br>

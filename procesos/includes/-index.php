@@ -1,9 +1,10 @@
 <?php
 ini_set('memory_limit', '-1');
 set_time_limit(0);
-require_once('../../includes.php');
-require_once PATH_CLASS.DS.'PHPExcel.php';
+require_once dirname(dirname(dirname(__FILE__))) . "/includes.php";
+require_once PATH_COMPOSER . DS . 'vendor' . DS . 'autoload.php';
 require_once PATH_CLASS.DS.'_conexion.php';
+require_once PATH_CCLASS . DS . 'official.class.php';
 //require_once '../../lib/class/client.class.php';
 //clientes();
 //clientes2();
@@ -1544,8 +1545,6 @@ function cargueMasivoDevoluciones() {
 }
 
 function enviarMailDevolucion($documentos, $causales, $oficiales, $observaciones) {
-    require_once PATH_MAILER . DS . 'class.phpmailer.php';
-    require_once PATH_CCLASS . DS . 'official.class.php';
     $offici = new Official();
     $mail = new PHPMailer();
     $tam = count($documentos);

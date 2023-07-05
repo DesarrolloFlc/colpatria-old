@@ -3,9 +3,10 @@ ini_set('memory_limit', '-1');
 set_time_limit(0);
 header("Content-Type: text/html;charset=utf-8");
 require "includes.php";
+require_once dirname(dirname(dirname(__FILE__))) . "/includes.php";
+require_once PATH_COMPOSER . DS . 'vendor' . DS . 'autoload.php';
 require_once PATH_CLASS.DS.'_conexion.php';
-require_once PATH_MAILER.DS.'class.phpmailer.php';
-require_once PATH_PHPSHEET.DS.'vendor'.DS.'autoload.php';
+
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 dataDigitadosColpatria();
