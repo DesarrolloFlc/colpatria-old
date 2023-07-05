@@ -345,7 +345,7 @@ function cargueEvidenciaWordAction($request)
 		echo json_encode(["error" => "El archivo adjunto no debe ser mayo a 50MB"]);
 		exit;
 	}
-	if (isset($mime) && !in_array($mime, [...Formulario::MIME_WORD, 'application/pdf'])) {
+	if (isset($mime) && !in_array($mime, ['application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/pdf'])) {
 		echo json_encode(["error" => "Esta intentando adjuntar un archivo con un formato diferente al requerido"]);
 		exit;
 	}
