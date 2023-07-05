@@ -873,8 +873,8 @@ function creaciondeRadicadoMasivo($request){
         $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader($inputFileType);
         $reader->setReadDataOnly(true);
 
-        $worksheetData = $reader->listWorksheetInfo($tmpName);
-        $reader->setLoadSheetsOnly($worksheetData[0]['worksheetName']);
+        //$worksheetData = $reader->listWorksheetInfo($tmpName);
+        //$reader->setLoadSheetsOnly($worksheetData[0]['worksheetName']);
         $spreadsheet = $reader->load($tmpName);
 
         $worksheet = $spreadsheet->getActiveSheet();

@@ -1,6 +1,6 @@
 <?php
-require_once '../../includes.php';
-require_once PATH_PHPSHEET.DS.'vendor'.DS.'autoload.php';
+require_once dirname(dirname(dirname(__FILE__))) . "/includes.php";
+require_once PATH_COMPOSER . DS . 'vendor' . DS . 'autoload.php';
 
 /*use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
@@ -33,8 +33,8 @@ $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader($inputFileType);
 /**  Advise the Reader that we only want to load cell data  **/
 $reader->setReadDataOnly(true);
 
-$worksheetData = $reader->listWorksheetInfo($inputFileName);
-$reader->setLoadSheetsOnly($worksheetData[0]['worksheetName']);
+//$worksheetData = $reader->listWorksheetInfo($inputFileName);
+//$reader->setLoadSheetsOnly($worksheetData[0]['worksheetName']);
 $spreadsheet = $reader->load($inputFileName);
 
 $worksheet = $spreadsheet->getActiveSheet();
