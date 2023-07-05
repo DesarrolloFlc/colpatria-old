@@ -418,17 +418,115 @@ $.fn.cargarArchivoEvidencias = function(e){
                 div: '#box-errores'
             });
         }
-});
+    });
 }
-$.fn.mostrarEvidencias = function(e, posicion, radicado_item_id){
+$.fn.mostrarEvidencias = function(e, pos, radicado_item_id){
     (e.preventDefault) ? e.preventDefault() : e.returnValue = false;
-    return false;
     if (radicado_item_id === null) return false;
+    
+    $.ajax({
+        beforeSend: function(){
+            $.facebox.loading();
+        },
+        data: {
+            action: 'verEvidencia',
+            domain: 'cargue',
+            meth: 'js',
+            posicion: pos, 
+            radicado_item_id: radicado_item_id
+        },
+        type: 'GET',
+        url: '../includes/Controller.php',
+        dataType: 'json',
+        success: function(dato){
+            if ((!dato.exito && dato.error) || (!dato.exito && !dato.error)) {
+                $('p.text-center > span').html(dato.error ? dato.error : 'Ocurrio un error al momento de generar el archivo, contacte con el administrador.');
+                $.facebox({
+                    div: '#box-errores'
+                });
+                if (!dato.error) console.log(dato);
+                return false;
+            }
+            $('#box2').html('<div id="muestra-pdf-evidencia"></div>');
+            const tam = tamVentana();
+            const widtam = (60 * tam[0]) / 100;
+            var opt = {
+                width: widtam + "px",
+                height: "650px",
+                pdfOpenParams: {
+                    view: "FitH"
+                }
+            };
+            PDFObject.embed(dato.item.path, "#muestra-pdf-evidencia", opt);
+            $.facebox({
+                div: '#box2'
+            });
+        },
+        complete: function(jqXHR, textStatus){
+            //$.facebox.close();
+        },
+        error: function(xhr, ajaxOptions, thrownError){
+            console.log(xhr, ajaxOptions, thrownError);
+            $('p.text-center > span').html("Error(cargueBaseGestorVentas): "+xhr.status+" Error: "+xhr.responseText);
+            $.facebox({
+                div: '#box-errores'
+            });
+        }
+    });
 }
-$.fn.eliminarEvidencias = function(e, posicion, radicado_item_id){
+$.fn.eliminarEvidencias = function(e, pos, radicado_item_id){
     (e.preventDefault) ? e.preventDefault() : e.returnValue = false;
-    return false;
     if (radicado_item_id === null) return false;
+
+    if (!confirm('Esta seguro que desea eliminar la evidencia para este cliente, recuerde que esta acción no se puede deshacer, confirme?')) return false;
+
+    $.ajax({
+        beforeSend: function(){
+            $.facebox.loading();
+        },
+        data: {
+            action: 'eliminarEvidenciaWord',
+            domain: 'cargue',
+            meth: 'js',
+            posicion: pos, 
+            radicado_item_id: radicado_item_id
+        },
+        type: 'GET',
+        url: '../includes/Controller.php',
+        dataType: 'json',
+        success: function(dato){
+            if ((!dato.exito && dato.error) || (!dato.exito && !dato.error)) {
+                $('p.text-center > span').html(dato.error ? dato.error : 'Ocurrio un error al momento de generar el archivo, contacte con el administrador.');
+                $.facebox({
+                    div: '#box-errores'
+                });
+                if (!dato.error) console.log(dato);
+                return false;
+            }
+            $('p.text-center > span').html(dato.exito);
+            $.facebox({
+                div: '#box-errores'
+            });
+            $('a#evidencias-check-' + pos)
+                .css('filter', 'grayscale(1)')
+                .css('cursor', 'not-allowed')
+                .attr('onclick', `$(this).mostrarEvidencias(event, ${pos}, ${null});`);
+            $('a#evidencias-del-' + pos)
+                .css('filter', 'grayscale(1)')
+                .css('cursor', 'not-allowed')
+                .attr('onclick', `$(this).eliminarEvidencias(event, ${pos}, ${null});`);
+        },
+        complete: function(jqXHR, textStatus){
+            //$.facebox.close();
+        },
+        error: function(xhr, ajaxOptions, thrownError){
+            console.log(xhr, ajaxOptions, thrownError);
+            $('p.text-center > span').html("Error(cargueBaseGestorVentas): "+xhr.status+" Error: "+xhr.responseText);
+            $.facebox({
+                div: '#box-errores'
+            });
+        }
+    });
 }
 </script>
 </body>

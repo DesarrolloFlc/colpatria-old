@@ -5,7 +5,7 @@ $parts = explode(DS, PATH_BASE);
 define('PATH_ROOT',			implode(DS, $parts));
 //variables definidas para uso de los PATHs
 define('PATH_SITE',				PATH_ROOT);
-define('SITE_ROOT',          '/colpatria-old');
+define('SITE_ROOT',             DS . 'colpatria-old');
 //PATH LIBRERIAS
 define('PATH_LIBRERIAS',		PATH_SITE.DS.'librerias');
 define('PATH_LCALENDARIO',		PATH_LIBRERIAS.DS.'calendario');
@@ -28,6 +28,7 @@ define('VIRTUALES_DOC',			PATH_SITE.DS.'virtuales_doc');
 define('VIRTUALES',				VIRTUALES_DOC.DS.'virtuales');
 define('VIRTUALES_ACEPTADOS',	VIRTUALES_DOC.DS.'virtuales_aceptados');
 define('PATH_EVIDENCIAS',	    PATH_SITE . DS . 'files' . DS . 'evidencias');
+define('PATH_EVIDENCIAS_PATH',	SITE_ROOT . DS . 'files' . DS . 'evidencias');
 
 define('PATH_MATRIZ',			PATH_SITE.DS.'procesos'.DS.'ajuste_db');
 define('PATH_INTERNAL',			PATH_SITE.DS.'procesos'.DS.'internal');

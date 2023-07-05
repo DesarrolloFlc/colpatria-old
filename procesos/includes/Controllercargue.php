@@ -352,7 +352,11 @@ function cargueEvidenciaWordAction($request)
 	$ext = obtenerTipoArchivoWord($mime);
 	$fileName = $request['radicado_item_id'] . "_" . $request['documento'] . "_" . date('Ymd') . ".";
 
-	if (!move_uploaded_file($file['tmp_name'], PATH_EVIDENCIAS . DS . $fileName . $ext)) {
+	if (!file_exists(PATH_EVIDENCIAS . DS . $request['documento'])) {
+		mkdir(PATH_EVIDENCIAS . DS . $request['documento'], 0777, true);
+	}
+
+	if (!move_uploaded_file($file['tmp_name'], PATH_EVIDENCIAS . DS . $request['documento'] . DS . $fileName . $ext)) {
 		echo json_encode(['error'=> 'Ocurrio un error al momento de cargar el archivo, por favor contacte con el administrador']);
 		exit;
 	}
@@ -362,10 +366,10 @@ function cargueEvidenciaWordAction($request)
 		try {
 			Settings::setPdfRendererPath(PATH_COMPOSER . DS . 'vendor' . DS . 'tecnickcom' . DS . 'tcpdf');
 			Settings::setPdfRendererName(Settings::PDF_RENDERER_TCPDF);
-			$temDoc = PATH_EVIDENCIAS . DS . $fileName . $ext;
+			$temDoc = PATH_EVIDENCIAS . DS . $request['documento'] . DS . $fileName . $ext;
 			$phpWord = IOFactoryWord::load($temDoc);
 			$xmlWriter = IOFactoryWord::createWriter($phpWord, 'PDF');
-			$xmlWriter->save(PATH_EVIDENCIAS . DS . $fileName . "pdf");
+			$xmlWriter->save(PATH_EVIDENCIAS . DS . $request['documento'] . DS . $fileName . "pdf");
 			unlink($temDoc);
 			$file = $fileName . "pdf";
 		} catch (\Exception $ef) {
@@ -386,6 +390,66 @@ function cargueEvidenciaWordAction($request)
 		exit;
 	}
 	echo json_encode(['exito'=> 'La carga del archivo se realizo satisfactoriamente.' . $message]);
+}
+function eliminarEvidenciaWordAction($request)
+{
+	if ((!isset($_SESSION['group']) || !in_array($_SESSION['group'], ["6", "1"]))) {
+		echo json_encode(['error'=> 'Usted no cuenta con sesion activa, o cuenta con los permisos necesario para realizar esta accion, contacte con el administrador.']);
+		exit;
+	}
+	if (!isset($request['radicado_item_id']) || empty($request['radicado_item_id'])) {
+		echo json_encode(['error'=> 'No se recibio el identificador del cliente a quien pertenece la evidencia, por favor verifique']);
+		exit;
+	}
+	$conn = new Conexion();
+	if (!$conn->consultar("SELECT * FROM radicado_item_evidencias WHERE radicado_item_id = :radicado_item_id", [':radicado_item_id'=> $request['radicado_item_id']])) {
+		echo json_encode(['error'=> 'No se encontro registro para eliminar, por favor verifique.']);
+		exit;
+	}
+	if ($conn->getNumeroRegistros() !== 1) {
+		echo json_encode(['error'=> 'El registro a eliminar no genero resultados, verifique por favor.']);
+		exit;
+	}
+	$row = $conn->sacarRegistro('str');
+	if (!$conn->ejecutar("DELETE FROM radicado_item_evidencias WHERE radicado_item_id = :radicado_item_id", [':radicado_item_id'=> $request['radicado_item_id']])) {
+		echo json_encode(['error'=> 'Ocurrio un error al momento de eliminar el registro, contacte con el administrador.']);
+		exit;
+	}
+	$part = explode('/', $row['directorio']);
+	$cliente = $part[(count($part) - 1)];
+	$mensaje = "";
+	if (!unlink(PATH_EVIDENCIAS . DS . $cliente . DS . $row['archivo'])) {
+		$mensaje = "<br>Pero el archivo de la evidencia no se pudo eliminar.";
+	}
+	echo json_encode(['exito'=> 'Se realizo la eliminacion de la evidencia correctamente.' . $mensaje]);
+}
+function verEvidenciaAction($request)
+{
+	if (!isset($request['radicado_item_id']) || empty($request['radicado_item_id'])) {
+		echo json_encode(['error'=> 'No se recibio el identificador del cliente a quien pertenece la evidencia, por favor verifique']);
+		exit;
+	}
+	$conn = new Conexion();
+	if (!$conn->consultar("SELECT * FROM radicado_item_evidencias WHERE radicado_item_id = :radicado_item_id", [':radicado_item_id'=> $request['radicado_item_id']])) {
+		echo json_encode(['error'=> 'No se encontro registro para eliminar, por favor verifique.']);
+		exit;
+	}
+	if ($conn->getNumeroRegistros() !== 1) {
+		echo json_encode(['error'=> 'El registro a eliminar no genero resultados, verifique por favor.']);
+		exit;
+	}
+	$row = $conn->sacarRegistro('str');
+	$part = explode('/', $row['directorio']);
+	$cliente = $part[(count($part) - 1)];
+	$row['cliente'] = $cliente;
+
+	$row['full_path'] = PATH_EVIDENCIAS . DS . $cliente . DS . $row['archivo'];
+	$row['path'] = PATH_EVIDENCIAS_PATH . DS . $cliente . DS . $row['archivo'];
+
+	$row['mime'] = mime_content_type($row['full_path']);
+	$row['extension'] = obtenerTipoArchivoWord($row['mime']);
+
+	echo json_encode(['exito'=> 'Se encontro la evidencia', 'item'=> $row]);
 }
 function obtenerTipoDocumento($texto)
 {
