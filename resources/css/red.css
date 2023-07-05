@@ -1,0 +1,24 @@
+
+a              { color: black; }
+                
+.button {
+                background: #a40e0e;
+                border-color: black !important;		
+                }
+
+#sidebar #main-nav li a.nav-top-item {
+                background: black;
+                }
+
+ul.content-box-tabs li a:hover {
+                color: black;
+                }              
+                
+.pagination a.current {
+                background: #950000 url('../images/bg-button-red.gif') top left repeat-x !important;
+                border-color: #940000 !important;
+                }
+				
+.action-button span:hover {
+                color: black;
+                }

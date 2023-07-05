@@ -1,0 +1,57 @@
+body {
+    font-family: Calibri, Arial, Verdana;      
+}
+
+/**
+ * GENERAL TAGS
+*/
+h1 {
+    font-size: 34px;
+}
+/**
+* FIN GENERAL TAGS
+*/
+
+.clear {
+    clear: both;
+}
+
+#content {
+    padding-top: 30px;    
+}
+
+#login_box {
+    text-align: center;
+    margin: 0 auto;
+    padding: 30px;
+    border: 1px solid #b0b0af;
+    width: 400px;
+    height: auto;    
+}
+
+#login_box h1 {
+    text-align: left;
+}
+
+.input_text {
+    margin-bottom: 10px;
+    text-align: left;
+}
+
+.input_text input {
+    height: 26px;
+    width: 100%;
+    background-color: #f1f2f2;
+}
+
+input[type=submit]{    
+    width: 200px;
+    height: 30px;
+    background-color: #f09108;
+    color: white;
+}
+
+#login_footer {
+    font-family: Arial;
+    font-size: 11px;
+}

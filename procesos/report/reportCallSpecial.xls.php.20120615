@@ -1,0 +1,273 @@
+<?php
+session_start();
+
+header('Content-type: application/vnd.ms-excel');
+header("Content-Disposition: attachment; filename=reportCallSpecial.xls");
+header("Pragma: no-cache");
+header("Expires: 0");
+
+
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Colpatria/config/globalParameters.php';
+
+extract($_POST);
+
+if (!empty($hora)) {
+    $hora = $hora + 1;
+    $complemento = " WHERE (formu.date_created >= '$fecha_inicio $hora:00:00' AND formu.date_created  <= '$fecha_fin $hora:59:59') AND formu.status = 1 ";
+} else {
+    $complemento = " WHERE (formu.date_created >= '$fecha_inicio 00:00:00' AND formu.date_created <= '$fecha_fin 23:59:59')  AND formu.status = 1 ";
+}
+
+if (!empty($area)) {
+    $complemento.= " AND data.area = '$area' ";
+}
+
+if (!empty($sucursal)) {
+    $complemento.= " AND data.sucursal = '$sucursal' ";
+}
+
+
+$sql = "SELECT 
+IF(cli.persontype = '1', 'NATURAL','JURIDICO'),
+sucursal.sucursal,
+param_area.description,
+data.id_official,
+formu.log_planilla,
+formu.log_lote,
+formu.marca,
+param_clasecliente.description, 
+IF( cli.persontype = '1',param_tipodocumento.description,'NIT'),
+IF( cli.persontype = '1', CONCAT(data.primerapellido,' ',data.segundoapellido,' ',data.nombres), data.razonsocial ),
+cli.document,
+IF( cli.persontype = '1',data.documento,data.nit),
+IF( cli.persontype = '1','NA',data.digitochequeo),
+data.fechasolicitud,
+data.fecharadicado,
+formu.date_created, 
+data.fecharadicado,
+IF(param_actividadecono.description = '','NA',param_actividadecono.description),
+IF( cli.persontype = '1','NA',param_tipoempresa.description),
+IF( cli.persontype = '1',param_profesion.description,'NA'),
+IF( cli.persontype = '1',param_ocupacion.description,'NA'),
+IF( cli.persontype = '1',data.numerohijos,'NA'),
+IF( cli.persontype = '1',data.sexo,'NA'),
+IF( cli.persontype = '1',data.estrato,'NA'),
+IF( cli.persontype = '1',param_estadocivil.description,'NA'),
+IF( cli.persontype = '1',param_estudio.description,'NA'),
+IF( cli.persontype = '1',data.cargo,'NA'),
+IF( cli.persontype = '1',data.fechanacimiento,'NA'),
+IF( cli.persontype = '1',lugar_nac.description,'NA'),
+IF( cli.persontype = '--','NA',data.fechaexpedicion),
+IF( cli.persontype = '1',lugar_exp.description,'NA'),
+IF( cli.persontype = '1',param_pais.description, 'NA'),
+IF( cli.persontype = '1',lugar_resi.description,lugar_emp.description),
+IF( cli.persontype = '1',data.direccionresidencia,data.direccionempresa),
+data.nomenclatura,
+IF( data.telefonoresidencia = '0', 'SD',data.telefonoresidencia),
+IF( cli.persontype = '1',data.telefonolaboral,'NA'),
+data.celular,
+IF( cli.persontype = '2',data.faxoficina,'NA'),
+CONCAT('observaciones',''),
+IF(data.correoelectronico='','SD',data.correoelectronico),
+IF( cli.persontype = '1',data.nombreempresa,'NA'),
+IF(param_ciiu.codigo='','SD',param_ciiu.codigo),
+lugar_oficina.description,
+IF( cli.persontype = '1','NA',param_tipoempresa.description),
+IF( cli.persontype = '1',param_tipovivienda.description,'NA'),
+IF( cli.persontype = '1',param_estadocivil.description, 'NA'),
+IF( cli.persontype = '1',param_ingresosmensuales.description,param_ingresosmensuales_emp.description),
+IF( cli.persontype = '1',param_egresosmensuales.description,param_egresosmensuales_emp.description),
+IF( cli.persontype = '1',param_otrosingresos.description,'NA'),
+IF(cli.persontype = '1',data.conceptosotrosingresos,'NA'),
+IF(cli.persontype = '1',data.totalactivos, data.activosemp),
+IF(cli.persontype = '1',data.totalpasivos, data.pasivosemp),
+data.monedaextranjera,
+IF(cli.persontype = '1','NA',param_tipotransacciones.description),
+data.huella,
+data.firma,
+CONCAT('SI',''),
+data.lugarentrevista,
+data.fechaentrevista,
+CONCAT(data.horaentrevista,' ',data.tipohoraentrevista),
+data.resultadoentrevista,
+data.nombreintermediario,
+user.name 
+FROM client cli 
+INNER JOIN form formu ON formu.id_client = cli.id  
+INNER JOIN data ON formu.id = data.id_form 
+LEFT JOIN  param_sucursales sucursal ON sucursal.id = data.sucursal
+LEFT JOIN param_area ON param_area.id = data.area  
+LEFT JOIN param_formulario ON param_formulario.id = data.formulario
+LEFT JOIN  param_clasecliente ON  param_clasecliente.id = data.clasecliente 
+LEFT JOIN param_tipodocumento ON param_tipodocumento.id = data.tipodocumento 
+LEFT JOIN param_ciudad lugar_exp ON lugar_exp.id = data.lugarexpedicion 
+LEFT JOIN param_ciudad lugar_nac ON lugar_nac.id = data.lugarnacimiento
+LEFT JOIN param_pais ON param_pais.id = data.nacionalidad
+LEFT JOIN param_estadocivil ON param_estadocivil.id = data.estadocivil
+LEFT JOIN param_ciudad lugar_resi ON lugar_resi.id = data.ciudadresidencia
+LEFT JOIN param_ciudad lugar_emp ON lugar_emp.id = data.ciudadempresa
+LEFT JOIN param_actividadecono ON param_actividadecono.id = data.actividadeconomicaempresa
+LEFT JOIN param_profesion ON param_profesion.id = data.profesion
+LEFT JOIN param_ocupacion ON param_ocupacion.id = data.ocupacion
+LEFT JOIN param_ciiu ON param_ciiu.codigo = data.ciiu 
+LEFT JOIN param_ingresosmensuales ON param_ingresosmensuales.id = data.ingresosmensuales
+LEFT JOIN param_otrosingresos ON param_otrosingresos.id = data.otrosingresos 
+LEFT JOIN param_egresosmensuales ON param_egresosmensuales.id = data.egresosmensuales 
+LEFT JOIN param_tipoactividad ON param_tipoactividad.id = data.tipoactividad
+LEFT JOIN param_estudio ON param_estudio.id = data.nivelestudios
+LEFT JOIN param_tipovivienda ON param_tipovivienda.id = data.tipovivienda
+LEFT JOIN param_ciudad lugar_oficina ON lugar_oficina.id = data.ciudadoficina
+LEFT JOIN param_ciudad lugar_sucursal ON lugar_sucursal.id = data.ciudadsucursal
+LEFT JOIN param_actividad ON param_actividad.id = data.actividadeconomicappal
+LEFT JOIN param_tipoempresa ON param_tipoempresa.id = data.tipoempresaemp
+LEFT JOIN param_ingresosmensuales_emp ON param_ingresosmensuales_emp.id = data.ingresosmensualesemp
+LEFT JOIN param_egresosmensuales_emp ON param_egresosmensuales_emp.id = data.egresosmensualesemp
+LEFT JOIN param_tipotransacciones ON param_tipotransacciones.id = data.tipotransacciones
+INNER JOIN user ON user.id = formu.id_user   
+$complemento   
+";
+
+
+$result = mysqli_query($sql);
+?>
+<table>
+    <tr>
+        <td>Tipo de persona</td>
+        <td>Sucursal</td>
+        <td>Area</td>
+        <td>Funcionario</td>
+        <td>Planilla</td>
+        <td>Lote Colpatria</td>
+        <td>Marca</td>
+        <td>Tipo de Cliente</td>
+        <td>Tipo Identificaci�n</td>
+        <td>Nombre y/o Raz&oacute;n Social</td>
+        <td>Documento</td>
+        <td>Nro. ID</td>
+        <td>Digito de Chequeo</td>
+        <td>Fecha de Env&iacute;o</td>
+        <td>Fecha Creacion y/o actualizacion Cliente &Uacute;ltimo Formulario</td>
+        <td>Fecha Formulario</td>
+        <td>Fecha Ultimo Contacto</td>
+        <td>Actividad Economica y/o Tipo de actividad</td>
+        <td>Tipo de empresa</td>
+        <td>Profesion</td>
+        <td>Ocupacion</td>
+        <td>No de hijos</td>
+        <td>Genero</td>
+        <td>Estrato</td>
+        <td>Estado Civil</td>
+        <td>Nivel Estudios</td>
+        <td>Cargo</td>
+        <td>Fecha Nacimiento</td>
+        <td>Lugar Nacimiento</td>
+        <td>Fecha Expedicion</td>
+        <td>Lugar Expedicion</td>
+        <td>Nacionalidad</td>
+        <td>Ciudad Residencia</td>
+        <td>Direccion residencia y/o persona jur&iacute;dica</td>
+        <td>Nomenclatura</td>
+        <td>Telefono Residencia y/o PJ</td>
+        <td>Telefono Laboral</td>
+        <td>Celular</td>
+        <td>Fax</td>
+        <td>Observaciones Telefonos</td>
+        <td>Correo electronico</td>
+        <td>Empresa donde labora</td>
+        <td>Ciiu</td>
+        <td>Ciudad Laboral</td>
+        <td>Tipo Empresa</td>
+        <td>Tipo Vivienda</td>
+        <td>Estado Civil</td>
+        <td>Ingresos Mensuales</td>
+        <td>Egresos mensuales</td>
+        <td>Otros ingresos</td>
+        <td>Concepto Otros Ingresos</td>
+        <td>Activos</td>
+        <td>Pasivos</td>
+        <td>Transacciones en Moneda Extranjera</td>
+        <td>Tipo de Transacciones</td>
+        <td>Huella Verificada con documento de identificaci�n</td>
+        <td>Firma</td>
+        <td>Entrevista</td>
+        <td>Lugar Entrevista</td>
+        <td>Fecha Entrevista</td>
+        <td>Hora de Entrevista</td>
+        <td>Resultado Entrevista</td>
+        <td>Intermediario Entrevista</td>
+        <td>Usuario</td>
+    </tr>
+    <?php
+    while ($registro = mysqli_fetch_array($result)) {
+        ?>
+        <tr>
+            <td><?php echo $registro[0] ?></td>
+            <td><?php echo $registro[1] ?></td>
+            <td><?php echo $registro[2] ?></td>
+            <td><?php echo $registro[3] ?></td>
+            <td><?php echo $registro[4] ?></td>
+            <td><?php echo $registro[5] ?></td>
+            <td><?php echo $registro[6] ?></td>
+            <td><?php echo $registro[7] ?></td>
+            <td><?php echo $registro[8] ?></td>
+            <td><?php echo $registro[9] ?></td>
+            <td><?php echo $registro[10] ?></td>
+            <td><?php echo $registro[11] ?></td>
+            <td><?php echo $registro[12] ?></td>
+            <td><?php echo $registro[13] ?></td>
+            <td><?php echo $registro[14] ?></td>
+            <td><?php echo $registro[15] ?></td>
+            <td><?php if ($registro[16] == "") echo "SD";
+    else echo $registro[16]; ?></td>
+            <td><?php echo $registro[17] ?></td>
+            <td><?php echo $registro[18] ?></td>
+            <td><?php echo $registro[19] ?></td>
+            <td><?php echo $registro[20] ?></td>
+            <td><?php echo $registro[21] ?></td>
+            <td><?php echo $registro[22] ?></td>
+            <td><?php echo $registro[23] ?></td>
+            <td><?php echo $registro[24] ?></td>
+            <td><?php echo $registro[25] ?></td>
+            <td><?php echo $registro[26] ?></td>
+            <td><?php echo $registro[27] ?></td>
+            <td><?php echo $registro[28] ?></td>
+            <td><?php echo $registro[29] ?></td>
+            <td><?php echo $registro[30] ?></td>
+            <td><?php echo $registro[31] ?></td>
+            <td><?php echo $registro[32] ?></td>
+            <td><?php echo $registro[33] ?></td>
+            <td><?php echo $registro[34] ?></td>
+            <td><?php echo $registro[35] ?></td>
+            <td><?php echo $registro[36] ?></td>
+            <td><?php echo $registro[37] ?></td>
+            <td><?php echo $registro[38] ?></td>
+            <td><?php echo $registro[39] ?></td>
+            <td><?php echo $registro[40] ?></td>
+            <td><?php echo $registro[41] ?></td>
+            <td><?php echo $registro[42] ?></td>
+            <td><?php echo $registro[43] ?></td>
+            <td><?php echo $registro[44] ?></td>
+            <td><?php echo $registro[45] ?></td>
+            <td><?php echo $registro[46] ?></td>
+            <td><?php echo $registro[47] ?></td>
+            <td><?php echo $registro[48] ?></td>
+            <td><?php echo $registro[49] ?></td>
+            <td><?php echo $registro[50] ?></td>
+            <td><?php echo $registro[51] ?></td>
+            <td><?php echo $registro[52] ?></td>
+            <td><?php echo $registro[53] ?></td>
+            <td><?php echo $registro[54] ?></td>
+            <td><?php echo $registro[55] ?></td>
+            <td><?php echo $registro[56] ?></td>
+            <td><?php echo $registro[57] ?></td>
+            <td><?php echo $registro[58] ?></td>
+            <td><?php echo $registro[59] ?></td>
+            <td><?php echo $registro[60] ?></td>
+            <td><?php echo $registro[61] ?></td>
+            <td><?php echo $registro[62] ?></td>
+            <td><?php echo $registro[63] ?></td>
+        </tr>
+        <?php
+    }
+    ?>
+</table>

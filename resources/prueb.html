@@ -1,0 +1,46 @@
+<html>
+<head>
+<title>My site</title>
+<!-- css file -->
+<link type="text/css" rel="stylesheet" href="css/jquery.qtip.css" />
+</head>
+<body>
+<!-- content here -->
+
+<div id="focus-example" class="example">
+    <select id="title" name="title" alt="Select title">
+      <option>Mr</option>
+      <option>Mrs</option>
+      <option>Miss</option>
+    </select><br>
+    <input type="text" id="forename" name="forename" alt="Enter forename"><br>
+    <input type="text" id="surname" name="surname" alt="Enter surname"><br>
+    <textarea name="message" style="margin:0" alt="Enter your message"></textarea>
+  </div>
+<script type="text/javascript" src="scripts/jquery-1.4.2.min.js"></script>
+ 
+<!-- Notice we only include the minified script here. You can include the non-minified version, just don't include both! -->
+<script type="text/javascript" src="scripts/jquery.qtip.min.js"></script>
+
+  <script type="text/javascript">
+    $('#focus-example [alt]').qtip({
+    	show: {
+			event: 'focus'
+		},
+		hide: {
+			event: 'blur'
+		},
+		content: {
+			attr: 'alt'
+		},
+		style: { 
+	      classes: 'qtip-dark qtip-shadow qtip-youtube'
+	   	},
+	   	position: {  // Position my top left...
+			my: 'center left',  // Position my top left...
+			at: 'center right', // at the bottom right of...
+		}
+	});
+  </script>
+</body>
+</html>
