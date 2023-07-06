@@ -6,10 +6,11 @@ ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
 require_once dirname(dirname(dirname(__FILE__))) . "/includes.php";
-require_once PATH_CCLASS . DS . 'radicados.class.php';
 require_once PATH_COMPOSER . DS . 'vendor' . DS . 'autoload.php';
 
-use TCPDF;
+require_once PATH_CCLASS . DS . 'radicados.class.php';
+require_once PATH_CCLASS . DS . 'MYPDF1.php';
+require_once PATH_CCLASS . DS . 'MYPDF2.php';
 
 if (!isset($_SESSION['group']) || !in_array($_SESSION['group'], ["1", "2", "6", "8", "10"])) {
 ?>
@@ -28,54 +29,7 @@ if (isset($_GET['consR']) && $_GET['consR'] == 'download') {
 	}
 	$header = ['# RADICADO', 'NIT/CEDULA', 'NOMBRE/RAZON SOCIAL', 'CREACION', 'ESTADO'];
 
-	class MYPDF extends TCPDF
-	{
-
-		// Colored table
-		public function ColoredTable($header, $data)
-		{
-			// Colors, line width and bold font
-			$this->SetFillColor(210, 20, 1);
-			$this->SetTextColor(255);
-			$this->SetDrawColor(204, 204, 204);
-			$this->SetLineWidth(0.2);
-			$this->SetFont('', 'B');
-			// Header
-			$w = array(20, 30, 80, 27, 25);
-			$num_headers = count($header);
-			for ($i = 0; $i < $num_headers; ++$i) {
-				$this->Cell($w[$i], 7, $header[$i], 1, 0, 'C', 1);
-			}
-			$this->Ln();
-			// Color and font restoration
-			$this->SetFillColor(224, 235, 255);
-			$this->SetTextColor(0);
-			$this->SetFont('');
-			// Data
-			$fill = 0;
-			$ext = '';
-			if (is_array($data)) {
-				foreach ($data as $row) {
-					$fecha = explode(' ', $row[5]);
-					$this->Cell($w[0], 6, $row[3], 'LR', 0, 'C', $fill);
-					$this->Cell($w[1], 6, $row[1], 'LR', 0, 'L', $fill);
-					$this->Cell($w[2], 6, $row[2], 'LR', 0, 'L', $fill);
-					$this->Cell($w[3], 6, $fecha[0], 'LR', 0, 'L', $fill);
-					$this->Cell($w[4], 6, getEstados($row[4]), 'LR', 0, 'L', $fill);
-					$this->Ln();
-					$fill = !$fill;
-				}
-				$this->Cell(array_sum($w), 0, '', 'T');
-			}
-			$this->Ln();
-			$this->Ln();
-			$this->Ln();
-			$this->Cell($w[0], 6, 'Firma:', '0', 0, 'C', 0);
-			$this->Cell(64, 6, '', 'B', 0, 'C', 0);
-		}
-	}
-
-	$pdf = new MYPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+	$pdf = new MYPDF1(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
 
 	// set document information
 	$pdf->SetCreator(PDF_CREATOR);
@@ -85,7 +39,7 @@ if (isset($_GET['consR']) && $_GET['consR'] == 'download') {
 	$pdf->SetKeywords('planilla, formularios, conocimiento de cliente, finlecobpo');
 
 	// set default header data
-	$pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, 'PLANILLA DE CLIENTES RADICADOS CON FORMULARIO DE CONOCIMIENTO DE CLIENTE', 'Listado de clientes radicados');
+	$pdf->SetHeaderData('', 0, 'PLANILLA DE CLIENTES RADICADOS CON FORMULARIO DE CONOCIMIENTO DE CLIENTE', 'Listado de clientes radicados');
 
 	// set header and footer fonts
 	$pdf->setHeaderFont(array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
@@ -95,15 +49,15 @@ if (isset($_GET['consR']) && $_GET['consR'] == 'download') {
 	$pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
 
 	//set margins
-	$pdf->SetMargins(15, PDF_MARGIN_TOP, 15);
-	$pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
-	$pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
+	$pdf->SetMargins(15, 31, 15);
+	$pdf->SetHeaderMargin(20);
+	$pdf->SetFooterMargin(10);
 
 	//set auto page breaks
-	$pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
+	$pdf->SetAutoPageBreak(true, 25);
 
 	//set image scale factor
-	$pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
+	$pdf->setImageScale(1.25);
 
 	//set some language-dependent strings
 	$pdf->setLanguageArray(['w_page'=> 'page']);
@@ -126,8 +80,6 @@ if (isset($_GET['consR']) && $_GET['consR'] == 'download') {
 	</table>';
 	@$pdf->writeHTMLCell(0, 0, '', '', $html, 0, 1, 0, true, '', true);
 
-	//print_r($data);
-	// print colored table
 	$pdf->ColoredTable($header, $data);
 	$pdf->Output('reporte_ClientesRadicados_' . date('Ymdhis') . '.pdf', 'D');
 
@@ -143,56 +95,8 @@ if (isset($_GET['consR']) && $_GET['consR'] == 'download') {
 	$radicado->getRadicado();
 	$data = $radicado->getItemsDeRadicado();
 
-	class MYPDF extends TCPDF
-	{
 
-		// Colored table
-		public function ColoredTable($header, $data, $radicado)
-		{
-			// Colors, line width and bold font
-			$this->SetFillColor(210, 20, 1);
-			$this->SetTextColor(255);
-			$this->SetDrawColor(204, 204, 204);
-			$this->SetLineWidth(0.2);
-			$this->SetFont('', 'B');
-			// Header
-			$w = array(18, 121, 40);
-			$num_headers = count($header);
-			for ($i = 0; $i < $num_headers; ++$i) {
-				$this->Cell($w[$i], 7, $header[$i], 1, 0, 'C', 1);
-			}
-			$this->Ln();
-			// Color and font restoration
-			$this->SetFillColor(224, 235, 255);
-			$this->SetTextColor(0);
-			$this->SetFont('');
-			// Data
-			$fill = 0;
-			$ext = '';
-			if ($radicado->getExtension() != '' && $radicado->getExtension() != 'NULL')
-				$ext = ' EXT ' . $radicado->getExtension();
-			if (is_array($data)) {
-				foreach ($data as $row) {
-					$this->Cell($w[0], 6, $row['rownum'], 'LR', 0, 'C', $fill);
-					$this->Cell($w[1], 6, $row['descripcion'], 'LR', 0, 'L', $fill);
-					$this->Cell($w[2], 6, $row['documento'], 'LR', 0, 'L', $fill);
-					$this->Ln();
-					$fill = !$fill;
-				}
-				$this->Cell(array_sum($w), 0, '', 'T');
-			}
-			$this->Ln();
-			$this->Ln();
-			$this->Ln();
-			$this->Cell($w[0], 6, 'Firma:', '0', 0, 'C', 0);
-			$this->Cell(64, 6, '', 'B', 0, 'C', 0);
-			$this->Ln();
-			$this->Cell(22, 6, 'Telefono:', '0', 0, 'C', 0);
-			$this->Cell(60, 6, $radicado->getTelefono() . $ext, 'B', 0, 'L', 0);
-		}
-	}
-
-	$pdf = new MYPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+	$pdf = new MYPDF2(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
 
 	// set document information
 	$pdf->SetCreator(PDF_CREATOR);
@@ -202,7 +106,7 @@ if (isset($_GET['consR']) && $_GET['consR'] == 'download') {
 	$pdf->SetKeywords('planilla, formularios, conocimiento de cliente, finlecobpo');
 
 	// set default header data
-	$pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE, PDF_HEADER_STRING);
+	$pdf->SetHeaderData('', 0, 'PLANILLA DE ENVIO DE FORMULARIO DE CONOCIMIENTO DE CLIENTE', 'Listado de clientes enviado');
 
 	// set header and footer fonts
 	$pdf->setHeaderFont(array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
@@ -212,15 +116,15 @@ if (isset($_GET['consR']) && $_GET['consR'] == 'download') {
 	$pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
 
 	//set margins
-	$pdf->SetMargins(15, PDF_MARGIN_TOP, 15);
-	$pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
-	$pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
+	$pdf->SetMargins(15, 31, 15);
+	$pdf->SetHeaderMargin(20);
+	$pdf->SetFooterMargin(10);
 
 	//set auto page breaks
-	$pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
+	$pdf->SetAutoPageBreak(true, 25);
 
 	//set image scale factor
-	$pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
+	$pdf->setImageScale(1.25);
 
 	//set some language-dependent strings
 	$pdf->setLanguageArray(['w_page'=> 'page']);
@@ -276,7 +180,7 @@ if (isset($_GET['consR']) && $_GET['consR'] == 'download') {
 	if ($radicado->getUtc() != 0) {
 		$html .= '<tr>
     <td width="82">Utc:</td>
-    <td>' . $radicado->getUtc() . '</td>
+    <td>' . $radicado->getUtc() ?? '' . '</td>
   </tr>';
 	}
 	$html .= '</table>';
