@@ -2090,13 +2090,13 @@ class Formulario
 		$conn = new Conexion();
 		$SQL = "INSERT INTO `radicado_item_evidencias` 
 				(
-					`radicado_item_id`, `resultado`, `archivo`, `directorio`
+					`creador_id`, `radicado_item_id`, `resultado`, `archivo`, `directorio`
 				) 
 				VALUES 
 				(
-					:radicado_item_id, :resultado, :archivo, :directorio
+					:creador_id, :radicado_item_id, :resultado, :archivo, :directorio
 				)";
-		$resp = $conn->ejecutar($SQL, [':radicado_item_id'=> $item_id, ':resultado'=> $resultado, ':archivo'=> $file, ':directorio'=> "/evidencias/" . $documento]);
+		$resp = $conn->ejecutar($SQL, [':creador_id'=> $_SESSION['id'], ':radicado_item_id'=> $item_id, ':resultado'=> $resultado, ':archivo'=> $file, ':directorio'=> "/evidencias/" . $documento]);
 		$conn->desconectar();
 		return $resp;
 	}
