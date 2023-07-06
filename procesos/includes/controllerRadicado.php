@@ -157,7 +157,7 @@ function aprobarClientes($request)
         $radicado->setObservacion(trim(preg_replace("/\s+/", " ", $request['observacion'])));
     }
 
-    if ($radicado->aprobarOrden()) {
+    if (!$radicado->aprobarOrden()) {
         echo json_encode(['errorr' => 'Ocurrio un error en el momento de aprobacion del radicado\\n comuniquese con el administrador del sistema para solucionarlo']);
         exit;
     }
@@ -182,21 +182,21 @@ function aprobarClientes($request)
             $error_fo = "";
             $cli_fil = Radicados::getClienteItem($cliitem[0]);
             if ($radicado->updateFilesRadicadoNombre($cli_fil['documento'], $pos_cli)) {
-                $upload_folder = '/var/www/html/Aplicativos.Serverfin04/Colpatria/virtuales_doc/virtuales';
-                $upload_folder_ = '/var/www/html/Aplicativos.Serverfin04/Colpatria/virtuales_doc/virtuales_aceptados';
-                if (!file_exists($upload_folder_ . "/" . $sucu_)) {
-                    if (!mkdir($upload_folder_ . "/" . $sucu_))
+                $upload_folder = PATH_SITE . DS . 'virtuales_doc' . DS . 'virtuales';
+                $upload_folder_ = PATH_SITE . DS . 'virtuales_doc' . DS . 'virtuales_aceptados';
+                if (!file_exists($upload_folder_ . DS . $sucu_)) {
+                    if (!mkdir($upload_folder_ . DS . $sucu_))
                         $error_fo .= "No se creo carpeta " . $cli_fil['documento'];
                     else
-                        chown($upload_folder_ . "/" . $sucu_, 'apache');
+                        chown($upload_folder_ . DS . $sucu_, 'apache');
                 } else {
-                    chown($upload_folder_ . "/" . $sucu_, 'apache');
+                    chown($upload_folder_ . DS . $sucu_, 'apache');
                 }
-                $pathSucDoc = $upload_folder . "/" . $sucu_ . "/" . $cli_fil['documento'] . "/" . $sucu_ . "_" . $cli_fil['documento'];
+                $pathSucDoc = $upload_folder . DS . $sucu_ . DS . $cli_fil['documento'] . DS . $sucu_ . "_" . $cli_fil['documento'];
                 if (file_exists($pathSucDoc . "_TODO.pdf")) {
-                    rename($pathSucDoc . "_TODO.pdf", $upload_folder_ . "/" . $sucu_ . "/LOTE_" . $id_ . "_" . $pos_cli . ".pdf");
+                    rename($pathSucDoc . "_TODO.pdf", $upload_folder_ . DS . $sucu_ . DS . "LOTE_" . $id_ . "_" . $pos_cli . ".pdf");
                 } else if (file_exists($pathSucDoc . "_MULTI.tiff")) {
-                    rename($pathSucDoc . "_MULTI.tiff", $upload_folder_."/" . $sucu_ . "/LOTE_" . $id_ . "_" . $pos_cli . ".tiff");
+                    rename($pathSucDoc . "_MULTI.tiff", $upload_folder_.DS . $sucu_ . DS . "LOTE_" . $id_ . "_" . $pos_cli . ".tiff");
                 } else {
                     $estado = '1';
                 }
