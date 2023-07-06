@@ -11,13 +11,14 @@ if (isset($_SESSION['group']) && in_array($_SESSION['group'], ["6", "1", "8", "2
     }
     $header = ['# RADICADO', 'TIPO', 'SUCURSAL', 'OFICIAL', 'NIT/CEDULA', 'NOMBRE/RAZON SOCIAL', 'FECHA RADICACION', 'FECHA ENVIO', 'FECHA RECIBIDO', 'ESTADO'];
     $col_name = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'];
-    $array[] = [0 => $data, 1 => $header, 2 => $col_name, 3 => 'Reporte Radicados Sucursal', 4 => 'Reporte_radicadosXSucursal'];
+    $array[] = [null, $header, $col_name, 'Reporte Radicados Sucursal', 'Reporte_radicadosXSucursal'];
     if (isset($_GET['type']) && $_GET['type'] == 'sucur') {
         if ($data = Radicados::clientesDelOficialSucursal($_GET['fecha_inicio'], $_GET['fecha_fin'], $_GET['sucursales'])) {
             crearCsv($header, $data, 'Reporte_radicadosXSucursal');
         }
     } else if ($_GET['type'] == 'ofic') {
         if ($data = Radicados::clientesDelOficialOficial($_GET['fecha_inicio'], $_GET['fecha_fin'], $_GET['oficiales'])) {
+            $array[0] = $data;
             crearXls($array);
         }
     }
