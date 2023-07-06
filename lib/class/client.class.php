@@ -430,24 +430,23 @@ where
         }
     }
 
-    public static function listadataMatriz($id_client) {
+    public static function listadataMatriz($id_client)
+    {
         $conn = new Conexion();
         $SQL = "SELECT * 
                   FROM data_matriz 
-                 WHERE id_client = '$id_client'";
-        if($conn->consultar($SQL)){
-            if ($conn->getNumeroRegistros() == 1){
-                $consulta = $conn->sacarRegistro('str');
-                $conn->desconectar();
-                return $consulta;
-            }else{
-                $conn->desconectar();
-                return false;
-            }
-        }else{
+                 WHERE id_client = :id_client";
+        if(!$conn->consultar($SQL, [':id_client'=> $id_client])){
             $conn->desconectar();
             return false;
         }
+        if ($conn->getNumeroRegistros() !== 1){
+            $conn->desconectar();
+            return false;
+        }
+        $row = $conn->sacarRegistro('str');
+        $conn->desconectar();
+        return $row;
     }
     public static function actualizarItemRadicadoComplementaria($documento, $lote, $especial){
         $conn = new Conexion();
@@ -462,5 +461,31 @@ where
             $conn->desconectar();
             return false;
         }
+    }
+    public static function obtenerEvidencias($documento)
+    {
+        $conn = new Conexion();
+        $SQL = "SELECT e.*,
+                       u.name,
+                       i.id_radicados
+                  FROM radicado_item_evidencias AS e
+                 INNER JOIN user AS u ON(u.id = e.creador_id)
+                 INNER JOIN radicados_items AS i ON(i.id = e.radicado_item_id AND i.documento = :documento)
+                 WHERE e.estado = :estado
+                 ORDER BY e.radicado_item_id DESC";
+        if(!$conn->consultar($SQL, [':documento'=> $documento, ':estado'=> '0'])){
+            $conn->desconectar();
+            return false;
+        }
+        if ($conn->getNumeroRegistros() !== 1){
+            $conn->desconectar();
+            return false;
+        }
+        $objs = [];
+        while ($row = $conn->sacarRegistro('str')) {
+            $objs[] = $row;
+        }
+        $conn->desconectar();
+        return $objs;
     }
 }

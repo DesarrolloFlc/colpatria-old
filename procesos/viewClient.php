@@ -46,6 +46,7 @@ $devoluciones = $form->getDevolucion($client['document']);
 
 $user = new User();
 $matriz = Client::listadataMatriz($id_client);
+$evidencias = Client::obtenerEvidencias($client['document']);
 ?>
 <!-- Page Head -->
 <h2>Detalle del cliente</h2>
@@ -110,6 +111,11 @@ if($_SESSION['group'] == "4" || $_SESSION['group'] == "6" || $_SESSION['group'] 
 		<h3>Formularios del cliente</h3>
 		<ul class="content-box-tabs">
 <?php
+if (isset($evidencias) && $evidencias !== false) {
+?>
+			<li><a href="#tab23">Evidencias de verificaciones</a></li>
+<?php
+}
 if(isset($matriz) && is_array($matriz)){
 ?>
 			<li><a href="#tab22">Registro matriz</a></li>
@@ -135,6 +141,40 @@ if($_SESSION['group'] == "1" || $_SESSION['group'] == "6" || $_SESSION['group'] 
 	</div> <!-- End .content-box-header -->
 	<div class="content-box-content">
 <?php
+if (isset($evidencias) && $evidencias !== false) {
+?>
+		<div class="tab-content" id="tab23">
+			<table>
+				<thead>
+					<tr>
+						<th>Radicado</th>
+						<th>Resultado</th>
+						<th>Creador</th>
+						<th>Fecha de cargue</th>
+						<th>Acciones</th>
+					</tr>
+				</thead>
+				<tbody>
+<?php
+	foreach ($evidencias as $evidencia) {
+?>
+					<tr>
+						<td><?=$evidencia['id_radicados']?></td>
+						<td><?=$evidencia['resultado']?></td>
+						<td><?=$evidencia['name']?></td>
+						<td><?=date('Y-m-d h:i:s a', strtotime($evidencia['fecha_creacion']))?></td>
+						<td><a href="#" onClick="$(this).mostrarEvidencias(event, <?=$evidencia['radicado_item_id']?>)">
+							<img src="../resources/images/icons/show.jpg" alt="Ver evidencias" /></a>
+						</td>
+					</tr>
+<?php
+	}
+?>
+				</tbody>
+			</table>
+		</div>
+<?php
+}
 if(isset($matriz) && is_array($matriz)){
 ?>
 		<div class="tab-content" id="tab22">
@@ -507,5 +547,65 @@ if($_SESSION['group'] == 1 || $_SESSION['group'] == 6 || /*$_SESSION['group'] ==
 ?>
 <input type="hidden" name="id_client1" id="id_client1" value="<?php echo $_GET['id_client'] ?>" />
 <div class="clear"></div> <!-- End .clear -->
+<div id="box2" style="display:none;"><br></div>
+<script>
+$.fn.cerrarVentana = function() {
+    //radioSelected.checked = false;
+};
+$.fn.mostrarEvidencias = function(e, radicado_item_id){
+    (e.preventDefault) ? e.preventDefault() : e.returnValue = false;
+    if (radicado_item_id === null) return false;
+    
+    $.ajax({
+        beforeSend: function(){
+            $.facebox.loading();
+        },
+        data: {
+            action: 'verEvidencia',
+            domain: 'cargue',
+            meth: 'js',
+            radicado_item_id: radicado_item_id
+        },
+        type: 'GET',
+        url: './includes/Controller.php',
+        dataType: 'json',
+        success: function(dato){
+			console.log(dato);
+            if ((!dato.exito && dato.error) || (!dato.exito && !dato.error)) {
+                $('p.text-center > span').html(dato.error ? dato.error : 'Ocurrio un error al momento de generar el archivo, contacte con el administrador.');
+                $.facebox({
+                    div: '#box-errores'
+                });
+                if (!dato.error) console.log(dato);
+                return false;
+            }
+            $('#box2').html('<div id="muestra-pdf-evidencia"></div>');
+            const tam = tamVentana();
+            const widtam = (60 * tam[0]) / 100;
+            var opt = {
+                width: widtam + "px",
+                height: "650px",
+                pdfOpenParams: {
+                    view: "FitH"
+                }
+            };
+            PDFObject.embed(dato.item.path, "#muestra-pdf-evidencia", opt);
+            $.facebox({
+                div: '#box2'
+            });
+        },
+        complete: function(jqXHR, textStatus){
+            //$.facebox.close();
+        },
+        error: function(xhr, ajaxOptions, thrownError){
+            console.log(xhr, ajaxOptions, thrownError);
+            $('p.text-center > span').html("Error(cargueBaseGestorVentas): "+xhr.status+" Error: "+xhr.responseText);
+            $.facebox({
+                div: '#box-errores'
+            });
+        }
+    });
+}
+</script>
 <?php
 require_once PATH_SITE . DS . 'template/general/footer.php';
