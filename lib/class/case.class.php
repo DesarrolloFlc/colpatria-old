@@ -1,6 +1,6 @@
 <?php
 
-include $_SERVER['DOCUMENT_ROOT'].'/Aplicativos.Serverfin04' . '/Colpatria/config/globalParameters.php';
+include PATH_SITE . DS . 'config/globalParameters.php';
 
 class Cases {
     function insertCase($id_user, $id_official, $causal, $observation, $sucursal, $area, $nombre, $persontype, $documento, $lote) {

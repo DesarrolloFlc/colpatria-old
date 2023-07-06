@@ -1,6 +1,6 @@
 <?php
 
-require_once $_SERVER['DOCUMENT_ROOT'].'/Aplicativos.Serverfin04' . '/Colpatria/config/globalParameters.php';
+require_once PATH_SITE . DS . 'config/globalParameters.php';
 
 class Form {
 

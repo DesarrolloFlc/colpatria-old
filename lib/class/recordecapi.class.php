@@ -1,5 +1,5 @@
 <?php
-require_once $_SERVER['DOCUMENT_ROOT'].'/Aplicativos.Serverfin04' . '/Colpatria/config/globalParameters.php';
+require_once PATH_SITE . DS . 'config/globalParameters.php';
 class Recordecapi{
 	function add( $id_data_confirm, $temporal,$name)	{
 		//error_log("La base de datos de Oracle no está disponible".json_encode(array($id_data_confirm, $temporal, $name)), 0);

@@ -1,5 +1,6 @@
 <?php
-class Conexion{
+class Conexion
+{
 	private $nombreBD = DB_NAME;
 	private $enlaceBD;
 	private $numeroRegistros = 0;
