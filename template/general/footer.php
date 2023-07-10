@@ -1,4 +1,3 @@
-			<script type="text/javascript" src="../resources/scripts/pdfobject/pdfobject.min.js"></script>
 			<div id="box-manual-radicacion" style="display:none;"></div>
 				<div id="footer">
 					<small>
