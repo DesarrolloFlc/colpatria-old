@@ -666,7 +666,7 @@ $.fn.agregarCliente = function(form, docEspe){
     if(!confirm('Esta seguro que la informaci\xF3n que radic\xF3 y va a enviar esta completa, debidamente diligenciada y tiene todos los documentos adicionales para cumplir con los p\xE1rametros exigidos por SARLAFT, y que son su responsabilidad, y por lo tanto este cliente no tendr\xE1 ninguna causal de devoluci\xF3n?')) return false;
     let noPasa = false;
     let idx = 0;
-    $('input[type="file"]'. form).each(function(index, el) {
+    $('input[type="file"]', form).each(function(index, el) {
         if($(el).val() == '' || $(el).val().split('.')[($(el).val().split('.').length - 1)].toLowerCase() != 'pdf'){
             noPasa = true;
             idx = index + 1;
@@ -680,7 +680,7 @@ $.fn.agregarCliente = function(form, docEspe){
         });
         return false;
     }
-    const documento = $('input[name="documento_cli"]'. form).val().trim();
+    const documento = $('input[name="documento_cli"]', form).val().trim();
     if($('form#creaciondeRadicado input[name="clientes"]').val().indexOf(documento) !== -1){
         $('p.text-center > span').html(`Ya ha agregado un cliente con este numero de documento(<strong>${documento}</strong>), por favor verifique.`)
         $.facebox({
@@ -689,10 +689,10 @@ $.fn.agregarCliente = function(form, docEspe){
         return false;
     }
     const formData = new FormData();
-    $('input[type="file"]'. form).each(function(index, el) {
+    $('input[type="file"]', form).each(function(index, el) {
         formData.append('archivos_cliente[]', $(el)[0].files[0]);
     });
-    $('input[name="sucursal_sub"]'. form).val($('form#creaciondeRadicado select[name="id_sucursal"] option:selected').text());
+    $('input[name="sucursal_sub"]', form).val($('form#creaciondeRadicado select[name="id_sucursal"] option:selected').text());
 
     $.each($(form).serializeArray(), function(key, input){
         formData.append(input.name, input.value);
