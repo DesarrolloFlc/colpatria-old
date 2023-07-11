@@ -308,26 +308,23 @@ function enviarMailAprobacion($radicado) {
 function devolverRadicadoForm($request) {
     $radicado = new Radicados();
     $radicado->setId($request['radicado_id']);
-    if ($radicado->getRadicado()) {
-        $observacion = '';
-        $cont = 0;
-        foreach ($request['observation'] as $observation) {
-            if ($cont == 0)
-                $observacion .= $observation;
-            else
-                $observacion .= "<br>".$observation;
-            $cont++;
-        }
-        $cliente = Radicados::getClienteItem($request['clienteid_dev']);
-        if ($radicado->insertarDevolucion($cliente, $request['causaldevolucion'], $observacion, $request['persontype'])){
-            $emailResp = enviarMailDevuelto($radicado, $cliente);
-            echo json_encode(array('exito' => 'Devolucion guardada satisfactoriamente.'));
-        }
-        else
-            echo json_encode(array('errorr' => 'No se pudo guardar la devolucion.'));
-    } else
-        echo json_encode(array('errorr' => 'No se pudo cargar la informacion del radicado.'));
-    //print_r($request);
+    if (!$radicado->getRadicado()) {
+        echo json_encode(['errorr' => 'No se pudo cargar la informacion del radicado.']);
+        exit;
+    }
+    $observacion = '';
+    $cont = 0;
+    foreach ($request['observation'] as $observation) {
+        $observacion .= $cont == 0 ? $observation : "<br>" . $observation;
+        $cont++;
+    }
+    $cliente = Radicados::getClienteItem($request['clienteid_dev']);
+    if (!$radicado->insertarDevolucion($cliente, $request['causaldevolucion'], $observacion, $request['persontype'])){
+        echo json_encode(['errorr' => 'No se pudo guardar la devolucion.']);
+        exit;
+    }
+    enviarMailDevuelto($radicado, $cliente);
+    echo json_encode(['exito' => 'Devolucion guardada satisfactoriamente.']);
 }
 
 function enviarMailDevuelto($radicado, $cliente) {

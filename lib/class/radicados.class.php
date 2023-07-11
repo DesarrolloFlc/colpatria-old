@@ -3,7 +3,8 @@ date_default_timezone_set('America/Bogota');
 require_once PATH_CLASS . DS . '_conexion.php';
 require_once 'festivos.class.php';
 
-class Radicados {
+class Radicados
+{
 
     var $id;
     var $tipo;
@@ -21,6 +22,16 @@ class Radicados {
     var $fecha_envio;
     var $fecha_creacion;
     var $observacion;
+	public  $conn;
+
+	public function __construct(){
+		$this->conn = new Conexion();
+	}
+	public function __destruct(){
+		$this->conn->desconectar();
+	}
+
+    const TIPOS = ['Fisico', 'Virtual', 'Masivo Fisico', 'Financial virtual', 'Gestor de ventas', 'Contingencia virtual', 'Masivo Falabella', 'Masivo Cencosud'];
 
     //Analizadoras
     public function getId() {
@@ -31,36 +42,7 @@ class Radicados {
         return $this->tipo;
     }
     public function getTipoRadicado(){
-        switch ($this->tipo) {
-            case '0':
-                return 'Fisico';
-                break;
-            case '1':
-                return 'Virtual';
-                break;
-            case '2':
-                return 'Masivo Fisico';
-                break;
-            case '3':
-                return 'Financial virtual';
-                break;
-            case '4':
-                return 'Gestor de ventas';
-                break;
-            case '5':
-                return 'Contingencia virtual';
-                break;
-            case '6':
-                return 'Masivo Falabella';
-                break;
-            case '7':
-                return 'Masivo Cencosud';
-                break;
-            
-            default:
-                return 'Fisico';
-                break;
-        }
+        return self::TIPOS[$this->tipo] ?? 'Fisico';
     }
 
     public function getId_sucursal() {
@@ -224,26 +206,25 @@ class Radicados {
 
     public function setAtributos($atributos) {
         if (is_array($atributos)) {
-            $this->setId((isset($atributos["id"]) ? $atributos["id"] : "NULL"));
-            $this->setTipo((isset($atributos["tipo"]) ? $atributos["tipo"] : "0"));
-            $this->setId_sucursal($atributos["id_sucursal"]);
+            $this->id = isset($atributos["id"]) ? $atributos["id"] : "NULL";
+            $this->tipo = isset($atributos["tipo"]) ? $atributos["tipo"] : "0";
+            $this->id_sucursal = $atributos["id_sucursal"];
             /* $this->setFecha_envio($atributos["fecha_envio"]);
               $this->setFuncionario($atributos["funcionario"]); */
-            $this->setUtc((isset($atributos["utc"]) && trim($atributos["utc"]) != '') ? trim($atributos["utc"]) : "NULL");
-            $this->setTelefono($atributos["telefono"]);
-            $this->setExtension((isset($atributos["extension"]) && trim($atributos["extension"]) != '') ? trim($atributos["extension"]) : "NULL");
-            $this->setId_usuarioenvia($atributos["id_usuarioenvia"]);
-            $this->setLote((isset($atributos["lote"]) && trim($atributos["lote"]) != '') ? $atributos["lote"] : "NULL");
-            $this->setFecha_recibido((isset($atributos["fecha_recibido"]) && trim($atributos["fecha_recibido"]) != '') ? $atributos["fecha_recibido"] : "NULL");
-            $this->setEstado((isset($atributos["estado"])) ? $atributos["estado"] : "NULL");
-            $this->setId_usuariorecibido((isset($atributos["id_usuariorecibido"]) && trim($atributos["id_usuariorecibido"]) != '') ? $atributos["id_usuariorecibido"] : "NULL");
-            $this->setFecha_envio((isset($atributos["fecha_envio"]) && trim($atributos["fecha_envio"]) != '') ? $atributos["fecha_envio"] : "0000-00-00");
-            $this->setFecha_creacion((isset($atributos["fecha_creacion"]) && trim($atributos["fecha_creacion"]) != '') ? $atributos["fecha_creacion"] : "NULL");
+            $this->utc = (isset($atributos["utc"]) && trim($atributos["utc"]) != '') ? trim($atributos["utc"]) : "NULL";
+            $this->telefono = $atributos["telefono"];
+            $this->extension = (isset($atributos["extension"]) && trim($atributos["extension"]) != '') ? trim($atributos["extension"]) : "NULL";
+            $this->id_usuarioenvia = $atributos["id_usuarioenvia"];
+            $this->lote = (isset($atributos["lote"]) && trim($atributos["lote"]) != '') ? $atributos["lote"] : "NULL";
+            $this->fecha_recibido = (isset($atributos["fecha_recibido"]) && trim($atributos["fecha_recibido"]) != '') ? $atributos["fecha_recibido"] : "NULL";
+            $this->estado = (isset($atributos["estado"])) ? $atributos["estado"] : "NULL";
+            $this->id_usuariorecibido = (isset($atributos["id_usuariorecibido"]) && trim($atributos["id_usuariorecibido"]) != '') ? $atributos["id_usuariorecibido"] : "NULL";
+            $this->fecha_envio = (isset($atributos["fecha_envio"]) && trim($atributos["fecha_envio"]) != '') ? $atributos["fecha_envio"] : "0000-00-00";
+            $this->fecha_creacion = (isset($atributos["fecha_creacion"]) && trim($atributos["fecha_creacion"]) != '') ? $atributos["fecha_creacion"] : "NULL";
         }
     }
 
     public function registrar() {
-        $conexion = new Conexion();
         $SQL = "INSERT INTO radicados 
 				(
 					tipo, id_sucursal, utc, telefono, extension, id_usuarioenvia
@@ -252,88 +233,69 @@ class Radicados {
 				(
 					:tipo, :id_sucursal, :utc, :telefono, :extension, :id_usuarioenvia
                 )";
-        $data = array(
-            ':tipo'=> $this->getTipo(), 
-            ':id_sucursal'=> $this->getId_sucursal(), 
-            ':utc'=>  $this->getUtc(),
-            ':telefono'=> $this->getTelefono(), 
-            ':extension'=> $this->getExtension(), 
-            ':id_usuarioenvia'=> $this->getId_usuarioenvia()
-        );
-        if ($conexion->ejecutar($SQL, $data)) {
-            $this->setId($conexion->ultimaId());
-            $this->getRadicado();
-            $conexion->desconectar();
-            return true;
-        } else {
-            $conexion->desconectar();
+        $data = [
+            ':tipo'=> $this->tipo, 
+            ':id_sucursal'=> $this->id_sucursal, 
+            ':utc'=>  $this->utc,
+            ':telefono'=> $this->telefono, 
+            ':extension'=> $this->extension, 
+            ':id_usuarioenvia'=> $this->id_usuarioenvia
+        ];
+        if (!$this->conn->ejecutar($SQL, $data)) {
             return false;
         }
+        $this->id = $this->conn->ultimaId();
+        $this->getRadicado();
+        return true;
     }
 
     public function aprobarRadicado() {
-        $conexion = new Conexion();
         $SQL = "INSERT INTO radicados 
 				(
 					lote, fecha_recibido, estado, id_usuariorecibido
 				)
 				VALUES
 				(
-					" . $this->getLote() . ", '" . $this->getFecha_recibido() . "', " . $this->getEstado() . ", 
-					" . $this->getId_usuariorecibido() . "
+					" . $this->lote . ", '" . $this->fecha_recibido . "', " . $this->estado . ", 
+					" . $this->id_usuariorecibido . "
 				)";
-        if ($conexion->ejecutar($SQL)) {
-            $this->setId($conexion->ultimaId());
-            $this->getRadicado();
-            $conexion->desconectar();
-            return true;
-        } else {
-            $conexion->desconectar();
+        if (!$this->conn->ejecutar($SQL)) {
             return false;
         }
+        $this->setId($this->conn->ultimaId());
+        $this->getRadicado();
+        return true;
     }
 
     public function agregarItems($nom, $ced, $docespe) {
-        $conexion = new Conexion();
         $SQL = "INSERT INTO radicados_items
 				(
 					documento, descripcion, id_radicados, documento_especial
 				)
 				VALUES
 				(
-					'" . $ced . "', '" . strtoupper($nom) . "', " . $this->getId() . ",'" . strtoupper($docespe) . "'
-				)
-				";
-        if ($conexion->ejecutar($SQL)) {
-            $conexion->desconectar();
-            return true;
-        } else {
-            $conexion->desconectar();
-            return false;
-        }
+					:documento, :descripcion, :id_radicados, :documento_especial
+				)";
+        return $this->conn->ejecutar($SQL, [':documento'=> $ced, ':descripcion'=> strtoupper($nom), ':id_radicados'=> $this->id, ':documento_especial'=> strtoupper($docespe)]);
     }
 
     public function getRadicado() {
-        $conexion = new Conexion();
         $SQL = "SELECT * 
 				  FROM radicados 
-				 WHERE id = " . $this->getId();
-        $conexion->consultar($SQL);
-        if ($conexion->getNumeroRegistros() <= 0) {
-            $conexion->desconectar();
+				 WHERE id = " . $this->id;
+        $this->conn->consultar($SQL);
+        if ($this->conn->getNumeroRegistros() <= 0) {
             return false;
         }
-        $row = $conexion->sacarRegistro();
+        $row = $this->conn->sacarRegistro();
         $this->setAtributos($row);
-        $conexion->desconectar();
         return true;
     }
 
     public function getItemsDeRadicado($sucursal = '') {
         $upload_folder = '/var/www/html/Aplicativos.Serverfin04/Colpatria/virtuales_doc/virtuales/'.$sucursal;
         $upload_folder2 = '/var/www/html/Aplicativos.Serverfin04/Colpatria/virtuales_doc/virtuales_aceptados/'.$sucursal;
-        $order = ($this->getTipo() == '2' || $this->getTipo() == '6') ? "ORDER BY id ASC" : "ORDER BY estado ASC";
-        $conexion = new Conexion();
+        $order = ($this->tipo == '2' || $this->tipo == '6') ? "ORDER BY id ASC" : "ORDER BY estado ASC";
         $SQL = "SELECT @rownum:=@rownum+1 AS rownum, 
                        ri.id, 
                        ri.descripcion, 
@@ -348,15 +310,14 @@ class Radicados {
                  INNER JOIN radicados AS ra ON(ra.id = ri.id_radicados)
                   LEFT JOIN radicado_item_evidencias AS e ON(e.radicado_item_id = ri.id)
                   /*LEFT JOIN radicados_files AS rf ON(rf.id_radicado = ri.id_radicados AND rf.documento = ri.documento)*/
-				 WHERE ri.id_radicados = " . $this->getId() . "
+				 WHERE ri.id_radicados = " . $this->id . "
 				 $order";
-        $conexion->consultar($SQL);
-        if ($conexion->getNumeroRegistros() <= 0) {
-            $conexion->desconectar();
+        $this->conn->consultar($SQL);
+        if ($this->conn->getNumeroRegistros() <= 0) {
             return false;
         }
         $array = [];
-        while ($row = $conexion->sacarRegistro('str')) {
+        while ($row = $this->conn->sacarRegistro('str')) {
             $row['estado_str'] = self::getEstados($row['estado'], $row['tipo']);
             $numstr = '0'.$row['rownum'];
             if (strlen($row['rownum']) > 1) $numstr = $row['rownum'];
@@ -366,39 +327,33 @@ class Radicados {
                     $row['file_name'] = $sucursal.'_'.$row['documento']."_TODO.pdf";
                 }else if(file_exists($upload_folder.'/'.$row['documento'].'/'.$sucursal.'_'.$row['documento']."_MULTI.tiff")){
                     $row['file_name'] = $sucursal.'_'.$row['documento']."_MULTI.tiff";
-                }else if($row['estado'] == '2' && file_exists($upload_folder2.'/'."LOTE_".$this->getId()."_".$numstr.".pdf")){
-                    $row['file_name'] = "LOTE_".$this->getId()."_".$numstr.".pdf";
-                }else if($row['estado'] == '2' && file_exists($upload_folder2.'/'."LOTE_".$this->getId()."_".$numstr.".tiff")){
-                    $row['file_name'] = "LOTE_".$this->getId()."_".$numstr.".tiff";
+                }else if($row['estado'] == '2' && file_exists($upload_folder2.'/'."LOTE_".$this->id."_".$numstr.".pdf")){
+                    $row['file_name'] = "LOTE_".$this->id."_".$numstr.".pdf";
+                }else if($row['estado'] == '2' && file_exists($upload_folder2.'/'."LOTE_".$this->id."_".$numstr.".tiff")){
+                    $row['file_name'] = "LOTE_".$this->id."_".$numstr.".tiff";
                 }else
-                    $row['file_name'] = "LOTE_".$this->getId()."_".$numstr.".pdf";
+                    $row['file_name'] = "LOTE_".$this->id."_".$numstr.".pdf";
             }
             $row['file_path'] = $upload_folder.'/'.$row['documento'].'/'.$sucursal.'_'.$row['documento']."_";
             $array[] = $row;
         }
-        $conexion->desconectar();
         return $array;
     }
 
     public function getSucursal() {
-        $conexion = new Conexion();
         $SQL = "SELECT t2.sucursal 
 				FROM radicados AS t1
 				INNER JOIN param_sucursales AS t2 ON(t1.id_sucursal = t2.id)
-				WHERE t1.id = " . $this->getId();
-        $conexion->consultar($SQL);
-        if ($conexion->getNumeroRegistros() > 0) {
-            $consulta = $conexion->sacarRegistro();
-            $conexion->desconectar();
-            return $consulta[0];
-        } else {
-            $conexion->desconectar();
+				WHERE t1.id = " . $this->id;
+        $this->conn->consultar($SQL);
+        if ($this->conn->getNumeroRegistros() <= 0) {
             return false;
         }
+        $row = $this->conn->sacarRegistro();
+        return $row[0];
     }
 
     public function aprobarOrden() {
-        $conexion = new Conexion();
         $SQL = "UPDATE radicados
 				   SET lote = :lote, 
                        fecha_recibido = :fecha_recibido, 
@@ -416,46 +371,32 @@ class Radicados {
             ':observacion'=> $this->observacion,
             ':id'=> $this->id
         ];
-        if (!$conexion->ejecutar($SQL, $data)) {
-            $conexion->desconectar();
+        if (!$this->conn->ejecutar($SQL, $data)) {
             return false;
         }
         $this->getRadicado();
-        $conexion->desconectar();
         return true;
     }
 
     public function aprobarCliente($id_cliente, $estado) {
-        $conexion = new Conexion();
         $SQL = "UPDATE radicados_items
 				SET estado = '$estado'
 				WHERE id = $id_cliente
-				AND id_radicados = ".$this->getId();
-        //echo $SQL;exit();
-        if($conexion->ejecutar($SQL)){
-            $conexion->desconectar();
-            return true;
-        }else{
-            $conexion->desconectar();
-            return false;
-        }
+				AND id_radicados = ".$this->id;
+        $this->conn->ejecutar($SQL);
     }
 
     public function getFuncionario() {
-        $conexion = new Conexion();
         $SQL = "SELECT t2.name
 				FROM radicados AS t1 
 				INNER JOIN user AS t2 ON(t1.id_usuarioenvia = t2.id)
-				WHERE t1.id = " . $this->getId();
-        $conexion->consultar($SQL);
-        if ($conexion->getNumeroRegistros() == 1) {
-            $consulta = $conexion->sacarRegistro();
-            $conexion->desconectar();
-            return $consulta[0];
-        } else {
-            $conexion->desconectar();
+				WHERE t1.id = " . $this->id;
+        $this->conn->consultar($SQL);
+        if ($this->conn->getNumeroRegistros() !== 1) {
             return false;
         }
+        $row = $this->conn->sacarRegistro();
+        return $row[0];
     }
 
     public static function getJustFuncionario() {
@@ -464,121 +405,114 @@ class Radicados {
 				FROM user
 				WHERE id = " . $_SESSION['id'];
         $conexion->consultar($SQL);
-        if ($conexion->getNumeroRegistros() == 1) {
-            $consulta = $conexion->sacarRegistro();
-            $conexion->desconectar();
-            return $consulta[0];
-        } else {
+        if ($conexion->getNumeroRegistros() !== 1) {
             $conexion->desconectar();
             return false;
         }
+        $consulta = $conexion->sacarRegistro();
+        $conexion->desconectar();
+        return $consulta[0];
     }
 
     public function getOficial() {
-        $conexion = new Conexion();
         $SQL = "SELECT t2.* 
 				  FROM radicados AS t1 
 				 INNER JOIN official AS t2 ON(t1.id_usuarioenvia = t2.id)
-				 WHERE t1.id = " . $this->getId() . "
-				   AND t1.id_usuarioenvia = " . $this->getId_usuarioenvia();
-        $conexion->consultar($SQL);
-        if ($conexion->getNumeroRegistros() == 1) {
-            $consulta = $conexion->sacarRegistro();
-            $conexion->desconectar();
-            return $consulta;
-        } else {
-            $conexion->desconectar();
+				 WHERE t1.id = " . $this->id . "
+				   AND t1.id_usuarioenvia = " . $this->id_usuarioenvia;
+        $this->conn->consultar($SQL);
+        if ($this->conn->getNumeroRegistros() !== 1) {
             return false;
         }
+        $row = $this->conn->sacarRegistro();
+        return $row;
     }
 
     public static function validaFestivos($id) {
         $sql = "SELECT fecha_creacion FROM radicados WHERE tipo IN ('0', '2') and estado = '0' and id = " . $id;
         $conexion = new Conexion();
         $conexion->consultar($sql);
-        $dactual = array(
+        $dactual = [
             "dia" => date('d'),
             "mes" => date('m'),
             "anio" => date('Y'),
             "stdia" => date('N')
-        );
-        $dcreacion = array(
+        ];
+        $dcreacion = [
             "dia" => 0,
             "mes" => 0,
             "anio" => 0,
             "stdia" => 0
-        );
+        ];
         $sd = new festivos(date("d-m-Y"));
         $fcorridos = $sd->getFestivosCorridos();
         $festables = $sd->getFestivosFijos();
+
+        if ($conexion->getNumeroRegistros() <= 0) {
+            $conexion->desconectar();
+            return 0;
+        }
         $count = 0;
+        while ($consulta = $conexion->sacarRegistro()) {
+            if ($dactual["anio"] !== date('Y', strtotime($consulta["fecha_creacion"]))) continue;
 
-        if ($conexion->getNumeroRegistros() > 0) {
-            while (($consulta = $conexion->sacarRegistro())) {
-//                echo "<br>" . $consulta["fecha_creacion"];
-                $dcreacion = array(
-                    "dia" => date('d', strtotime($consulta["fecha_creacion"])),
-                    "mes" => date('m', strtotime($consulta["fecha_creacion"])),
-                    "anio" => date('Y', strtotime($consulta["fecha_creacion"])),
-                    "stdia" => date("N", strtotime($consulta["fecha_creacion"]))
-                );
-                if ($dactual["anio"] == $dcreacion["anio"]) {
-                    
-                    $dsemana = $dcreacion["stdia"];
-                    for ($mes = 1; $mes <= 12; $mes++) {
-                        if ($mes >= $dcreacion["mes"] && $mes <= $dactual["mes"]) {//---
-                            for ($dia = 1; $dia <= 31; $dia++) {
+            $dcreacion = [
+                "dia" => date('d', strtotime($consulta["fecha_creacion"])),
+                "mes" => date('m', strtotime($consulta["fecha_creacion"])),
+                "anio" => date('Y', strtotime($consulta["fecha_creacion"])),
+                "stdia" => date("N", strtotime($consulta["fecha_creacion"]))
+            ];
+                
+            $dsemana = $dcreacion["stdia"];
+            for ($mes = 1; $mes <= 12; $mes++) {
+                if ($mes >= $dcreacion["mes"] && $mes <= $dactual["mes"]) {//---
+                    for ($dia = 1; $dia <= 31; $dia++) {
 
-                                if ($dia >= $dcreacion["dia"] || $mes > $dcreacion["mes"] && $dia <= $dactual["dia"]) {
+                        if ($dia >= $dcreacion["dia"] || $mes > $dcreacion["mes"] && $dia <= $dactual["dia"]) {
 
-                                    for ($i = 0; $i < count($fcorridos); $i++) {
-                                        $ftemp = explode("-", $fcorridos[$i]);
-                                        if ($dia == $ftemp[1] && $mes == $ftemp[0]) {
-                                            $count++;
-                                        }
-                                    }
-                                    for ($a = 0; $a < count($festables); $a++) {
-                                        $ftemp = explode("-", $festables[$a]);
-                                        if ($dia == $ftemp[1] && $mes == $ftemp[0]) {
-                                            $count++;
-                                        }
-                                    }
-                                    
-                                    if ($dsemana == 7) {
-                                        $count++;
-                                    }
-
-                                    $dsemana++;
-
-                                    if ($dsemana == 8) {
-                                        $dsemana = 1;
-                                    }
+                            for ($i = 0; $i < count($fcorridos); $i++) {
+                                $ftemp = explode("-", $fcorridos[$i]);
+                                if ($dia == $ftemp[1] && $mes == $ftemp[0]) {
+                                    $count++;
                                 }
-                                if ($mes == $dactual["mes"] && $dia == $dactual["dia"]) {//---
-                                    $dia = 31;
+                            }
+                            for ($a = 0; $a < count($festables); $a++) {
+                                $ftemp = explode("-", $festables[$a]);
+                                if ($dia == $ftemp[1] && $mes == $ftemp[0]) {
+                                    $count++;
                                 }
+                            }
+                            
+                            if ($dsemana == 7) {
+                                $count++;
+                            }
 
-                                //----
-                                if ($mes == 9 || $mes == 4 || $mes == 6 || $mes == 11) {
-                                    if ($dia == 30) {
-                                        $dia = 31;
-                                    }
-                                }
-                                if ($mes == 2) {
-                                    if ($dia == 28) {
-                                        $dia = 31;
-                                    }
-                                }
+                            $dsemana++;
+
+                            if ($dsemana == 8) {
+                                $dsemana = 1;
+                            }
+                        }
+                        if ($mes == $dactual["mes"] && $dia == $dactual["dia"]) {//---
+                            $dia = 31;
+                        }
+
+                        //----
+                        if ($mes == 9 || $mes == 4 || $mes == 6 || $mes == 11) {
+                            if ($dia == 30) {
+                                $dia = 31;
+                            }
+                        }
+                        if ($mes == 2) {
+                            if ($dia == 28) {
+                                $dia = 31;
                             }
                         }
                     }
                 }
             }
-            $conexion->desconectar();
-        } else {
-            $conexion->desconectar();
         }
-
+        $conexion->desconectar();
         return $count;
     }
 
@@ -589,28 +523,23 @@ class Radicados {
 				FROM radicados
 				WHERE tipo IN ('0', '2') AND estado = '0'";
         $conexion->consultar($SQL);
-        if ($conexion->getNumeroRegistros() > 0) {
-            $array = array();
-            while (($consulta = $conexion->sacarRegistro())) {
-                $diferencia = $consulta['diferencia'] - self::validaFestivos($consulta['id']);
-                if ($consulta['diferencia'] > 3) {
-//                if ($diferencia > 3) {
-                    $objeto = new Radicados();
-                    $objeto->setId($consulta['id']);
-                    $objeto->setId_usuarioenvia($consulta['id_usuarioenvia']);
-                    $oficial = $objeto->getOficial();
-//                    $oficial['dias_atrazo'] = $consulta['diferencia'];
-                    $oficial['dias_atrazo'] = $diferencia;
-                    $oficial['id_radicado'] = $consulta['id'];
-                    $array[] = $oficial;
-                }
-            }
-            $conexion->desconectar();
-            return $array;
-        } else {
-            $conexion->desconectar();
+        if ($conexion->getNumeroRegistros() <= 0) {
             return false;
         }
+        $array = [];
+        while (($consulta = $conexion->sacarRegistro())) {
+            $diferencia = $consulta['diferencia'] - self::validaFestivos($consulta['id']);
+            if ($consulta['diferencia'] <= 3) continue;
+
+            $objeto = new Radicados();
+            $objeto->setId($consulta['id']);
+            $objeto->setId_usuarioenvia($consulta['id_usuarioenvia']);
+            $oficial = $objeto->getOficial();
+            $oficial['dias_atrazo'] = $diferencia;
+            $oficial['id_radicado'] = $consulta['id'];
+            $array[] = $oficial;
+        }
+        return $array;
     }
 
     public static function verificarNotificacionDia() {
@@ -619,30 +548,21 @@ class Radicados {
         $SQL = "SELECT * FROM radicados_recordatorio 
 				WHERE fecha = '$fecha'";
         $conexion->consultar($SQL);
-        if ($conexion->getNumeroRegistros() > 0) {
-            $conexion->desconectar();
-            return true;
-        } else {
-            $conexion->desconectar();
-            return false;
-        }
+        $resp = $conexion->getNumeroRegistros() > 0;
+        $conexion->desconectar();
+        return $resp;
     }
 
     public static function insertarNotificacionDia() {
         $conexion = new Conexion();
         $fecha = date('Y-m-d');
         $SQL = "INSERT INTO radicados_recordatorio (fecha) VALUES ('$fecha')";
-        if ($conexion->ejecutar($SQL)) {
-            $conexion->desconectar();
-            return true;
-        } else {
-            $conexion->desconectar();
-            return false;
-        }
+        $resp = $conexion->ejecutar($SQL);
+        $conexion->desconectar();
+        return $resp;
     }
 
     public function insertarDevolucion($cliente, $causal, $observation, $persontype) {
-        $conexion = new Conexion();
         $id_user = $_SESSION['id'];
         $SQL = "INSERT INTO workflow
 				(
@@ -650,48 +570,37 @@ class Radicados {
 				)
 				VALUES
 				(
-					$id_user, '$causal', " . $this->getId_usuarioenvia() . ", '$observation', 1, $persontype, '" . $cliente['documento'] . "', 
-					'".str_replace("'", "´", $cliente['descripcion']). "', " . $this->getId() . ", " . $this->getId_sucursal() . ", " . $this->getId_sucursal() . ", " . $this->getId() . "
+					$id_user, '$causal', " . $this->id_usuarioenvia . ", '$observation', 1, $persontype, '" . $cliente['documento'] . "', 
+					'".str_replace("'", "´", $cliente['descripcion']). "', " . $this->id . ", " . $this->id_sucursal . ", " . $this->id_sucursal . ", " . $this->id . "
 				)";
-        if ($conexion->ejecutar($SQL)) {
-            $conexion->desconectar();
-            return true;
-        } else {
-            $conexion->desconectar();
-            return false;
-        }
+        return $this->conn->ejecutar($SQL);
     }
 
     public function getDevolucion($documento) {
-        $conexion = new Conexion();
         $SQL = "SELECT * FROM workflow
 				WHERE documento = '$documento'
-				AND id_radicado = " . $this->getId() . "
+				AND id_radicado = " . $this->id . "
 				ORDER BY date_created DESC
 				LIMIT 1";
-        $conexion->consultar($SQL);
-        if ($conexion->getNumeroRegistros() == 1) {
-            $consulta = $conexion->sacarRegistro();
-            $conexion->desconectar();
-            return $consulta;
-        } else {
-            $conexion->desconectar();
+        $this->conn->consultar($SQL);
+        if ($this->conn->getNumeroRegistros() !== 1) {
             return false;
         }
+        $row = $this->conn->sacarRegistro();
+        return $row;
     }
 
     public static function getClienteItem($id_cliente) {
         $conexion = new Conexion();
         $SQL = "SELECT * FROM radicados_items WHERE id = " . $id_cliente;
         $conexion->consultar($SQL);
-        if ($conexion->getNumeroRegistros() == 1) {
-            $consulta = $conexion->sacarRegistro();
-            $conexion->desconectar();
-            return $consulta;
-        } else {
+        if ($conexion->getNumeroRegistros() !== 1) {
             $conexion->desconectar();
             return false;
         }
+        $row = $conexion->sacarRegistro();
+        $conexion->desconectar();
+        return $row;
     }
 
     public static function inserFileRadicado($nombre, $documento, $pdfFile = '', $pathUpload = '') {
@@ -708,41 +617,21 @@ class Radicados {
 				(
 					'$nombre', '$documento'
 				)";
-        if ($conexion->ejecutar($SQL)) {
-            $conexion->desconectar();
-            return true;
-        } else {
-            $conexion->desconectar();
-            return false;
-        }
+        $resp = $conexion->ejecutar($SQL);
+        $conexion->desconectar();
+        return $resp;
     }
 
     public function updateFilesRadicado($documento) {
-        $conexion = new Conexion();
-        $SQL = "UPDATE radicados_files SET estado = '1', id_radicado = " . $this->getId() . "
+        $SQL = "UPDATE radicados_files SET estado = '1', id_radicado = " . $this->id . "
 				WHERE documento = '$documento'";
-        //echo "$SQL";
-        if ($conexion->ejecutar($SQL)) {
-            $conexion->desconectar();
-            return true;
-        } else {
-            $conexion->desconectar();
-            return false;
-        }
+        return $this->conn->ejecutar($SQL);
     }
 
     public function updateFilesRadicadoNombre($documento, $pos_cli) {
-        $conexion = new Conexion();
-        $SQL = "UPDATE radicados_files SET nombre = 'LOTE_" . $this->getId() . "_" . $pos_cli . ".pdf'
+        $SQL = "UPDATE radicados_files SET nombre = 'LOTE_" . $this->id . "_" . $pos_cli . ".pdf'
 				WHERE documento = '$documento'";
-        //echo "$SQL";
-        if ($conexion->ejecutar($SQL)) {
-            $conexion->desconectar();
-            return true;
-        } else {
-            $conexion->desconectar();
-            return false;
-        }
+        return $this->conn->ejecutar($SQL);
     }
 
     public static function clientesDelOficial($fec_ini, $fec_fin) {
@@ -793,10 +682,9 @@ class Radicados {
                  INNER JOIN param_sucursales AS t4 ON(t2.id_sucursal = t4.id)
                  WHERE t2.fecha_creacion BETWEEN '$fec_ini 00:00:00' AND '$fec_fin 23:59:59'$comp
                  ORDER BY t2.id";
-        //echo $SQL;exit();
         $conexion->consultar($SQL);
         if ($conexion->getNumeroRegistros() > 0) {
-            $array = array();
+            $array = [];
             while (($consulta = $conexion->sacarRegistro('str'))) {
                 $array[] = $consulta;
             }
@@ -821,10 +709,9 @@ class Radicados {
 				INNER JOIN param_sucursales AS t4 ON(t2.id_sucursal = t4.id)
 				WHERE t2.fecha_creacion BETWEEN '$fec_ini 00:00:00' AND '$fec_fin 23:59:59'$comp				
 				ORDER BY t2.id";
-        //echo $SQL;exit();
         $conexion->consultar($SQL);
         if ($conexion->getNumeroRegistros() > 0) {
-            $array = array();
+            $array = [];
             while (($consulta = $conexion->sacarRegistro())) {
                 $array[] = $consulta;
             }
@@ -857,7 +744,7 @@ class Radicados {
 					GROUP BY t1.id";
         $conexion->consultar($SQL);
         if ($conexion->getNumeroRegistros() > 0) {
-            $array = array();
+            $array = [];
             while (($consulta = $conexion->sacarRegistro())) {
                 $array[] = $consulta;
             }
@@ -902,7 +789,6 @@ class Radicados {
     }
 
     public static function getValidaCliente($cliente) {
-        //creado por sinthia rodriguez
         $conn = new Conexion();
         $SQL = "SELECT form.id as cformularios 
                   FROM form 
@@ -919,7 +805,6 @@ class Radicados {
     }
 
     public function updateRadicadoNombCliente($Ndocumento, $estado, $id_radicado, $item) {
-        //creado por sinthia rodriguez
         $conexion = new Conexion();
         $SQL = "UPDATE radicados_items SET documento = '" . $Ndocumento . "'
 				WHERE radicados_items.estado =" . $estado . " AND radicados_items.id_radicados =" . $id_radicado . " AND radicados_items.id =" . $item;
@@ -967,49 +852,19 @@ class Radicados {
             return false;
     }
     public function insertarMasivo($documento, $descripcion, $especial, $especial_str, $item){
-        $insertado = 0;
-        if($item === false)
-            $insertado = 1;
-        $conn = new Conexion();
+        $insertado = $item === false ? 1 : 0;
         $SQL = "INSERT INTO radicados_masivos 
                 (
                     radicados_id, documento, descripcion, documento_especial, especial_str, estado
                 )
                 VALUES
                 (
-                    ".$this->getId().", '$documento', '$descripcion', $especial, '$especial_str', $insertado
+                    ".$this->id.", '$documento', '$descripcion', $especial, '$especial_str', $insertado
                 )";
-        if($conn->ejecutar($SQL)){
-            $conn->desconectar();
-            return true;
-        }else{
-            $conn->desconectar();
-            return false;
-        }
+        return $this->conn->ejecutar($SQL);
     }
     public static function getEstados($estado, $tipo = 0) {
-        switch ($estado) {
-            case '0':
-                return 'Radicado';
-                break;
-            case '1':
-                if($tipo == 0)
-                    return 'No llego fisico';
-                elseif($tipo == 1 || $tipo == 5)
-                    return 'No se adjunto documento';
-                else
-                    return 'No llego fisico';
-                break;
-            case '2':
-                return 'Aprobado';
-                break;
-            case '3':
-                return 'Devuelto';
-                break;
-            case '4':
-                return 'Cancelado';
-                break;
-        }
+        $estados = ['Radicado', [], 'Aprobado', 'Devuelto', 'Cancelado'];
+        return $estado === 1 ? ($tipo == 1 || $tipo == 5 ? 'No se adjunto documento' : 'No llego fisico') : $estados[$estado] ?? 'Radicado';
     }
 }
-?>
