@@ -126,35 +126,35 @@ function creaciondeRadicadoAction($request){
     $request['id_usuarioenvia'] = $_SESSION['id'];
     $radicado = new Radicados();
     $radicado->setAtributos($request);
-    if ($radicado->registrar()) {
-        $clientes = explode('||', $request['clientes']);
-        $errorCliente = '';
-        foreach($clientes as $key => $value){
-            $cliente = explode('|', $value);
-            if(count($cliente) == 4){
-                if($radicado->agregarItems($cliente[0], $cliente[1], $cliente[2])){
-                    $radicado->updateFilesRadicado($cliente[1]);
-                }else{
-                    if(empty($errorCliente))
-                        $errorCliente = '<br>Ocurrieron el/los siguientes errores:<br>';
-                    $errorCliente .= 'No se pudo agregar el cliente con numero de documento: '.$cliente[1].'<br>';
-                }
-            }else{
-                if(empty($errorCliente))
-                    $errorCliente = '<br>Ocurrieron el/los siguiente/s error/es:<br>';
-                $errorCliente .= 'No se pudo agregar el cliente con datos: {'.$value.'}<br>';
-            }
-            unset($cliente);
+    if (!$radicado->registrar()) {
+        echo json_encode(['error' => 'Ocurrio un error al momento de insertar el radicado']);
+        exit;
+    }
+    $clientes = explode('||', $request['clientes']);
+    $errorCliente = '';
+    foreach($clientes as $key => $value){
+        $cliente = explode('|', $value);
+
+        if (count($cliente) !== 4) {
+            if (empty($errorCliente)) $errorCliente = '<br>Ocurrieron el/los siguiente/s error/es:<br>';
+            $errorCliente .= 'No se pudo agregar el cliente con datos: {' . $value . '}<br>';
+            continue;
         }
-        $email = "";
-        $email = enviarMailSeguimiento($radicado);
-        $errormail = '';
-        if ($email != "ok") {
-            $errormail = '<br>pero ocurrio el siguiente error: '.$email;
+
+        if (!$radicado->agregarItems($cliente[0], $cliente[1], $cliente[2])) {
+            if (empty($errorCliente)) $errorCliente = '<br>Ocurrieron el/los siguientes errores:<br>';
+            $errorCliente .= 'No se pudo agregar el cliente con numero de documento: ' . $cliente[1] . '<br>';
+            continue;
         }
-        echo json_encode(array('exito' => 'Radicado ingresado exitosamente con sus clientes...'.$errormail.$errorCliente, 'radicado' => $radicado));
-    }else
-        echo json_encode(array('error' => 'Ocurrio un error al momento de insertar el radicado'));
+        $radicado->updateFilesRadicado($cliente[1]);
+        unset($cliente);
+    }
+    $email = enviarMailSeguimiento($radicado);
+    $errormail = '';
+    if ($email != "ok") {
+        $errormail = '<br>pero ocurrio el siguiente error: ' . $email;
+    }
+    echo json_encode(array('exito' => 'Radicado ingresado exitosamente con sus clientes...'.$errormail.$errorCliente, 'radicado' => $radicado));
 }
 function creaciondeRadicadoFisicoAction($request){
     if(!isset($_SESSION['id']) || empty($_SESSION['id']) || $_SESSION['id'] === ''){
@@ -233,22 +233,15 @@ function enviarMailSeguimiento($radicado) {
     <p>Fecha de creaci&oacute;n: ".strftime("%A %d de %B de %Y a las %l:%M %P", strtotime($radicado->getFecha_creacion()))."</p><br>
     <p>Recuerda que puedes responder al caso accediendo al aplicativo Doc Finder.</p>";
 
-    //$mail->IsSendmail();
-    //indico a la clase que use SMTP
     $mail->IsSMTP();
     //permite modo debug para ver mensajes de las cosas que van ocurriendo
     //$mail->SMTPDebug = 2;
-    //Debo de hacer autenticación SMTP
     $mail->SMTPAuth = true;
     $mail->SMTPSecure = "ssl";
-    //indico el servidor de Gmail para SMTP
     $mail->Host = MAIL_HOST;
-    //indico el puerto que usa Gmail
     $mail->Port = MAIL_PORT;
-    //indico un usuario / clave de un usuario de gmail
     $mail->Username = MAIL_USER;
     $mail->Password = MAIL_PASS;
-    //indico creador del mensaje
 
     $mail->SetFrom(MAIL_USER, MAIL_SUBJECT);
     $mail->Subject = "Usted tiene un nuevo radicado en Doc Finder #".$radicado->getId().".";
@@ -267,14 +260,10 @@ function enviarMailSeguimiento($radicado) {
     //$mail->AddAddress("jenny.cardona@axacolpatria.co", "Jenny Viviana Cardona Rivera");
     $mail->AddAddress(MAIL_USER, MAIL_SUBJECT);
 
-    if (isset($oficial['email_father']) && !empty($oficial['email_father']))
+    if (isset($oficial['email_father']) && !empty($oficial['email_father'])) {
         $mail->AddCC($oficial['email_father']);
-
-    if (!$mail->Send()) {
-        return "Mailer Error: ".$mail->ErrorInfo;
-    } else {
-        return "ok";
     }
+    return !$mail->Send() ? "Mailer Error: " . $mail->ErrorInfo : "ok";
 }
 function tipoCSV($tipo){
     switch ($tipo) {
