@@ -287,19 +287,18 @@ $sucursales = $general->getSucursales();
 </div>
 <script src="../../resources/scripts/datatables.min.js"></script>
 <script type="text/javascript">
-    var resetInputFiles = `<tbody>
-        <tr class="alt-row">
-            <td width="8%">Archivo:</td>
-            <td
-                <input type="file" id="load_file" name="load_file[0]">
-                <div style="width:50px; display: inline; margin-left:20px;">
-                    <a href="#" onclick="$.fn.agregarCargaarchivos(event);">
-                        <img src="../../resources/images/icons/show.jpg" title="Agregar archivos" alt="Agregar">
-                    </a>
-                </div>
-            </td>
-        </tr>
-    </tbody>`;
+    var resetInputFiles = `<tr class="alt-row">
+        <td width="8%">Archivo:</td>
+        <td>
+            <input type="file" id="load_file" name="load_file[0]" />
+            <div style="width:50px; display: inline; margin-left:20px;">
+                <a href="#" onclick="$.fn.agregarCargaarchivos(event);">
+                    <img src="../../resources/images/icons/show.jpg" title="Agregar archivos" alt="Agregar" />
+                </a>
+            </div>
+            <span class="input-notification attention png_bg">Si el cliente tiene mas de un archivo, utilize el boton mas</span>
+        </td>
+    </tr>`;
 $(document).ready(function() {
     /*$('p.text-center > span').html('Se realizaron ajustes de rendimiento en el aplicativo, por favor cierre este mensaje y por primera vez actualice la página con <strong>Ctrl + F5</strong>(Si ya lo hizo una vez, no es necesario que lo vuelva a hacer, solo ignore este mensaje después de actualizar la página con <strong>Ctrl + F5</strong>).<br>Este mensaje está disponible hasta el 20 de agosto de 2021, nuevamente si ya realizo el proceso de <strong>Ctrl + F5</strong> no es necesario que lo haga diariamente, con una sola vez que lo haya hecho esta bien, gracias por su comprensión');
     $.facebox({
@@ -323,29 +322,29 @@ $(document).ready(function() {
     });
     $('form#form_load_file').submit(function(event) {
         (event.preventDefault) ? event.preventDefault() : event.returnValue = false;
-        if($('form#creaciondeRadicado select[name="id_sucursal"]').val() == ''){
+        if ($('form#creaciondeRadicado select[name="id_sucursal"]').val() == '') {
             $('p.text-center > span').html('Por favor seleccione una sucursal')
             $.facebox({
                 div: '#box-errores'
             });
             return false;
-        }else if($('input[name="sucursal_id"]', this).val() != '' && $('input[name="sucursal_id"]', this).val() != $('form#creaciondeRadicado select[name="id_sucursal"]').val()){
+        }else if ($('input[name="sucursal_id"]', this).val() != '' && $('input[name="sucursal_id"]', this).val() != $('form#creaciondeRadicado select[name="id_sucursal"]').val()) {
             $('p.text-center > span').html('No se pueden cargar clientes en diferentes sucursales para un mismo radicado, todos deben ser de la misma sucursal, por favor verifique.')
             $.facebox({
                 div: '#box-errores'
             });
             return false;
-        }else if($('input[name="sucursal_id"]', this).val() == '')
+        } else if($('input[name="sucursal_id"]', this).val() == '')
             $('input[name="sucursal_id"]', this).val($('form#creaciondeRadicado select[name="id_sucursal"]').val());
 
-        if($('input[name="nombre_cli"]', this).val() == ''){
+        if ($('input[name="nombre_cli"]', this).val() == '') {
             $('p.text-center > span').html('Por favor digite el nombre del cliente si piensa agregar uno nuevo')
             $.facebox({
                 div: '#box-errores'
             });
             return false;
         }
-        if($('input[name="documento_cli"]', this).val() == ''){
+        if ($('input[name="documento_cli"]', this).val() == '') {
             $('p.text-center > span').html('Por favor digite el documento del cliente si piensa agregar uno nuevo')
             $.facebox({
                 div: '#box-errores'
@@ -457,10 +456,10 @@ $(document).ready(function() {
                 });
                 $(form).reset();
                 $('table#listaclientes > tbody').html('');
-                $(form).find('input[name="clientes"]').val('');
-                $('form#form_load_file').find('input[name="sucursal_sub"]').val('');
-                $('form#form_load_file').find('input[name="documento_sub"]').val('');
-                $('form#form_load_file').find('input[name="sucursal_id"]').val('');
+                $('input[name="clientes"]', form).val('');
+                $('form#form_load_file input[name="sucursal_sub"]').val('');
+                $('form#form_load_file input[name="documento_sub"]').val('');
+                $('form#form_load_file input[name="sucursal_id"]').val('');
                 window.location.href = "generarReportePDF.php?idradicado=" + dato.radicado['id'];
             },
             complete: function(jqXHR, textStatus){
