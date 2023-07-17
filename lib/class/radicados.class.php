@@ -380,10 +380,10 @@ class Radicados
 
     public function aprobarCliente($id_cliente, $estado) {
         $SQL = "UPDATE radicados_items
-				SET estado = '$estado'
-				WHERE id = $id_cliente
-				AND id_radicados = ".$this->id;
-        $this->conn->ejecutar($SQL);
+				   SET estado = :estado
+				 WHERE id = :id
+				   AND id_radicados = :id_radicados";
+        return $this->conn->ejecutar($SQL, [':estado'=> $estado, ':id'=> $id_cliente, ':id_radicados'=> $this->id]);
     }
 
     public function getFuncionario() {

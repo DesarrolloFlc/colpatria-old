@@ -162,7 +162,7 @@ function aprobarClientes($request)
         exit;
     }
     if (!isset($request['cliente'])) {
-        echo json_encode(['exito' => 'El radicado fue aprovado, pero sin clientes anexos']);
+        echo json_encode(['exito' => 'El radicado fue aprobado, pero sin clientes anexos']);
         exit;
     }
     $i = 1;
@@ -209,10 +209,10 @@ function aprobarClientes($request)
         }
         $i++;
     }
-    $email = enviarMailAprobacion($radicado);
+    enviarMailAprobacion($radicado);
     echo $rep 
         ? json_encode(['exito' => 'Los clientes fueron aprobados exitosamente...'])
-        : json_encode(array('errorr' => 'Los clientes con cedula '.$strCli.'no pudieron ser aprovados,\\n comuniquese con el administrador del sistema'));
+        : json_encode(array('errorr' => 'Los clientes con id ' . $strCli . 'no pudieron ser aprobados,<br> comuniquese con el administrador del sistema'));
     exit;
 }
 
