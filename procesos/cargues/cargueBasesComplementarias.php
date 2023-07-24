@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-if (!isset($_SESSION['group']) || !in_array($_SESSION['group'], ["6", "1", "8", "2", "11"]) && !isset($_SESSION['cargo']) || $_SESSION['cargo'] !== 'radicador') {
+if (!isset($_SESSION['group']) || !in_array($_SESSION['group'], ["6", "1", "8", "2", "11"]) && (!isset($_SESSION['cargo']) || $_SESSION['cargo'] !== 'radicador')) {
 	echo "No tiene permiso para esta �rea";
 	exit;
 }
