@@ -181,7 +181,7 @@ if (isset($_SESSION['group']) && $_SESSION['group'] == "6" || $_SESSION['group']
                                 <?php
                             }
                             ?>
-                            <li><a href="<?=SITE_ROOT?>/procesos/radicado/download.php">Manual de radicaci&oacute;n</a></li>
+                            <li><a href="#" onclick="$(this).mostrarManual(event);">Manual de radicaci&oacute;n</a></li>
                         </ul>
                     </li>
 <?php
