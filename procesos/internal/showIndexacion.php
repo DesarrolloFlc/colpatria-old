@@ -23,7 +23,7 @@ $users = $user->getUsersByRol(3); //Traer usuarios con perfil de Digitador
                 <select name="id_user" id="id_user">
                     <option>-- Seleccione un usuario --</option>
                     <?php while ($user_digitador = mysqli_fetch_array($users)): ?>
-                        <option value="<?=$user_digitador['id'] . utf8_encode(ucwords(strtolower($user_digitador['name'])))?></option>
+                        <option value="<?=$user_digitador['id']?>"><?=utf8_encode(ucwords(strtolower($user_digitador['name'])))?></option>
                     <?php endwhile; ?>
                 </select>
             </td>
