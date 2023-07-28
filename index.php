@@ -38,22 +38,23 @@
         <script type="text/javascript">
             $(document).ready(function() {
                 $("form#login_form").submit(function() {
-                    if ($(this).find('input[name="username"]').val() == "") {
+                    if ($('input[name="username"]', this).val() == "") {
                         alert("Por favor complete el campo de usuario.");
-                        $(this).find('input[name="username"]').focus();
-                    } else if ($(this).find('input[name="password"]').val() == "") {
+                        $('input[name="username"]', this).focus();
+                        return false;
+                    } 
+                    if ($('input[name="password"]', this).val() == "") {
                         alert("Por favor complete el campo de contraseña.");
-                        $(this).find('input[name="password"]').focus();
-                    } else {
-                        $.post('lib/general/validacion.php', $("#login_form").serialize(), function(data) {
-                            //alert(data)
-                            if (data == "102") {
-                                $('#msg').html("Por favor valide los datos de acceso.");
-                                return false;
-                            }
-                            location.href = "procesos/change_password.php";
-                        });
+                        $('input[name="password"]', this).focus();
+                        return false;
                     }
+                    $.post('lib/general/validacion.php', $("#login_form").serialize(), function(data) {
+                        if (data == "102") {
+                            $('#msg').html("Por favor valide los datos de acceso.");
+                            return false;
+                        }
+                        location.href = "procesos/change_password.php";
+                    });
                     return false;
                 });
             });
@@ -78,12 +79,12 @@
                     </div>
                     <p>
                         <label>Usuario:</label>
-                        <input class="text-input" type="text" name="username"/>
+                        <input class="text-input" type="text" name="username" autofocus placeholder="Usuario" />
                     </p>
                     <div class="clear"></div>
                     <p>
                         <label>Contraseña:</label>
-                        <input class="text-input" type="password" name="password"/>
+                        <input class="text-input" type="password" name="password" placeholder="Contraseña" />
                     </p>
                     <div class="clear"></div>
 
@@ -91,7 +92,12 @@
                         <input id="entrar" type="submit" value="Acceder >>" />
                     </p>
                 </form>
-                <div><p><a href="#" onclick="window.open('WhatisMyUser.php', 'MiUsuario', 'width=320, height=160');"> <font color="red">Cu&aacute;l es mi usuario?</font></a></p>
+                <div>
+                    <p>
+                        <a href="#" onclick="window.open('WhatisMyUser.php', 'MiUsuario', 'width=320, height=160');"> 
+                            <font color="red">Cu&aacute;l es mi usuario?</font>
+                        </a>
+                    </p>
                 </div> <!-- End #login-content -->
 
             </div> <!-- End #login-wrapper -->
