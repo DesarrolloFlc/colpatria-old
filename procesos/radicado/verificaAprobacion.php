@@ -165,83 +165,38 @@ require_once dirname(dirname(dirname(__FILE__))) . "/template/general/header.php
         <div id="box1" style="display:none;">
             <br>
             <form id="devolverRadicadoForm" name="devolverRadicadoForm" onsubmit="$.fn.devolverRadicadoForm(event, this);">
-                <p>
+                <div style="padding-bottom: 10px;">
                     <label>Tipo de Cliente:</label>
-                    <select id="persontype" name="persontype">
+                    <select id="persontype" name="persontype" onchange="$(this).buscarCausales(event);">
                         <option value="">Seleccione...</option>
                         <option value="1">Natural</option>
                         <option value="2">Juridico</option>
                     </select>
-                </p>
+                </div>
                 <!--<p>
                     <label>Lote:</label>
                     <input type="text" name="lote" id="lote" size="6" maxlength="6" onkeypress="return validar_num(event)"/>
                 </p>-->
-                <p>
-                    <label>Causal de devoluci&oacute;n:</label>              
-                    <select name="causaldevolucion" id="causaldevolucion" class="big-input">
-                        <option value="">--Seleccione opci&oacute;n--</option>
-                        <option value="Actividad Economica">Actividad Economica</option>
-                        <option value="Codigo CIIU">Codigo CIIU</option>
-                        <option value="Datos de entrevista">Datos de entrevista</option>
-                        <option value="Datos de representante legal">Datos de representante legal</option>
-                        <option value="Falta documentos adicionales">Falta documentos adicionales</option>
-                        <option value="Falta fecha de diligenciamiento o solicitud">Falta fecha de diligenciamiento o solicitud</option>
-                        <option value="Formulario"> Formulario</option>
-                        <option value="Formulario de vinculación inicial">Formulario de vinculación inicial</option>
-                        <option value="Formato renovación de autos">Formato renovación de autos</option>
-                        <option value="Fotocopia de cedula">Fotocopia de cedula</option>
-                        <option value="Huella y/o Firma">Huella y/o Firma</option>
-                        <option value="Información laboral incompleta"> Información laboral incompleta</option>
-                        <option value="Ocupación/profesión">Ocupación/profesión</option>
-                        <option value="Peps">Pep's</option>
-                        <option value="Radicado desordenado"> Radicado desordenado</option>
-                        <option value="Sin datos completos de contacto">Sin datos completos de contacto</option>
-                        <option value="Sin datos financieros">Sin datos financieros</option>
+                <div style="padding-bottom: 10px;">
+                    <label>Devoluci&oacute;n:</label>
+                    <div style="display: flex; align-items: center;">
+                        <select name="causaldevolucion" id="causaldevolucion" class="big-input" onchange="$(this).buscarObservacion();" disabled>
+                            <option value="">Seleccione opci&oacute;n</option>
+                        </select>
+                        <div style="width: 16px; height: 16px; padding-left: 5px;">
+                            <img id="imgloading-observacion" src="../../images/icons/loading.gif" style="display: none;" />
+                        </div>
+                    </div>
+                </div>
+                <div style="padding-bottom: 10px;">
+                    <label>Causal de devolución:</label>
+                    <select name="causalobservacion[]" id="causalobservacion" multiple style="width: 100%; height: 140px;">
                     </select>
-                </p>
-                <p>
-                    <label>Observaciones:</label>              
-                    <select name="observation[]" id="observation" multiple="multiple">
-                        <option value="Sin dirección/teléfonos/ciudad">Sin dirección/teléfonos/ciudad</option>
-                        <option value="Nombre de empresa dirección / teléfono"> Nombre de empresa dirección / teléfono</option>
-                        <option value="Debe diligenciar todos los campos (ingresos/egresos/activos/pasivos)">Debe diligenciar todos los campos (ingresos/egresos/activos/pasivos)</option>
-                        <option value="Concepto de otros ingresos (especificar cuál es el concepto) en caso que exista valor.">Concepto de otros ingresos (especificar cuál es el concepto) en caso que exista valor.</option>
-                        <option value="Debe diligenciar actividad económica">Debe diligenciar actividad económica</option>
-                        <option value="Especificar la actividad, que comercia, independiente en qué?">Especificar la actividad, que comercia, independiente en qué?</option>
-                        <option value="Huella ilegible físico">Huella ilegible físico</option>
-                        <option value="Falta huella o firma">Falta huella o firma</option>
-                        <option value="Formulario Desactualizado">Formulario Desactualizado</option>
-                        <option value="La huella del documento de identificación no coincide con el físico">La huella del documento de identificación no coincide con el físico</option>
-                        <option value="Debe venir totalmente diligenciada: lugar, fecha, hora, funcionario">Debe venir totalmente diligenciada: lugar, fecha, hora, funcionario</option>
-                        <option value="Falta fecha de diligenciamiento y/o solicitud o entrevista (año-mes-día)">Falta fecha de diligenciamiento y/o solicitud o entrevista (año-mes-día)</option>
-                        <option value="Cámara de comercio">Cámara de comercio</option>
-                        <option value="Campos peps sin diligenciar o mal diligenciado">Campos pep's sin diligenciar o mal diligenciado</option>
-                        <option value="El número de documento en el formulario esta errado o mal diligenciado">El número de documento en el formulario esta errado o mal diligenciado</option>
-                        <option value="Rut">Rut</option>
-                        <option value="Fotocopia de cedula">Fotocopia de cedula</option>
-                        <option value="Certificación de la alcaldía vigente">Certificación de la alcaldía vigente</option>
-                        <option value="Campo CIIU sin diligenciar o mal diligenciado">Campo CIIU sin diligenciar o mal diligenciado</option>
-                        <option value="Acta de asamblea para copropiedades"> Acta de asamblea para copropiedades</option>
-                        <option value="Lista de socios personas jurídicas">Lista de socios personas jurídicas</option>
-                        <option value="Debe diligenciar correctamente los campos al radicar la documentación identificación y nombre">Debe diligenciar correctamente los campos al radicar la documentación identificación y nombre</option>
-                        <option value="Falta fotocopia de cedula">Falta fotocopia de cedula</option>
-                        <option value="Falta diligenciar datos del representante legal">Falta diligenciar datos del representante legal</option>
-                        <option value="Debe ser actual, legible y ampliada al 150%">Debe ser actual, legible y ampliada al 150%</option>
-                        <option value="Fotocopia cedula ilegible cara A">Fotocopia cedula ilegible cara A</option>
-                        <option value="Fotocopia cedula ilegible cara B">Fotocopia cedula ilegible cara B</option>
-                        <option value="Formulario ilegible">Formulario ilegible</option>
-                        <option value="Falta formulario o formulario incompleto">Falta formulario o formulario incompleto</option>
-                        <option value="Falta formulario cara A">Falta formulario cara A</option>
-                        <option value="Falta formulario cara B">Falta formulario cara B</option>
-                        <option value="Formulario con enmendadura">Formulario con enmendadura</option>
-                        <option value="No existe formulario de vinculación inicial">No existe formulario de vinculación inicial</option>
-                        <option value="Debe diligenciar campo">Debe diligenciar campo</option>
-                        <option value="Falta numero de póliza">Falta numero de póliza</option>
-                        <option value="Debe volver a radicar la documentacion">Debe volver a radicar la documentacion</option>
-                        <option value="Camara de comercio superior a 30 dias">Camara de comercio superior a 30 días</option>
-                    </select>
-                </p>
+                </div>
+                <div style="padding-bottom: 10px;">
+                    <label>Observaciones:</label>
+                    <textarea name="observation" id="observation" cols="10" rows="5"></textarea>
+                </div>
                 <input type="hidden" name="id_sucursal" id="id_sucursal">
                 <input type="hidden" name="id_official" id="id_official">
                 <input type="hidden" name="clienteid_dev" id="clienteid_dev">
@@ -249,9 +204,12 @@ require_once dirname(dirname(dirname(__FILE__))) . "/template/general/header.php
                 <input type="hidden" name="radicado_id" id="radicado_id">
                 <input type="hidden" name="opcion" id="opcion" value="1">
                 <input type="hidden" name="action" value="devolverRadicadoForm">
-                <p>
+                <div style="display: flex; align-items: center;">
                     <input type="submit" id="devolverItem" class="button" value="Realizar devolucion >>"/>
-                </p>            
+                    <div style="width: 16px; height: 16px; padding-left: 5px;">
+                        <img id="imgloading-agregar" src="../../images/icons/loading.gif" style="display: none;" />
+                    </div>
+                </div>            
             </form>
         </div>
         <div id="box2" style="display:none;">
@@ -528,6 +486,89 @@ $.fn.eliminarEvidencias = function(e, pos, radicado_item_id){
         }
     });
 }
+$.fn.buscarCausales = function(e){
+    if ($(this).val() === '') return false;
+
+    const tipo_persona = $(this).val();
+
+$.ajax({
+    beforeSend: function(){
+        $('img#imgloading-observacion').show();
+    },
+    data: {
+        action: 'buscarCausales',
+        domain: 'radicados',
+        meth: 'js',
+        tipo_persona: tipo_persona
+    },
+    type: 'GET',
+    url: '../includes/Controller.php',
+    dataType: 'json',
+    success: function(dato){
+        if (dato.length <= 0) {
+            $('select[name="causaldevolucion"]').html('<option value="">--Seleccione observaci&oacute;n--</option>');
+            $('select[name="causaldevolucion"]').attr('disabled', true);
+            return false;
+        }
+
+        let strHtml = '<option value="">--Seleccione observaci&oacute;n--</option>';
+        for (let i = 0; i < dato.length; i++) {
+            strHtml += `<option value="${dato[i]['id']}">${dato[i]['descripcion']}</option>`;
+        }
+        $('select[name="causaldevolucion"]').html(strHtml);
+        $('select[name="causaldevolucion"]').removeAttr('disabled');
+    },
+    complete: function(jqXHR, textStatus){
+        $('img#imgloading-observacion').hide();
+    },
+    error: function(xhr, ajaxOptions, thrownError){
+        console.log(xhr, ajaxOptions, thrownError);
+        $('p.text-center > span').html("Error(cargueBaseGestorVentas): "+xhr.status+" Error: "+xhr.responseText);
+        $.facebox({
+            div: '#box-errores'
+        });
+    }
+});
+};
+$.fn.buscarObservacion = function(){
+    if ($(this).val() === '') return false;
+
+    const causal_id = $(this).val();
+
+    $.ajax({
+        beforeSend: function(){
+            $('img#imgloading-observacion').show();
+        },
+        data: {
+            action: 'buscarObservacionesCausal',
+            domain: 'radicados',
+            meth: 'js',
+            causal_id: causal_id
+        },
+        type: 'GET',
+        url: '../includes/Controller.php',
+        dataType: 'json',
+        success: function(dato){
+            if (dato.length <= 0) return false;
+
+            let strHtml = '';
+            for (let i = 0; i < dato.length; i++) {
+                strHtml += `<option value="${dato[i]['id']}">${dato[i]['descripcion']}</option>`;
+            }
+            $('select[name="causalobservacion[]"]').html(strHtml);
+        },
+        complete: function(jqXHR, textStatus){
+            $('img#imgloading-observacion').hide();
+        },
+        error: function(xhr, ajaxOptions, thrownError){
+            console.log(xhr, ajaxOptions, thrownError);
+            $('p.text-center > span').html("Error(cargueBaseGestorVentas): "+xhr.status+" Error: "+xhr.responseText);
+            $.facebox({
+                div: '#box-errores'
+            });
+        }
+    });
+};
 </script>
 </body>
 </html>
