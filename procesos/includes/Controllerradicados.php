@@ -7,8 +7,6 @@ require_once PATH_CCLASS . DS . 'radicados.class.php';
 require_once PATH_COMPOSER . DS . 'vendor' . DS . 'autoload.php';
 
 use PHPMailer\PHPMailer\PHPMailer;
-use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 
 function validarCliente2Action($request){
@@ -18,12 +16,11 @@ function validarCliente2Action($request){
         echo json_encode(['error'=> 'Este cliente no se puede radicar con documento especial porque <strong>no cuenta con Formulario de Conocimiento del Cliente de Vinculación Inicial</strong>.']);
 }
 function cargarArchivoAction($request){
-   $sucursal = str_replace(' ', '_', trim($request['sucursal_sub']));
+    $sucursal = str_replace(' ', '_', trim($request['sucursal_sub']));
 
     $documentoCliente = trim($request['documento_cli']);
-    $pathSucursal = VIRTUALES.DS.$sucursal;
-    $pathUpload = $pathSucursal.DS.$documentoCliente;
-    $error_fo = "";
+    $pathSucursal = VIRTUALES . DS . $sucursal;
+    $pathUpload = $pathSucursal . DS . $documentoCliente;
     $error_fi = "";
     $sonPdfs = true;
     $pdfFiles = [];
@@ -31,44 +28,37 @@ function cargarArchivoAction($request){
     foreach($request['FILES']['archivos_cliente']['tmp_name'] as $key => $value){
         if (!file_exists($pathSucursal)) {
             if(!mkdir($pathSucursal)){
-                $error_fo .= "No se creo carpeta ".$sucursal." {1}<br>";
-            }else{
-                chown($pathSucursal, 'apache');
-                if (!file_exists($pathUpload)) {
-                    if (!mkdir($pathUpload))
-                        $error_fo .= "No se creo carpeta ".$documentoCliente." {2}<br>";
-                    chown($pathUpload, 'apache');
-                }
+                echo json_encode(['error'=> 'Ocurrio un error al momento de intentar el directorio para la sucursal de los documentos que intenta cargar, por favor contacte con el administrador.']);
+                exit;
             }
-        }else{
-            if (!file_exists($pathUpload)) {
-                if (!mkdir($pathUpload))
-                    $error_fo .= "No se creo carpeta ".$documentoCliente." {3}<br>";
-                chown($pathUpload, 'apache');
+            chown($pathSucursal, 'apache');
+        }
+        if (!file_exists($pathUpload)) {
+            if (!mkdir($pathUpload)) {
+                echo json_encode(['error'=> 'Ocurrio un error al momento de intentar el directorio del cliente para los documentos que intenta cargar, por favor contacte con el administrador.']);
+                exit;
             }
+            chown($pathUpload, 'apache');
         }
 
-        if(mime_content_type($value) == 'application/pdf'){
-            $pos = '0'.($key + 1);
-            if(($key + 1) > 9)
-                $pos = ($key + 1);
-
-            $newFile = $pathUpload.DS.strtolower($sucursal)."_".$documentoCliente."_".$pos.".pdf";
-            if(file_exists($newFile)){
-                unlink($newFile);
-            }
-            if(!move_uploaded_file($value, $newFile)){
-                $error_fi .= "No se pudo crear el archivo ".$request['FILES']['load_file']['name'][$key]." por favor verifique<br>";
-            }else
-                $pdfFiles[] = $newFile;
-        }else{
+        if(mime_content_type($value) !== 'application/pdf'){
             $error_fi .= "El archivo con nombre ".$request['FILES']['load_file']['name'][$key]." no es un archivo con formato PDF, y por tal razon no se cargo.<br>";
+            continue;
         }
+
+        $pos = ($key + 1) > 9 ? ($key + 1) : '0' . ($key + 1);
+
+        $newFile = $pathUpload . DS . strtolower($sucursal) . "_" . $documentoCliente . "_" . $pos . ".pdf";
+        if (file_exists($newFile)) {
+            unlink($newFile);
+        }
+        if (!move_uploaded_file($value, $newFile)) {
+            $error_fi .= "No se pudo crear el archivo ".$request['FILES']['load_file']['name'][$key]." por favor verifique<br>";
+            continue;
+        }
+        $pdfFiles[] = $newFile;
     }
     $mensaje = "";
-    if(!empty($error_fo)){
-        $mensaje .= "Ocurrieron los siguentes errores:<br>".$error_fo;
-    }
     if(!empty($error_fi)){
         if(empty($mensaje))
             $mensaje .= "Ocurrieron los siguentes errores:<br>";
@@ -81,32 +71,31 @@ function cargarArchivoAction($request){
 
     $pathConvertir = $pathUpload.DS.'*';
     $pdfFileOut = strtoupper($sucursal)."_".$documentoCliente."_TODO.pdf";
-    if(!empty($pdfFiles)){
-        if(count($pdfFiles) > 1){
-            $pdfStr = implode(' ', $pdfFiles);
-
-            $strSalida2 = exec('/usr/bin/gs -q -dNOPAUSE -dBATCH -sDEVICE=pdfwrite -sOutputFile='.$pathUpload.DS.$pdfFileOut.' '.$pdfStr.' 2>&1', $resultExec2, $intExec2);
-
-            if(($intExec2 == 0) && (strpos(strtolower($strSalida2), 'error') === false && strpos(strtolower(json_encode($resultExec2)), 'error') === false)){
-                foreach ($pdfFiles as $pdfFile) {
-                    unlink($pdfFile);
-                }
-                $pathConvertir = $pathUpload.DS.$pdfFileOut;
-            }else{
-                $fh2 = fopen(PATH_LOGS.DS.'errores_conversionPDF_salida.log', "a");
-                fputcsv($fh2, array('Error_conversion', date('Y-m-d H:i:s'), $pdfFileOut, json_encode(scandir($pathUpload)), json_encode($resultExec2), $strSalida2), '|');
-                fclose($fh2);
-            }
-        }else if(count($pdfFiles) == 1){
-            if(!rename($pdfFiles[0], $pathUpload.DS.$pdfFileOut)){
-                $fh2 = fopen(PATH_LOGS.DS.'errores_conversionPDF_salida.log', "a");
-                fputcsv($fh2, array('Error_renombre', date('Y-m-d H:i:s'), $pdfFileOut, json_encode(scandir($pathUpload)), '{}'), '|');
-                fclose($fh2);
-            }
-        }
-    }else{
+    if (empty($pdfFiles)) {
         echo json_encode(['error'=> 'No se encontraron archivos PDF para unificar, por favor verifique o contacte con el administrador.']);
         exit;
+    }
+    if(count($pdfFiles) > 1){
+        $pdfStr = implode(' ', $pdfFiles);
+
+        $strSalida2 = exec('/usr/bin/gs -q -dNOPAUSE -dBATCH -sDEVICE=pdfwrite -sOutputFile='.$pathUpload.DS.$pdfFileOut.' '.$pdfStr.' 2>&1', $resultExec2, $intExec2);
+
+        if(($intExec2 == 0) && (strpos(strtolower($strSalida2), 'error') === false && strpos(strtolower(json_encode($resultExec2)), 'error') === false)){
+            foreach ($pdfFiles as $pdfFile) {
+                unlink($pdfFile);
+            }
+            $pathConvertir = $pathUpload.DS.$pdfFileOut;
+        }else{
+            $fh2 = fopen(PATH_LOGS.DS.'errores_conversionPDF_salida.log', "a");
+            fputcsv($fh2, array('Error_conversion', date('Y-m-d H:i:s'), $pdfFileOut, json_encode(scandir($pathUpload)), json_encode($resultExec2), $strSalida2), '|');
+            fclose($fh2);
+        }
+    }else if(count($pdfFiles) == 1){
+        if(!rename($pdfFiles[0], $pathUpload.DS.$pdfFileOut)){
+            $fh2 = fopen(PATH_LOGS.DS.'errores_conversionPDF_salida.log', "a");
+            fputcsv($fh2, array('Error_renombre', date('Y-m-d H:i:s'), $pdfFileOut, json_encode(scandir($pathUpload)), '{}'), '|');
+            fclose($fh2);
+        }
     }
     try{
         Radicados::inserFileRadicado("", $documentoCliente, $pdfFileOut, $pathUpload);
@@ -119,9 +108,9 @@ function cargarArchivoAction($request){
     }
 }
 function creaciondeRadicadoAction($request){
-    if(!isset($_SESSION['id']) || empty($_SESSION['id']) || $_SESSION['id'] === ''){
+    if (!isset($_SESSION['id']) || empty($_SESSION['id']) || $_SESSION['id'] === '') {
         echo json_encode(array('error' => 'Su sesi&oacute;n a expirado, para no perder la informaci&oacute;n que hasta el momento a procesado, por favor abra una nueva pestaña en el navegador sin cerrar esta y en &eacute;sta nueva pestaña inicie sesion, luego regrese a esta pestaña e intente crear el radicado, en caso de que no se cree el nuevo radicado, contacte con el administrador.'));
-        exit();
+        exit;
     }
     $request['id_usuarioenvia'] = $_SESSION['id'];
     $radicado = new Radicados();
@@ -132,7 +121,7 @@ function creaciondeRadicadoAction($request){
     }
     $clientes = explode('||', $request['clientes']);
     $errorCliente = '';
-    foreach($clientes as $key => $value){
+    foreach ($clientes as $key => $value) {
         $cliente = explode('|', $value);
 
         if (count($cliente) !== 4) {
@@ -150,47 +139,40 @@ function creaciondeRadicadoAction($request){
         unset($cliente);
     }
     $email = enviarMailSeguimiento($radicado);
-    $errormail = '';
-    if ($email != "ok") {
-        $errormail = '<br>pero ocurrio el siguiente error: ' . $email;
-    }
-    echo json_encode(array('exito' => 'Radicado ingresado exitosamente con sus clientes...'.$errormail.$errorCliente, 'radicado' => $radicado));
+    $errormail = $email != "ok" ? '<br>pero ocurrio el siguiente error: ' . $email : '';
+    echo json_encode(['exito' => 'Radicado ingresado exitosamente con sus clientes...' . $errormail . $errorCliente, 'radicado' => $radicado]);
 }
 function creaciondeRadicadoFisicoAction($request){
-    if(!isset($_SESSION['id']) || empty($_SESSION['id']) || $_SESSION['id'] === ''){
+    if (!isset($_SESSION['id']) || empty($_SESSION['id']) || $_SESSION['id'] === '') {
         echo json_encode(array('error' => 'Su sesi&oacute;n a expirado, para no perder la informaci&oacute;n que hasta el momento a procesado, por favor abra una nueva pestaña en el navegador sin cerrar esta y en &eacute;sta nueva pestaña inicie sesion, luego regrese a esta pestaña e intente crear el radicado, en caso de que no se cree el nuevo radicado, contacte con el administrador.'));
-        exit();
+        exit;
     }
     $request['id_usuarioenvia'] = $_SESSION['id'];
     $radicado = new Radicados();
     $radicado->setAtributos($request);
-    if ($radicado->registrar()) {
-        $clientes = explode('||', $request['clientes']);
-        $errorCliente = '';
-        foreach($clientes as $key => $value){
-            $cliente = explode('|', $value);
-            if(count($cliente) == 3){
-                if(!$radicado->agregarItems($cliente[0], $cliente[1], $cliente[2])){
-                    if(empty($errorCliente))
-                        $errorCliente = '<br>Ocurrieron el/los siguientes errores:<br>';
-                    $errorCliente .= 'No se pudo agregar el cliente con numero de documento: '.$cliente[1].'<br>';
-                }
-            }else{
-                if(empty($errorCliente))
-                    $errorCliente = '<br>Ocurrieron el/los siguiente/s error/es:<br>';
-                $errorCliente .= 'No se pudo agregar el cliente con datos: {'.$value.'}<br>';
-            }
-            unset($cliente);
+    if (!$radicado->registrar()) {
+        echo json_encode(['error' => 'Ocurrio un error al momento de insertar el radicado']);
+        exit;
+    }
+    $clientes = explode('||', $request['clientes']);
+    $errorCliente = '';
+    foreach ($clientes as $key => $value) {
+        $cliente = explode('|', $value);
+        if (count($cliente) !== 3) {
+            if (empty($errorCliente)) $errorCliente = '<br>Ocurrieron el/los siguiente/s error/es:<br>';
+            $errorCliente .= 'No se pudo agregar el cliente con datos: {'.$value.'}<br>';
+            continue;
         }
-        $email = "";
-        $email = enviarMailSeguimiento($radicado);
-        $errormail = '';
-        if ($email != "ok") {
-            $errormail = '<br>pero ocurrio el siguiente error: '.$email;
+        if (!$radicado->agregarItems($cliente[0], $cliente[1], $cliente[2])) {
+            if (empty($errorCliente)) $errorCliente = '<br>Ocurrieron el/los siguientes errores:<br>';
+            $errorCliente .= 'No se pudo agregar el cliente con numero de documento: ' . $cliente[1] . '<br>';
         }
-        echo json_encode(array('exito' => 'Radicado ingresado exitosamente con sus clientes...'.$errormail.$errorCliente, 'radicado' => $radicado));
-    }else
-        echo json_encode(array('error' => 'Ocurrio un error al momento de insertar el radicado'));
+        unset($cliente);
+    }
+    $email = "";
+    $email = enviarMailSeguimiento($radicado);
+    $errormail = $email != "ok" ? '<br>pero ocurrio el siguiente error: ' . $email : '';
+    echo json_encode(['exito' => 'Radicado ingresado exitosamente con sus clientes...' . $errormail . $errorCliente, 'radicado' => $radicado]);
 }
 function busquedadeRadicadoAction($request){
     $radicado = new Radicados();
@@ -265,62 +247,27 @@ function enviarMailSeguimiento($radicado) {
     }
     return !$mail->Send() ? "Mailer Error: " . $mail->ErrorInfo : "ok";
 }
-function tipoCSV($tipo){
-    switch ($tipo) {
-        case 'text/comma-separated-values':
-            return true;
-            break;
-        case 'text/csv':
-            return true;
-            break;
-        case 'application/csv':
-            return true;
-            break;
-        case 'application/excel':
-            return true;
-            break;
-        case 'application/vnd.ms-excel':
-            return true;
-            break;
-        case 'application/vnd.msexcel':
-            return true;
-            break;
-        case 'text/anytext':
-            return true;
-            break;
-        case 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':
-            return true;
-            break;
-        
-        default:
-            return false;
-            break;
-    }
-    return false;
+function tipoCSV($tipo)
+{
+    return in_array($tipo, ['text/comma-separated-values', 'text/csv', 'application/csv', 'application/excel', 'application/vnd.ms-excel', 'application/vnd.msexcel', 'text/anytext', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet']);
 }
-function getEstados2($estado, $tipo = 0) {
-    switch ($estado) {
-        case '0':
-            return 'Radicado';
-            break;
-        case '1':
-            if($tipo == 0)
-                return 'No llego fisico';
-            elseif($tipo == 1 || $tipo == 5)
-                return 'No se adjunto documento';
-            else
-                return 'No llego fisico';
-            break;
-        case '2':
-            return 'Aprobado';
-            break;
-        case '3':
-            return 'Devuelto';
-            break;
-        case '4':
-            return 'Cancelado';
-            break;
-    }
+function getEstados2(int $estado, int $tipo = 0): string
+{
+    $estados = ['Radicado', null, 'Aprobado', 'Devuelto', 'Cancelado'];
+    return $estado !== 1 
+        ? ($estados[$estado] ?? 'Radicado') 
+        : (in_array($tipo, [1, 5]) ? 'No se adjunto documento' : 'No llego fisico');
+}
+function buscarCausalesAction(array $request)
+{
+    $resp = Radicados::obtenerCausales($request['tipo_persona']);
+    echo json_encode($resp);
+}
+
+function buscarObservacionesCausalAction(array $request)
+{
+    $resp = Radicados::obtenerObservacionCausales(intval($request['causal_id']));
+    echo json_encode($resp);
 }
 /*
 define('KB', 1024);

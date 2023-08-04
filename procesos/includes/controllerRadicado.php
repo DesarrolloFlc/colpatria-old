@@ -26,32 +26,31 @@ function creaciondeRadicado($request) {
     $radicado = new Radicados();
     $radicado->setAtributos($request);
     if ($radicado->registrar()) {
-        $clientes = explode('|', $request['clientes']);
-        $tam = count($clientes) / 3; //2
-        $j = 0;
-        $i = 0;
-        $pas = true;
-        while ($i < $tam && $pas == true) {
-            if ($radicado->agregarItems($clientes[$j], $clientes[($j + 1)], $clientes[($j + 2)])) {
-                $radicado->updateFilesRadicado($clientes[($j + 1)]);
-                $i++;
-                $j = $j + 3; //2
-                $pas = true;
-            } else
-                $pas = false;
-        }
-        $email = "";
-        $email = enviarMailSeguimiento($radicado); //SKRV
-        $errormail = '';
-        if ($email != "ok") {
-            $errormail = ' pero ocurrio el siguiente error: '.$email;
-        }
-        if ($pas == true) {
-            echo json_encode(array('exito' => 'Radicado ingresado exitosamente con sus clientes...'.$errormail, 'radicado' => $radicado));
+        echo json_encode(['errorr' => 'Ocurrio un error al momento de insertar el radicado']);
+    }
+    $clientes = explode('|', $request['clientes']);
+    $tam = count($clientes) / 3; //2
+    $j = 0;
+    $i = 0;
+    $pas = true;
+    while ($i < $tam && $pas === true) {
+        if ($radicado->agregarItems($clientes[$j], $clientes[($j + 1)], $clientes[($j + 2)])) {
+            $radicado->updateFilesRadicado($clientes[($j + 1)]);
+            $i++;
+            $j = $j + 3; //2
+            $pas = true;
         } else
-            echo json_encode(array('errorr' => 'Ocurrio un error al momento de insertar clientes'));
-    }else
-        echo json_encode(array('errorr' => 'Ocurrio un error al momento de insertar el radicado'));
+            $pas = false;
+    }
+    $email = "";
+    $email = enviarMailSeguimiento($radicado); //SKRV
+    $errormail = '';
+    if ($email != "ok") {
+        $errormail = ' pero ocurrio el siguiente error: '.$email;
+    }
+    echo $pas === true 
+        ? json_encode(array('exito' => 'Radicado ingresado exitosamente con sus clientes...' . $errormail, 'radicado' => $radicado))
+        : json_encode(array('errorr' => 'Ocurrio un error al momento de insertar clientes'));
 }
 
 function enviarMailSeguimiento($radicado) {
@@ -180,7 +179,7 @@ function aprobarClientes($request)
             $pos_cli = strlen($imas) > 1 ? $i : "0" . $i;
 
             $error_fo = "";
-            $cli_fil = Radicados::getClienteItem($cliitem[0]);
+            $cli_fil = $radicado->getClienteItem($cliitem[0]);
             if ($radicado->updateFilesRadicadoNombre($cli_fil['documento'], $pos_cli)) {
                 $upload_folder = PATH_SITE . DS . 'virtuales_doc' . DS . 'virtuales';
                 $upload_folder_ = PATH_SITE . DS . 'virtuales_doc' . DS . 'virtuales_aceptados';
@@ -245,7 +244,10 @@ function enviarMailAprobacion($radicado) {
             if ($cliente['estado'] == 3) {
                 $body .= ", <strong>".getEstados2($cliente['estado'], $radicado->getTipo())." por las siguientes razones:</strong></p>";
                 if ($devolucion = $radicado->getDevolucion($cliente['documento'])) {
-                    $body .= "<ul type='disk'><li>".$devolucion['causal'].": ".str_replace('<br>', ', ', $devolucion['observation'])."</li></ul>";
+                    //$body .= "<ul type='disk'><li>".$devolucion['causal'].": ".str_replace('<br>', ', ', $devolucion['observation'])."</li></ul>";
+                    $causal = is_null($devolucion['causal_id']) ? $devolucion['causal'] : $devolucion['causal_str'];
+                    $observation = $devolucion['observaciones_causal'] . "<br>" . str_replace('<br>', ', ', $devolucion['observation']);
+                    $body .= "<ul type='disk'><li>" . $causal . ": " . $observation . "</li></ul>";
                 }
             } else {
                 $body .= ", <strong>".getEstados2($cliente['estado'], $radicado->getTipo())."</strong>";
@@ -306,24 +308,18 @@ function enviarMailAprobacion($radicado) {
 }
 
 function devolverRadicadoForm($request) {
-    $radicado = new Radicados();
-    $radicado->setId($request['radicado_id']);
-    if (!$radicado->getRadicado()) {
+    $rad = new Radicados();
+    $rad->setId($request['radicado_id']);
+    if (!$rad->getRadicado()) {
         echo json_encode(['errorr' => 'No se pudo cargar la informacion del radicado.']);
         exit;
     }
-    $observacion = '';
-    $cont = 0;
-    foreach ($request['observation'] as $observation) {
-        $observacion .= $cont == 0 ? $observation : "<br>" . $observation;
-        $cont++;
-    }
-    $cliente = Radicados::getClienteItem($request['clienteid_dev']);
-    if (!$radicado->insertarDevolucion($cliente, $request['causaldevolucion'], $observacion, $request['persontype'])){
+    $cliente = $rad->getClienteItem($request['clienteid_dev']);
+    if (!$rad->insertarDevolucion($cliente, $request['causaldevolucion'], $request['causalobservacion'], $request['observation'], $request['persontype'])){
         echo json_encode(['errorr' => 'No se pudo guardar la devolucion.']);
         exit;
     }
-    enviarMailDevuelto($radicado, $cliente);
+    enviarMailDevuelto($rad, $cliente);
     echo json_encode(['exito' => 'Devolucion guardada satisfactoriamente.']);
 }
 
@@ -351,8 +347,11 @@ function enviarMailDevuelto($radicado, $cliente) {
     $body .= "<p>Detalle del cambio de estado:</p><br>";
     $body .= "<p>".$cliente['descripcion']." con documento # ".$cliente['documento'];
     $body .= ", <strong>".getEstados2('3', $radicado->getTipo())." por las siguientes razones:</strong></p>";
-    if($devolucion = $radicado->getDevolucion($cliente['documento'])){
-        $body .= "<ul type='disk'><li>".$devolucion['causal'].": ".str_replace('<br>', ', ', $devolucion['observation'])."</li></ul>";
+    if ($devolucion = $radicado->getDevolucion($cliente['documento'])) {
+        $causal = is_null($devolucion['causal_id']) ? $devolucion['causal'] : $devolucion['causal_str'];
+        //$observation = is_null($devolucion['causal_id']) ? str_replace('<br>', ', ', $devolucion['observation']) : $devolucion['causal_observacion_str'];
+        $observation = $devolucion['observaciones_causal'] . "<br>" . str_replace('<br>', ', ', $devolucion['observation']);
+        $body .= "<ul type='disk'><li>" . $causal . ": " . $observation . "</li></ul>";
     }
     $body .= "</p>";
     $body .= "<br>
@@ -362,22 +361,15 @@ function enviarMailDevuelto($radicado, $cliente) {
 
     $mail = new PHPMailer();
 
-    //$mail->IsSendmail();
-    //indico a la clase que use SMTP
     $mail->IsSMTP();
     //permite modo debug para ver mensajes de las cosas que van ocurriendo
     //$mail->SMTPDebug = 2;
-    //Debo de hacer autenticación SMTP
     $mail->SMTPAuth = true;
     $mail->SMTPSecure = "ssl";
-    //indico el servidor de Gmail para SMTP
     $mail->Host = MAIL_HOST;
-    //indico el puerto que usa Gmail
     $mail->Port = MAIL_PORT;
-    //indico un usuario / clave de un usuario de gmail
     $mail->Username = MAIL_USER;
     $mail->Password = MAIL_PASS;
-    //indico creador del mensaje
 
     $mail->SetFrom(MAIL_USER, MAIL_SUBJECT);
     $mail->Subject = "Radicado #".$radicado->getId()." cambio de estado, aplicativo Doc Finder.";
