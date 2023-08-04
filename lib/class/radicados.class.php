@@ -400,17 +400,17 @@ class Radicados
     }
 
     public static function getJustFuncionario() {
-        $conexion = new Conexion();
+        $conn = new Conexion();
         $SQL = "SELECT name
 				FROM user
 				WHERE id = " . $_SESSION['id'];
-        $conexion->consultar($SQL);
-        if ($conexion->getNumeroRegistros() !== 1) {
-            $conexion->desconectar();
+        $conn->consultar($SQL);
+        if ($conn->getNumeroRegistros() !== 1) {
+            $conn->desconectar();
             return false;
         }
-        $consulta = $conexion->sacarRegistro();
-        $conexion->desconectar();
+        $consulta = $conn->sacarRegistro();
+        $conn->desconectar();
         return $consulta[0];
     }
 
@@ -430,8 +430,8 @@ class Radicados
 
     public static function validaFestivos($id) {
         $sql = "SELECT fecha_creacion FROM radicados WHERE tipo IN ('0', '2') and estado = '0' and id = " . $id;
-        $conexion = new Conexion();
-        $conexion->consultar($sql);
+        $conn = new Conexion();
+        $conn->consultar($sql);
         $dactual = [
             "dia" => date('d'),
             "mes" => date('m'),
@@ -448,12 +448,12 @@ class Radicados
         $fcorridos = $sd->getFestivosCorridos();
         $festables = $sd->getFestivosFijos();
 
-        if ($conexion->getNumeroRegistros() <= 0) {
-            $conexion->desconectar();
+        if ($conn->getNumeroRegistros() <= 0) {
+            $conn->desconectar();
             return 0;
         }
         $count = 0;
-        while ($consulta = $conexion->sacarRegistro()) {
+        while ($consulta = $conn->sacarRegistro()) {
             if ($dactual["anio"] !== date('Y', strtotime($consulta["fecha_creacion"]))) continue;
 
             $dcreacion = [
@@ -512,22 +512,22 @@ class Radicados
                 }
             }
         }
-        $conexion->desconectar();
+        $conn->desconectar();
         return $count;
     }
 
     public static function radicadosNoAprobados() {
-        $conexion = new Conexion();
+        $conn = new Conexion();
         $fecha = date('Y-m-d');
         $SQL = "SELECT id, id_usuarioenvia, DATEDIFF('$fecha', fecha_creacion) AS diferencia
 				FROM radicados
 				WHERE tipo IN ('0', '2') AND estado = '0'";
-        $conexion->consultar($SQL);
-        if ($conexion->getNumeroRegistros() <= 0) {
+        $conn->consultar($SQL);
+        if ($conn->getNumeroRegistros() <= 0) {
             return false;
         }
         $array = [];
-        while (($consulta = $conexion->sacarRegistro())) {
+        while (($consulta = $conn->sacarRegistro())) {
             $diferencia = $consulta['diferencia'] - self::validaFestivos($consulta['id']);
             if ($consulta['diferencia'] <= 3) continue;
 
@@ -543,45 +543,73 @@ class Radicados
     }
 
     public static function verificarNotificacionDia() {
-        $conexion = new Conexion();
+        $conn = new Conexion();
         $fecha = date('Y-m-d');
         $SQL = "SELECT * FROM radicados_recordatorio 
 				WHERE fecha = '$fecha'";
-        $conexion->consultar($SQL);
-        $resp = $conexion->getNumeroRegistros() > 0;
-        $conexion->desconectar();
+        $conn->consultar($SQL);
+        $resp = $conn->getNumeroRegistros() > 0;
+        $conn->desconectar();
         return $resp;
     }
 
     public static function insertarNotificacionDia() {
-        $conexion = new Conexion();
+        $conn = new Conexion();
         $fecha = date('Y-m-d');
         $SQL = "INSERT INTO radicados_recordatorio (fecha) VALUES ('$fecha')";
-        $resp = $conexion->ejecutar($SQL);
-        $conexion->desconectar();
+        $resp = $conn->ejecutar($SQL);
+        $conn->desconectar();
         return $resp;
     }
 
-    public function insertarDevolucion($cliente, $causal, $observation, $persontype) {
-        $id_user = $_SESSION['id'];
+    public function insertarDevolucion($cliente, $causal, $causalobservacion, $observation, $persontype) {
+        $observacionesCausal = $this->obtenerTextoDevoluciones($causalobservacion);
         $SQL = "INSERT INTO workflow
 				(
-					id_user, causal, id_official, observation, status, persontype, documento, nombre, id_radicado, id_sucursal, id_area, lote
+					id_user, causal, causal_id, causal_observacion_id, observaciones_causal, id_official, observation, status, persontype, documento, nombre, id_radicado, id_sucursal, id_area, lote
 				)
 				VALUES
 				(
-					$id_user, '$causal', " . $this->id_usuarioenvia . ", '$observation', 1, $persontype, '" . $cliente['documento'] . "', 
-					'".str_replace("'", "´", $cliente['descripcion']). "', " . $this->id . ", " . $this->id_sucursal . ", " . $this->id_sucursal . ", " . $this->id . "
+                    :id_user, :causal, :causal_id, :causal_observacion_id, :observaciones_causal, :id_official, :observation, :status, :persontype, :documento, :nombre, :id_radicado, :id_sucursal, :id_area, :lote
 				)";
-        return $this->conn->ejecutar($SQL);
+        return $this->conn->ejecutar($SQL, [
+            ':id_user'=> $_SESSION['id'], 
+            ':causal'=> "", 
+            ':causal_id'=> $causal, 
+            ':causal_observacion_id'=> "NULL",
+            ':observaciones_causal'=> mb_strtoupper($observacionesCausal),
+            ':id_official'=> $this->id_usuarioenvia, 
+            ':observation'=> mb_strtoupper($observation), 
+            ':status'=> 1, 
+            ':persontype'=> $persontype, 
+            ':documento'=> $cliente['documento'], 
+            ':nombre'=> str_replace("'", "´", $cliente['descripcion']), 
+            ':id_radicado'=> $this->id, 
+            ':id_sucursal'=> $this->id_sucursal, 
+            ':id_area'=> $this->id_sucursal, 
+            ':lote'=> $this->id
+        ]);
     }
 
     public function getDevolucion($documento) {
-        $SQL = "SELECT * FROM workflow
-				WHERE documento = '$documento'
-				AND id_radicado = " . $this->id . "
-				ORDER BY date_created DESC
-				LIMIT 1";
+        $SQL = "SELECT w.*, c.descripcion AS causal_str, o.descripcion AS causal_observacion_str
+                  FROM workflow AS w
+                  LEFT JOIN param_causal AS c ON(c.id = w.causal_id)
+                  LEFT JOIN param_causal_observacion AS o ON(o.id = w.causal_observacion_id)
+				 WHERE w.documento = :documento
+				   AND w.id_radicado = :id_radicado
+				 ORDER BY w.date_created DESC
+				 LIMIT 1";
+        $this->conn->consultar($SQL, [':documento'=> $documento, ':id_radicado'=> $this->id]);
+        if ($this->conn->getNumeroRegistros() !== 1) {
+            return false;
+        }
+        $row = $this->conn->sacarRegistro('str');
+        return $row;
+    }
+
+    public function getClienteItem($id_cliente) {
+        $SQL = "SELECT * FROM radicados_items WHERE id = " . $id_cliente;
         $this->conn->consultar($SQL);
         if ($this->conn->getNumeroRegistros() !== 1) {
             return false;
@@ -590,25 +618,12 @@ class Radicados
         return $row;
     }
 
-    public static function getClienteItem($id_cliente) {
-        $conexion = new Conexion();
-        $SQL = "SELECT * FROM radicados_items WHERE id = " . $id_cliente;
-        $conexion->consultar($SQL);
-        if ($conexion->getNumeroRegistros() !== 1) {
-            $conexion->desconectar();
-            return false;
-        }
-        $row = $conexion->sacarRegistro();
-        $conexion->desconectar();
-        return $row;
-    }
-
     public static function inserFileRadicado($nombre, $documento, $pdfFile = '', $pathUpload = '') {
         if($pdfFile != '' && $pathUpload != ''){
             if(file_exists($pathUpload.DS.$pdfFile))
                 $nombre = $pdfFile;
         }
-        $conexion = new Conexion();
+        $conn = new Conexion();
         $SQL = "INSERT INTO radicados_files
 				(
 					nombre, documento 
@@ -617,8 +632,8 @@ class Radicados
 				(
 					'$nombre', '$documento'
 				)";
-        $resp = $conexion->ejecutar($SQL);
-        $conexion->desconectar();
+        $resp = $conn->ejecutar($SQL);
+        $conn->desconectar();
         return $resp;
     }
 
@@ -664,7 +679,7 @@ class Radicados
         $comp = ' AND t2.id_sucursal = ' . $sucursal;
         if ($sucursal == 'T')
             $comp = '';
-        $conexion = new Conexion();
+        $conn = new Conexion();
         $SQL = "SELECT t1.id_radicados,
                        t2.tipo,
                        t4.sucursal,
@@ -682,16 +697,16 @@ class Radicados
                  INNER JOIN param_sucursales AS t4 ON(t2.id_sucursal = t4.id)
                  WHERE t2.fecha_creacion BETWEEN '$fec_ini 00:00:00' AND '$fec_fin 23:59:59'$comp
                  ORDER BY t2.id";
-        $conexion->consultar($SQL);
-        if ($conexion->getNumeroRegistros() > 0) {
+        $conn->consultar($SQL);
+        if ($conn->getNumeroRegistros() > 0) {
             $array = [];
-            while (($consulta = $conexion->sacarRegistro('str'))) {
+            while (($consulta = $conn->sacarRegistro('str'))) {
                 $array[] = $consulta;
             }
-            $conexion->desconectar();
+            $conn->desconectar();
             return $array;
         } else {
-            $conexion->desconectar();
+            $conn->desconectar();
             return false;
         }
     }
@@ -700,7 +715,7 @@ class Radicados
         $comp = ' AND t2.id_usuarioenvia = ' . $oficial;
         if ($oficial == 'T')
             $comp = '';
-        $conexion = new Conexion();
+        $conn = new Conexion();
         $SQL = "SELECT t1.id_radicados, t2.tipo, t4.sucursal, t3.name AS oficial, t1.documento, t1.descripcion,
 				t1.fecha_creacion, t2.fecha_envio, t2.fecha_recibido, t1.estado 
 				FROM radicados_items AS t1
@@ -709,22 +724,22 @@ class Radicados
 				INNER JOIN param_sucursales AS t4 ON(t2.id_sucursal = t4.id)
 				WHERE t2.fecha_creacion BETWEEN '$fec_ini 00:00:00' AND '$fec_fin 23:59:59'$comp				
 				ORDER BY t2.id";
-        $conexion->consultar($SQL);
-        if ($conexion->getNumeroRegistros() > 0) {
+        $conn->consultar($SQL);
+        if ($conn->getNumeroRegistros() > 0) {
             $array = [];
-            while (($consulta = $conexion->sacarRegistro())) {
+            while (($consulta = $conn->sacarRegistro())) {
                 $array[] = $consulta;
             }
-            $conexion->desconectar();
+            $conn->desconectar();
             return $array;
         } else {
-            $conexion->desconectar();
+            $conn->desconectar();
             return false;
         }
     }
 
     public static function getRadicadosDia($fecha) {
-        $conexion = new Conexion();
+        $conn = new Conexion();
         /* $SQL = "SELECT t1.id, t1.fecha_recibido, t2.sucursal, t2.sucursal, t1.utc, t3.name, t3.name, 
           COUNT(t4.id), IF(t1.tipo = 0, 'Fisico', 'Virtual'), t1.fecha_creacion
           FROM radicados AS t1
@@ -742,47 +757,47 @@ class Radicados
 				WHERE t1.estado = 2
 					AND t1.fecha_recibido = '$fecha'
 					GROUP BY t1.id";
-        $conexion->consultar($SQL);
-        if ($conexion->getNumeroRegistros() > 0) {
+        $conn->consultar($SQL);
+        if ($conn->getNumeroRegistros() > 0) {
             $array = [];
-            while (($consulta = $conexion->sacarRegistro())) {
+            while (($consulta = $conn->sacarRegistro())) {
                 $array[] = $consulta;
             }
-            $conexion->desconectar();
+            $conn->desconectar();
             return $array;
         } else {
-            $conexion->desconectar();
+            $conn->desconectar();
             return false;
         }
     }
 
     public static function cancelRadicado($id_radicado) {
-        $conexion = new Conexion();
+        $conn = new Conexion();
         $hoy = date('Y-m-d');
         $SQL = "UPDATE radicados 
 				SET estado = '4', fecha_recibido = '$hoy'
 				WHERE id = $id_radicado
 				AND estado = '0'";
-        if ($conexion->ejecutar($SQL)) {
+        if ($conn->ejecutar($SQL)) {
             if (Radicados::cancelItemsRadicado($id_radicado)) {
-                $conexion->desconectar();
+                $conn->desconectar();
                 return true;
             } else {
-                $conexion->desconectar();
+                $conn->desconectar();
                 return false;
             }
         } else {
-            $conexion->desconectar();
+            $conn->desconectar();
             return false;
         }
     }
 
     public static function cancelItemsRadicado($id_radicado) {
-        $conexion = new Conexion();
+        $conn = new Conexion();
         $SQL = "UPDATE radicados_items 
 				SET estado = '4'
 				WHERE id_radicados = $id_radicado";
-        if ($conexion->ejecutar($SQL))
+        if ($conn->ejecutar($SQL))
             return true;
         else
             return false;
@@ -805,19 +820,19 @@ class Radicados
     }
 
     public function updateRadicadoNombCliente($Ndocumento, $estado, $id_radicado, $item) {
-        $conexion = new Conexion();
+        $conn = new Conexion();
         $SQL = "UPDATE radicados_items SET documento = '" . $Ndocumento . "'
 				WHERE radicados_items.estado =" . $estado . " AND radicados_items.id_radicados =" . $id_radicado . " AND radicados_items.id =" . $item;
-        if ($conexion->ejecutar($SQL)) {
-            $conexion->desconectar();
+        if ($conn->ejecutar($SQL)) {
+            $conn->desconectar();
             return true;
         } else {
-            $conexion->desconectar();
+            $conn->desconectar();
             return false;
         }
     }
     public static function verificarCambioEstadoRadicado($documento, $id_radicado){
-        $conexion = new Conexion();
+        $conn = new Conexion();
         $SQL = "SELECT r.tipo, r.id_sucursal, r.utc, r.telefono, r.extension, r.id_usuarioenvia,
                        ri.id AS radicado_item_id, ri.documento, ri.descripcion, ri.id_radicados, ri.documento_especial, ri.estado
                   FROM radicados_items ri
@@ -826,30 +841,27 @@ class Radicados
                    AND ri.id_radicados = $id_radicado
 				   AND r.estado = '2'
                    AND ri.estado IN ('0', '1', '2', '3')";
-        if($conexion->consultar($SQL)){
-			if($conexion->getNumeroRegistros() > 0){
-				$consulta = $conexion->sacarRegistro();
-				$conexion->desconectar();
+        if($conn->consultar($SQL)){
+			if($conn->getNumeroRegistros() > 0){
+				$consulta = $conn->sacarRegistro();
+				$conn->desconectar();
 				return $consulta;
 			}else{
-				$conexion->desconectar();
+				$conn->desconectar();
 				return "No se encontraron resultados con los datos suministrados, por favor verifique.";
 			}
 		}else{
-			$conexion->desconectar();
+			$conn->desconectar();
 			return false;
 		}
     }
 
     public static function cambiarEstadoItemRadicado($id, $estado) {
-        $conexion = new Conexion();
+        $conn = new Conexion();
         $SQL = "UPDATE radicados_items 
-                SET estado = '$estado'
-                WHERE id = $id";
-        if ($conexion->ejecutar($SQL))
-            return true;
-        else
-            return false;
+                   SET estado = :estado
+                 WHERE id = :id";
+        return $conn->ejecutar($SQL, [':estado'=> $estado, ':id'=> $id]);
     }
     public function insertarMasivo($documento, $descripcion, $especial, $especial_str, $item){
         $insertado = $item === false ? 1 : 0;
@@ -866,5 +878,56 @@ class Radicados
     public static function getEstados($estado, $tipo = 0) {
         $estados = ['Radicado', [], 'Aprobado', 'Devuelto', 'Cancelado'];
         return $estado === 1 ? ($tipo == 1 || $tipo == 5 ? 'No se adjunto documento' : 'No llego fisico') : $estados[$estado] ?? 'Radicado';
+    }
+    public static function obtenerCausales(int $tipo_persona){
+        $conn = new Conexion();
+        $sql = "SELECT id, descripcion 
+                  FROM param_causal 
+                 WHERE tipo_persona = :tipo_persona
+                   AND estado = '0'";
+        $conn->consultar($sql, [':tipo_persona'=> $tipo_persona]);
+        if ($conn->getNumeroRegistros() <= 0) {
+            $conn->desconectar();
+            return [];
+        }
+        $objs = $conn->sacarTodoRegistro('str');
+        return $objs;
+    }
+    public static function obtenerObservacionCausales(int $causal_id){
+        $conn = new Conexion();
+        $sql = "SELECT id, descripcion 
+                  FROM param_causal_observacion 
+                 WHERE causal_id = :causal_id
+                   AND estado = :estado";
+        $conn->consultar($sql, [':causal_id'=> $causal_id, ':estado'=> '0']);
+        if ($conn->getNumeroRegistros() <= 0) {
+            $conn->desconectar();
+            return [];
+        }
+        $objs = $conn->sacarTodoRegistro('str');
+        return $objs;
+    }
+    public function obtenerTextoDevoluciones(array $ids)
+    {
+        $idtxt = "";
+        $i = 0;
+        foreach ($ids as $key => $value) {
+            $idtxt .= $i === 0 ? $value : ", " . $value;
+            $i++;
+        }
+        $sql = "SELECT id, descripcion  
+                  FROM param_causal_observacion 
+                 WHERE id IN ($idtxt)";
+        if (!$this->conn->consultar($sql)) return "";
+
+        if ($this->conn->getNumeroRegistros() <= 0) return "";
+
+        $texto = "";
+        $i = 0;
+        while ($row = $this->conn->sacarRegistro('str')) {
+            $texto .= $i === 0 ? $row['descripcion'] : ", " . $row['descripcion'];
+            $i++;
+        }
+        return $texto;
     }
 }
