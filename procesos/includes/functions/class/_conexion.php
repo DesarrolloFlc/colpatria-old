@@ -86,6 +86,16 @@ class Conexion
 			return $this->result->fetch(PDO::FETCH_BOTH);
 		}
 	}
+	public function sacarTodoRegistro(string $fetch_style = '')
+	{
+		if ($fetch_style == 'str') {
+			return $this->result->fetchAll(PDO::FETCH_ASSOC);
+		} else if ($fetch_style == 'num') {
+			return $this->result->fetchAll(PDO::FETCH_NUM);
+		} else {
+			return $this->result->fetchAll(PDO::FETCH_BOTH);
+		}
+	}
 	public function ultimaId()
 	{
 		return $this->link->lastInsertId();
