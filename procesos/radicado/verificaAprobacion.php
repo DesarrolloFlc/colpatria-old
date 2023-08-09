@@ -190,7 +190,7 @@ require_once dirname(dirname(dirname(__FILE__))) . "/template/general/header.php
                 </div>
                 <div style="padding-bottom: 10px;">
                     <label>Causal de devolución:</label>
-                    <select name="causalobservacion[]" id="causalobservacion" multiple style="width: 100%; height: 140px;">
+                    <select name="causalobservacion[]" id="causalobservacion" multiple style="width: 100%; height: 140px; overflow-x: scroll;">
                     </select>
                 </div>
                 <div style="padding-bottom: 10px;">
@@ -494,6 +494,7 @@ $.fn.buscarCausales = function(e){
 $.ajax({
     beforeSend: function(){
         $('img#imgloading-observacion').show();
+        $('select[name="causalobservacion[]"]').html('');
     },
     data: {
         action: 'buscarCausales',
@@ -538,6 +539,7 @@ $.fn.buscarObservacion = function(){
     $.ajax({
         beforeSend: function(){
             $('img#imgloading-observacion').show();
+            $('select[name="causalobservacion[]"]').html('');
         },
         data: {
             action: 'buscarObservacionesCausal',
