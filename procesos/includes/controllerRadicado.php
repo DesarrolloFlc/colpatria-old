@@ -120,14 +120,14 @@ function busquedadeRadicado($request) {
     $radicado->setId($request['id']);
     if (!$radicado->getRadicado()) {
         echo json_encode(['errorr' => 'El numero de radicado que intenta buscar no ha sido aun creado']);
+        exit;
     }
     $sucursal = $radicado->getSucursal();
     $funcionario = $radicado->getFuncionario();
-    if ($items = $radicado->getItemsDeRadicado(str_replace(" ", "_", $sucursal))) {
-        echo json_encode(['exito' => 'Radicado encontrado', 'radicado' => $radicado, 'sucursal' => $sucursal, 'funcionario' => $funcionario, 'items' => $items]);
-    } else {
-        echo json_encode(['exito' => 'Radicado encontrado', 'radicado' => $radicado, 'sucursal' => $sucursal, 'funcionario' => $funcionario, 'erroritems' => 'no se encontraron items']);
-    }
+    $items = $radicado->getItemsDeRadicado(str_replace(" ", "_", $sucursal));
+    echo $items === false
+        ? json_encode(['exito' => 'Radicado encontrado', 'radicado' => $radicado, 'sucursal' => $sucursal, 'funcionario' => $funcionario, 'erroritems' => 'no se encontraron items'])
+        : json_encode(['exito' => 'Radicado encontrado', 'radicado' => $radicado, 'sucursal' => $sucursal, 'funcionario' => $funcionario, 'items' => $items]);
 }
 
 function aprobarClientes($request) 
@@ -311,12 +311,12 @@ function devolverRadicadoForm($request) {
     $rad = new Radicados();
     $rad->setId($request['radicado_id']);
     if (!$rad->getRadicado()) {
-        echo json_encode(['errorr' => 'No se pudo cargar la informacion del radicado.']);
+        echo json_encode(['error' => 'No se pudo cargar la informacion del radicado.']);
         exit;
     }
     $cliente = $rad->getClienteItem($request['clienteid_dev']);
     if (!$rad->insertarDevolucion($cliente, $request['causaldevolucion'], $request['causalobservacion'], $request['observation'], $request['persontype'])){
-        echo json_encode(['errorr' => 'No se pudo guardar la devolucion.']);
+        echo json_encode(['error' => 'No se pudo guardar la devolucion.']);
         exit;
     }
     enviarMailDevuelto($rad, $cliente);
@@ -389,14 +389,10 @@ function enviarMailDevuelto($radicado, $cliente) {
     $mail->AddAddress(MAIL_USER, MAIL_SUBJECT);
     //$mail->AddAddress("daniel.chico@finlecobpo.com", "Daniel Chico P.");
 
-    if (isset($oficial['email_father']) && !empty($oficial['email_father']) && filter_var($oficial['email_father'], FILTER_VALIDATE_EMAIL))
+    if (isset($oficial['email_father']) && !empty($oficial['email_father']) && filter_var($oficial['email_father'], FILTER_VALIDATE_EMAIL)) {
         $mail->AddCC($oficial['email_father']);
-
-    if (!$mail->Send()) {
-        return "Mailer Error: ".$mail->ErrorInfo;
-    } else {
-        return "ok";
     }
+    return !$mail->Send() ? "Mailer Error: " . $mail->ErrorInfo : "ok";
 }
 
 function enviarMailRecordatorio($request) {
