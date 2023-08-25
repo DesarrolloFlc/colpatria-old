@@ -4,7 +4,10 @@ ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 require 'includes.php';
 require_once PATH_COMPOSER . DS . 'vendor' . DS . 'autoload.php';
-//enviarMailCreacion();
+
+use PHPMailer\PHPMailer\PHPMailer;
+enviarMailCreacion();
+exit;
 echo htmlentities("JOSE YOVANI D' ALEMAN URIBE");
 echo "<br>";
 echo htmlspecialchars("JOSE YOVANI D' ALEMAN URIBE");
@@ -71,7 +74,7 @@ $body = "Daniel chico";
     //indico a la clase que use SMTP
     $mail->IsSMTP();
     //permite modo debug para ver mensajes de las cosas que van ocurriendo
-    //$mail->SMTPDebug = 2;
+    $mail->SMTPDebug = 2;
     //Debo de hacer autenticación SMTP
     $mail->SMTPAuth = true;
     $mail->SMTPSecure = "ssl";
@@ -83,12 +86,12 @@ $body = "Daniel chico";
     $mail->Username = 'daniel.chico@finlecobpo.com';
     $mail->Password = 'FlcBpo@$2016';
     //indico creador del mensaje
-    $mail->SetFrom('e.meza.co@gmail.com', "Edwar Meza");
+    $mail->SetFrom('daniel.chico@finlecobpo.com', "Daniel Chico");
     $mail->Subject = "Vamos a la Final de LA CHAMPIONS LEAGUE";
 
     $mail->MsgHTML($body);
     $mail->CharSet = 'UTF-8';
-    $mail->AddAddress('e.meza.co@gmail.com', "Edwar Meza");
+    //$mail->AddAddress('e.meza.co@gmail.com', "Edwar Meza");
     $mail->AddAddress("pipook@gmail.com", "Daniel Chico");
     //$mail->AddAddress("daniel.chico@finlecobpo.com", "Daniel Chico P.");
 
