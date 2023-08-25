@@ -609,12 +609,12 @@ class Radicados
     }
 
     public function getClienteItem($id_cliente) {
-        $SQL = "SELECT * FROM radicados_items WHERE id = " . $id_cliente;
-        $this->conn->consultar($SQL);
+        $SQL = "SELECT * FROM radicados_items WHERE id = :id";
+        $this->conn->consultar($SQL, [':id'=> $id_cliente]);
         if ($this->conn->getNumeroRegistros() !== 1) {
             return false;
         }
-        $row = $this->conn->sacarRegistro();
+        $row = $this->conn->sacarRegistro('str');
         return $row;
     }
 
