@@ -1972,40 +1972,42 @@ class Formulario
 		$conn = new Conexion();
 		$i = 0;
 		$upd = "";
-		$daArray = array();
-		foreach($dat as $key => $value){
-			if($key != 'domain' && $key != 'action' && $key != 'meth' && $key != 'respOut' && $key != 'id_form' && $key != 'type_person' && $key != 'id_data'){
-				if($i == 0){
-					$upd = $key." = :".$key;
-					$daArray[':'.$key] = (trim($value) != '') ? strtoupper(trim($value)) : 'NULL';
-				}else{
-					$upd .= ", ".$key." = :".$key;
-					$daArray[':'.$key] = (trim($value) != '') ? strtoupper(trim($value)) : 'NULL';
-				}
+		$daArray = [];
+		foreach ($dat as $key => $value) {
+			if (in_array($key, ['domain', 'action', 'meth', 'respOut', 'id_form', 'type_person', 'id_data'])) {
+				continue;
+			}
+			if ($i === 0) {
+				$upd = $key . " = :" . $key;
+				$daArray[':' . $key] = (trim($value) != '') ? strtoupper(trim($value)) : 'NULL';
 				$i++;
+				continue;
 			}
-		}
-		if(!empty($daArray) && (isset($dat['id_data']) && !empty($dat['id_data'])))
-			$daArray[':id_data'] = $dat['id_data'];
+		
+			$upd .= ", " . $key . " = :" . $key;
+			$daArray[':' . $key] = (trim($value) != '') ? strtoupper(trim($value)) : 'NULL';
 
-		if(!empty($daArray)){
-			$SQL = "UPDATE data
-					   SET $upd
-					 WHERE id = :id_data";
-			try{
-				if($conn->ejecutar($SQL, $daArray)){
-					$conn->desconectar();
-					return array("exito"=> "La data del cliente fue actualizado con exito.");
-				}else{
-					$conn->desconectar();
-					return array("error"=>"No se pudo actualizar la data.");
-				}
-			}catch(Exception $e){
-				throw new Exception("Ocurrio un error(Exception):".$e->getMessage(), (int)$e->getCode());
-			}
-		}else{
+			$i++;
+		}
+		if (!empty($daArray) && (isset($dat['id_data']) && !empty($dat['id_data']))) {
+			$daArray[':id_data'] = $dat['id_data'];
+		}
+		if (empty($daArray)) {
 			$conn->desconectar();
-			return array("error"=>"No se encontraron datos para actualizar la data del cliente.");
+			return ["error"=> "No se encontraron datos para actualizar la data del cliente."];
+			exit;
+		}
+		$SQL = "UPDATE data
+				   SET $upd
+				 WHERE id = :id_data";
+		try {
+			$resp = $conn->ejecutar($SQL, $daArray);
+			$conn->desconectar();
+			return $resp
+				? ["exito"=> "La data del cliente fue actualizado con exito."]
+				: ["error"=> "No se pudo actualizar la data."];
+		} catch (Exception $e) {
+			throw new Exception("Ocurrio un error(Exception):" . $e->getMessage(), (int) $e->getCode());
 		}
 	}
 	public static function agregarEvidenciaItemRadicado($item_id, $resultado, $documento, $file)
