@@ -12,12 +12,12 @@
 	</tr>
 	<tr>
 		<td style="width: 100px;display: table-cell;">Nombres:</td>
-		<td><input type="text" id="nombres" name="nombres" style="width: 200px; margin-right: 40px" onkeypress="return validar_letra(event)" title="Nombres" value="<?=$dataform['nombres']?>"data-oldvalue="<?=$dataform['nombres']?>"></td>
+		<td><input type="text" id="nombres" name="nombres" style="width: 200px; margin-right: 40px" onkeypress="return validar_letra(event)" title="Nombres" value="<?=$dataform['nombres']?>" data-oldvalue="<?=$dataform['nombres']?>"></td>
 	</tr>
 	<tr>
 		<td style="width: 100px;display: table-cell;">Tipo documento:</td>
 		<td>
-			<select id="tipodocumento" name="tipodocumento" style="font-size: 12px; margin-right: 5px" title="Tipo documento">
+			<select id="tipodocumento" name="tipodocumento" style="font-size: 12px; margin-right: 5px" title="Tipo documento"  data-oldvalue="<?=$dataform['tipodocumento']?>">
 				<option value="">Seleccione...</option>
 <?php
 if(isset($tipoDocumentos) && !empty($tipoDocumentos) && is_array($tipoDocumentos)){
