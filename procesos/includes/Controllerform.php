@@ -1177,41 +1177,22 @@ function desactivarPlanillasAction($request){
 		echo json_encode(array('error'=> 'Ocurrio un error al momento de desactivar la planilla, contacte con el administrador...'));
 }
 function saveEditNewAction($request){
-	$dat = array();
+	$dat = [];
 	$telDir = false;
-	foreach($request as $key => $value){
-		if(!is_array($request[$key]))
-			$dat[$key] = $value;
-		/*else if(is_array($request[$key]) && ($key == 'telefono' || $key == 'direccion')){
-			$telDir = true;
-			////error_log(json_encode($request[$key]), 0);
-			////error_log(json_encode($request['tipo_telefono_id']), 0);
-			foreach ($request[$key] as $keyi => $valuei) {
-			    
-			////error_log($keyi, 0);
-			////error_log($valuei, 0);
-			////error_log($request[$key][$keyi], 0);
-			////error_log($request['tipo_telefono_id'][$keyi], 0);
-			////error_log($key, 0);
-				if($key == 'telefono')
-					Cliente::actualizarTelefono($request['cliente_id'], $request[$key][$keyi], $request['tipo_telefono_id'][$keyi]);
-				
-				if($key == 'direccion')
-					Cliente::actualizarDireccion($request['cliente_id'], $request[$key][$keyi], $request['tipo_direccion_id'][$keyi]);
-			}
-		}*/
+	foreach ($request as $key => $value) {
+		if (is_array($request[$key])) continue;
+
+		$dat[$key] = $value;
 	}
-	if(!empty($dat) && count($dat) > 7){
-		try{
-			if($us = Formulario::editarDataFormulario($dat)){
-				echo json_encode($us);
-			}else
-				echo json_encode(array("error"=> "Ocurrion un error al momento de realizar la actualizacion de la data, contacte con el administrador..."));
-		}catch(Exception $e){
-			echo json_encode(array('error'=> 'Ocurrio un error al momento de la actualizacion; contacte con el administrador.<br>ERROR: '.$e->getMessage().': '.$dat['fechanacimiento']));
-		}
-	}else{
-		echo json_encode(array('error'=> 'No se encontraron datos del cliente para actualizar...'));
+	if (empty($dat) || count($dat) <= 7) {
+		echo json_encode(['error'=> 'No se encontraron datos del cliente para actualizar...']);
+		exit;
+	}
+	try {
+		$us = Formulario::editarDataFormulario($dat);
+		echo json_encode($us);
+	} catch (Exception $e) {
+		echo json_encode(['error'=> 'Ocurrio un error al momento de la actualizacion; contacte con el administrador.<br>ERROR: ' . $e->getMessage() . ': ' . $dat['fechanacimiento']]);
 	}
 }
 function guardarFormularioNuevoCe02720Action($request){
