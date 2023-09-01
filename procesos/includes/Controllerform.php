@@ -81,10 +81,11 @@ function formularioAntiguoTipoAction($request){
 	require_once PATH_INTERNAL.DS.$request['action'].'View.php';
 }
 function formularioNuevoTipoCe02720Action($request){
-	$lote = (isset($request['lote']) && $request['lote'] != '' && strlen($request['lote']) > 5) ? substr($request['lote'], 5, strlen($request['lote'])) : 'NULL';
+	$lote = (isset($request['lote']) && $request['lote'] != '' && strlen($request['lote']) > 5) 
+		? substr($request['lote'], 5, strlen($request['lote'])) 
+		: 'NULL';
 	$radInfo = [];
-	if($lote != 'NULL')
-		$radInfo = Formulario::obtenerInformacionRadicado($lote);
+	if ($lote != 'NULL') $radInfo = Formulario::obtenerInformacionRadicado($lote);
 	$daneCiudades = Formulario::getCiudadesDanes();
 	$sucursales = Formulario::getSucursalesLista();
 	$clasesVinculacion = Formulario::getclaseVinculacion();
@@ -100,7 +101,7 @@ function formularioNuevoTipoCe02720Action($request){
 	$areas = Formulario::getAreasID();
 	$funcionarios = Formulario::getOfficials();
 	$tipo_persona = Formulario::getTipoPersona();
-	require_once PATH_INTERNAL.DS.$request['action'].'_View.php';
+	require_once PATH_INTERNAL . DS . $request['action'] . '_View.php';
 }
 function formularioSectorAseguradoAction($request){
 	$lote = (isset($request['lote']) && $request['lote'] != '' && strlen($request['lote']) > 5) ? substr($request['lote'], 5, strlen($request['lote'])) : 'NULL';
@@ -155,34 +156,34 @@ function guardarFormularioNuevoAction($request){
 	if((isset($request['f_rad_a']) && !empty($request['f_rad_a'])) && (isset($request['f_rad_m']) && !empty($request['f_rad_m'])) && (isset($request['f_rad_d']) && !empty($request['f_rad_d']))){
 		if(date('Y-m-d', strtotime($request['f_rad_a'].'-'.$request['f_rad_m'].'-'.$request['f_rad_d'])) == '1969-12-31'){
 			echo json_encode(array("error"=> "La fecha de radicado no puede ser errada."));
-			exit();
+			exit;
 		}else
 			$request['fecharadicado'] = date('Y-m-d', strtotime($request['f_rad_a'].'-'.$request['f_rad_m'].'-'.$request['f_rad_d']));
 	}else{
 		echo json_encode(array("error"=> "La fecha de radicado no puede ser vacia."));
-		exit();
+		exit;
 	}
 	if((isset($request['f_dil_a']) && !empty($request['f_dil_a'])) && (isset($request['f_dil_m']) && !empty($request['f_dil_m'])) && (isset($request['f_dil_d']) && !empty($request['f_dil_d']))){
 		if(date('Y-m-d', strtotime($request['f_dil_a'].'-'.$request['f_dil_m'].'-'.$request['f_dil_d'])) == '1969-12-31'){
 			echo json_encode(array("error"=> "La fecha de diligenciamiento no puede ser errada."));
-			exit();
+			exit;
 		}else
 			$request['fechasolicitud'] = date('Y-m-d', strtotime($request['f_dil_a'].'-'.$request['f_dil_m'].'-'.$request['f_dil_d']));
 	}else{
 		echo json_encode(array("error"=> "La fecha de diligenciamiento no puede ser vacia."));
-		exit();
+		exit;
 	}
 	if((isset($request['f_exp_a']) && !empty($request['f_exp_a'])) && (isset($request['f_exp_m']) && !empty($request['f_exp_m'])) && (isset($request['f_exp_d']) && !empty($request['f_exp_d']))){
 		if(date('Y-m-d', strtotime($request['f_exp_a'].'-'.$request['f_exp_m'].'-'.$request['f_exp_d'])) == '1969-12-31'){
 			echo json_encode(array("error"=> "La fecha de expedicion no puede ser errada."));
-			exit();
+			exit;
 		}else
 			$request['fechaexpedicion'] = date('Y-m-d', strtotime($request['f_exp_a'].'-'.$request['f_exp_m'].'-'.$request['f_exp_d']));
 	}
 	if((isset($request['f_nac_a']) && !empty($request['f_nac_a'])) && (isset($request['f_nac_m']) && !empty($request['f_nac_m'])) && (isset($request['f_nac_d']) && !empty($request['f_nac_d']))){
 		if(date('Y-m-d', strtotime($request['f_nac_a'].'-'.$request['f_nac_m'].'-'.$request['f_nac_d'])) == '1969-12-31' && ($request['f_nac_a'] != '1969' || $request['f_nac_m'] != '12' || $request['f_nac_d'] != '31')){
 			echo json_encode(array("error"=> "La fecha de nacimento no puede ser errada."));
-			exit();
+			exit;
 		}else
 			$request['fechanacimiento'] = date('Y-m-d', strtotime($request['f_nac_a'].'-'.$request['f_nac_m'].'-'.$request['f_nac_d']));
 	}
@@ -190,14 +191,14 @@ function guardarFormularioNuevoAction($request){
 		if((isset($request['f_ini_a']) && !empty($request['f_ini_a'])) && (isset($request['f_ini_m']) && !empty($request['f_ini_m'])) && (isset($request['f_ini_d']) && !empty($request['f_ini_d']))){
 			if(date('Y-m-d', strtotime($request['f_ini_a'].'-'.$request['f_ini_m'].'-'.$request['f_ini_d'])) == '1969-12-31'){
 				echo json_encode(array("error"=> "La fecha inicial no puede ser errada."));
-				exit();
+				exit;
 			}else
 				$request['cargo_politica_ini'] = date('Y-m-d', strtotime($request['f_ini_a'].'-'.$request['f_ini_m'].'-'.$request['f_ini_d']));
 		}
 		if((isset($request['f_fin_a']) && !empty($request['f_fin_a'])) && (isset($request['f_fin_m']) && !empty($request['f_fin_m'])) && (isset($request['f_fin_d']) && !empty($request['f_fin_d']))){
 			if(date('Y-m-d', strtotime($request['f_fin_a'].'-'.$request['f_fin_m'].'-'.$request['f_fin_d'])) == '1969-12-31'){
 				echo json_encode(array("error"=> "La fecha final no puede ser errada."));
-				exit();
+				exit;
 			}else
 				$request['cargo_politica_fin'] = date('Y-m-d', strtotime($request['f_fin_a'].'-'.$request['f_fin_m'].'-'.$request['f_fin_d']));
 		}
@@ -208,14 +209,14 @@ function guardarFormularioNuevoAction($request){
 	if((isset($request['f_ent_a']) && !empty($request['f_ent_a'])) && (isset($request['f_ent_m']) && !empty($request['f_ent_m'])) && (isset($request['f_ent_d']) && !empty($request['f_ent_d']))){
 		if(date('Y-m-d', strtotime($request['f_ent_a'].'-'.$request['f_ent_m'].'-'.$request['f_ent_d'])) == '1969-12-31'){
 			echo json_encode(array("error"=> "La fecha de entrevista no puede ser errada."));
-			exit();
+			exit;
 		}else
 			$request['fechaentrevista'] = date('Y-m-d', strtotime($request['f_ent_a'].'-'.$request['f_ent_m'].'-'.$request['f_ent_d']));
 	}
 	if((isset($request['f_ver_a']) && !empty($request['f_ver_a'])) && (isset($request['f_ver_m']) && !empty($request['f_ver_m'])) && (isset($request['f_ver_d']) && !empty($request['f_ver_d']))){
 		if(date('Y-m-d', strtotime($request['f_ver_a'].'-'.$request['f_ver_m'].'-'.$request['f_ver_d'])) == '1969-12-31'){
 			echo json_encode(array("error"=> "La fecha de verificacion no puede ser errada."));
-			exit();
+			exit;
 		}else
 			$request['verificacion_fecha'] = date('Y-m-d', strtotime($request['f_ver_a'].'-'.$request['f_ver_m'].'-'.$request['f_ver_d']));
 	}
@@ -324,7 +325,7 @@ function guardarFormularioNuevoAction($request){
 			$exForm = Formulario::verificarFormulario($cliente_id, $request['lote'], $request['planilla1'], $_SESSION['id']);
 			if(isset($exForm) && is_array($exForm) && !empty($exForm) && isset($exForm['id']) && !empty($exForm['id'])){
 				echo json_encode(array("error"=> "1. El formulario que esta intentando registrar, ya se encuentra registrado bajo el id => ".$exForm['id'].", por favor contacte con el administrador."));
-				exit();
+				exit;
 			}
 			if($form_id = Formulario::agregarNuevoFormulario($cliente_id, 'FORMULARIO', $request['lote'], $request['planilla1'], $_SESSION['id'], '1', $request['marca'])){
 				if(isset($form_id) && !empty($form_id) && $form_id !== false){
@@ -381,7 +382,7 @@ function guardarFormularioNuevoAction($request){
 
 						}else{
 							echo json_encode(array('error'=> 'Ocurrio un error al momento de crear la data del formulario, por favor contacte con el administrador.'));
-							exit();
+							exit;
 						}
 					}catch(Exception $e){
 						var_dump($e);
@@ -389,11 +390,11 @@ function guardarFormularioNuevoAction($request){
 					}
 				}else{
 					echo json_encode(array('error'=> 'Ocurrio un error al momento de crear el formulario, por favor contacte con el administrador...'));
-					exit();
+					exit;
 				}
 			}else{
 				echo json_encode(array('error'=> 'Ocurrio un error al momento de crear el formulario, por favor contacte con el administrador.'));
-				exit();
+				exit;
 			}
 		}else{
 			if(!empty($request['nit']) && $request['tipopersona'] == "2")
@@ -407,7 +408,7 @@ function guardarFormularioNuevoAction($request){
 				$exForm = Formulario::verificarFormulario($cliente_id, $request['lote'], $request['planilla1'], $_SESSION['id']);
 				if(isset($exForm) && is_array($exForm) && !empty($exForm) && isset($exForm['id']) && !empty($exForm['id'])){
 					echo json_encode(array("error"=> "2. El formulario que esta intentando registrar, ya se encuentra registrado bajo el id => ".$exForm['id'].", por favor contacte con el administrador."));
-					exit();
+					exit;
 				}
 				if($form_id = Formulario::agregarNuevoFormulario($cliente_id, 'FORMULARIO', $request['lote'], $request['planilla1'], $_SESSION['id'], '1', $request['marca'])){
 					if(isset($form_id) && !empty($form_id) && $form_id !== false){
@@ -460,27 +461,27 @@ function guardarFormularioNuevoAction($request){
 
 							}else{
 								echo json_encode(array('error'=> 'Ocurrio un error al momento de crear la data del formulario, por favor contacte con el administrador.'));
-								exit();
+								exit;
 							}
 						}catch(Exception $e){
 							echo json_encode(array('error'=> $e->getMessage()));
 						}
 					}else{
 						echo json_encode(array('error'=> 'Ocurrio un error al momento de crear el formulario, por favor contacte con el administrador...'));
-						exit();
+						exit;
 					}
 				}else{
 					echo json_encode(array('error'=> 'Ocurrio un error al momento de crear el formulario, por favor contacte con el administrador.'));
-					exit();
+					exit;
 				}
 			}else{
 				echo json_encode(array('error'=> 'Ocurrio un error al momento de crear el cliente, por favor contacte con el administrador.'));
-				exit();
+				exit;
 			}
 		}
 	}else{
 		echo json_encode(array('error'=> 'El numero de documento del cliente no puede estar vacion, por favor verifiquelo.'));
-		exit();
+		exit;
 	}
 }
 function guardarFormularioAntiguoAction($request){
@@ -493,34 +494,34 @@ function guardarFormularioAntiguoAction($request){
 	if((isset($request['fechasolicitud_a']) && !empty($request['fechasolicitud_a']) && $request['fechasolicitud_a'] != '0000') && (isset($request['fechasolicitud_m']) && !empty($request['fechasolicitud_m']) && $request['fechasolicitud_m'] != '00') && (isset($request['fechasolicitud_d']) && !empty($request['fechasolicitud_d']) && $request['fechasolicitud_d'] != '00')){
 		if(date('Y-m-d', strtotime($request['fechasolicitud_a'].'-'.$request['fechasolicitud_m'].'-'.$request['fechasolicitud_d'])) == '1969-12-31'){
 			echo json_encode(array('error'=> 'La fecha de solicitud debe ser una fecha valida.'));
-			exit();
+			exit;
 		}else
 			$request['fechasolicitud'] = date('Y-m-d', strtotime($request['fechasolicitud_a'].'-'.$request['fechasolicitud_m'].'-'.$request['fechasolicitud_d']));
 	}else{
 		echo json_encode(array('error'=> 'La fecha de solicitud no puede ser vacia.'));
-		exit();
+		exit;
 	}
 
 	if((isset($request['fechaexpedicion_a']) && !empty($request['fechaexpedicion_a']) && $request['fechaexpedicion_a'] != '0000') && (isset($request['fechaexpedicion_m']) && !empty($request['fechaexpedicion_m']) && $request['fechaexpedicion_m'] != '00') && (isset($request['fechaexpedicion_d']) && !empty($request['fechaexpedicion_d']) && $request['fechaexpedicion_d'] != '00')){
 	    if(date('Y-m-d', strtotime($request['fechaexpedicion_a']."-".$request['fechaexpedicion_m']."-".$request['fechaexpedicion_d'])) == '1969-12-31'){
 	        echo json_encode(array('error'=> 'La fecha de expedicion debe ser una fecha valida.'));
-	        exit();
+	        exit;
 	    }else
 	    	$request['fechaexpedicion'] = date('Y-m-d', strtotime($request['fechaexpedicion_a']."-".$request['fechaexpedicion_m']."-".$request['fechaexpedicion_d']));
 	}else{
 	    echo json_encode(array('error'=> 'La fecha de expedicion no puede ser vacia.'));
-	    exit();
+	    exit;
 	}
 	if($request['tipopersona'] == "1"){
 	    if((isset($request['fechanacimiento_a']) && !empty($request['fechanacimiento_a']) && $request['fechanacimiento_a'] != '0000') && (isset($request['fechanacimiento_m']) && !empty($request['fechanacimiento_m']) && $request['fechanacimiento_m'] != '00') && (isset($request['fechanacimiento_d']) && !empty($request['fechanacimiento_d']) && $request['fechanacimiento_d'] != '00')){
 	        if(date('Y-m-d', strtotime($request['fechanacimiento_a']."-".$request['fechanacimiento_m']."-".$request['fechanacimiento_d'])) == '1969-12-31' && $request['fechanacimiento_a']."-".$request['fechanacimiento_m']."-".$request['fechanacimiento_d'] != '1969-12-31'){
 	            echo json_encode(array('error'=> 'La fecha de nacimiento debe ser una fecha valida.'));
-	            exit();
+	            exit;
 	        }else
 	        	$request['fechanacimiento'] = date('Y-m-d', strtotime($request['fechanacimiento_a']."-".$request['fechanacimiento_m']."-".$request['fechanacimiento_d']));
 	    }else{
 	        echo json_encode(array('error'=> 'La fecha de nacimiento no puede ser vacia.'));
-	        exit();
+	        exit;
 	    }
 	}
 	$request['fechaentrevista'] = date('Y-m-d', strtotime($request['fechaentrevista_a'] . "-" . $request['fechaentrevista_m'] . "-" . $request['fechaentrevista_d']));
@@ -615,13 +616,13 @@ function guardarFormularioAntiguoAction($request){
 
 	        if($request['fechaexpedicion'] === '--'){
 	            echo json_encode(array('error'=> 'La fecha de expedicion no puede ser -- 1.'));
-	            exit();
+	            exit;
 	            echo json_encode($_POST);
 	        }
 			$exForm = Formulario::verificarFormulario($cliente_id, $request['lote'], $request['planilla1'], $_SESSION['id']);
 			if(isset($exForm) && is_array($exForm) && !empty($exForm) && isset($exForm['id']) && !empty($exForm['id'])){
 				echo json_encode(array("error"=> "3. El formulario que esta intentando registrar, ya se encuentra registrado bajo el id => ".$exForm['id'].", por favor contacte con el administrador."));
-				exit();
+				exit;
 			}
 	        //Sinthia Rodriguez Alertas fin
 	        if($form_id = Formulario::agregarNuevoFormulario($cliente_id, 'FORMULARIO', $request['lote'], $request['planilla1'], $_SESSION['id'], '1', $request['marca'])){
@@ -654,18 +655,18 @@ function guardarFormularioAntiguoAction($request){
 
 			            }else{
 							echo json_encode(array('error'=> 'Ocurrio un error al momento de crear la data del formulario(cliente existente), por favor contacte con el administrador.'));
-							exit();
+							exit;
 						}
 					}catch(Exception $e){
 						echo json_encode(array('error'=> $e->getMessage()));
 					}
 				}else{
 					echo json_encode(array('error'=> 'Ocurrio un error al momento de crear el formulario(cliente existente), por favor contacte con el administrador...'));
-					exit();
+					exit;
 				}
 	        }else{
 				echo json_encode(array('error'=> 'Ocurrio un error al momento de crear el formulario(cliente existente), por favor contacte con el administrador.'));
-				exit();
+				exit;
 			}
 	    }else{
 			if(!empty($request['nit']) && $request['tipopersona'] == "2")
@@ -678,13 +679,13 @@ function guardarFormularioAntiguoAction($request){
 	            //$form = new Formulario();
 	            if($request['fechaexpedicion'] === '--'){
 	                echo json_encode(array('error'=> 'La fecha de expedicion no puede ser -- 2.'));
-	                exit();
+	                exit;
 	                echo json_encode($_POST);
 	            }
 				$exForm = Formulario::verificarFormulario($cliente_id, $request['lote'], $request['planilla1'], $_SESSION['id']);
 				if(isset($exForm) && is_array($exForm) && !empty($exForm) && isset($exForm['id']) && !empty($exForm['id'])){
 					echo json_encode(array("error"=> "4. El formulario que esta intentando registrar, ya se encuentra registrado bajo el id => ".$exForm['id'].", por favor contacte con el administrador."));
-					exit();
+					exit;
 				}
 	        	if($form_id = Formulario::agregarNuevoFormulario($cliente_id, 'FORMULARIO', $request['lote'], $request['planilla1'], $_SESSION['id'], '1', $request['marca'])){
 	        		if(isset($form_id) && !empty($form_id) && $form_id !== false){
@@ -715,22 +716,22 @@ function guardarFormularioAntiguoAction($request){
 								
 							}else{
 								echo json_encode(array('error'=> 'Ocurrio un error al momento de crear la data del formulario(cliente nuevo), por favor contacte con el administrador.'));
-								exit();
+								exit;
 							}
 						}catch(Exception $e){
 							echo json_encode(array('error'=> $e->getMessage()));
 						}
 					}else{
 						echo json_encode(array('error'=> 'Ocurrio un error al momento de crear el formulario(cliente nuevo), por favor contacte con el administrador...'));
-						exit();
+						exit;
 					}
 	            }else{
 					echo json_encode(array('error'=> 'Ocurrio un error al momento de crear el formulario(cliente nuevo), por favor contacte con el administrador.'));
-					exit();
+					exit;
 				}
 	        }else{
 				echo json_encode(array('error'=> 'Ocurrio un error al momento de crear el cliente(cliente nuevo), por favor contacte con el administrador.'));
-				exit();
+				exit;
 			}
 	    }
 	/*
@@ -765,62 +766,62 @@ function guardarFormularioAntiguoAction2($request){
 	if((isset($request['f_rad_a']) && !empty($request['f_rad_a'])) && (isset($request['f_rad_m']) && !empty($request['f_rad_m'])) && (isset($request['f_rad_d']) && !empty($request['f_rad_d']))){
 		if(date('Y-m-d', strtotime($request['f_rad_a'].'-'.$request['f_rad_m'].'-'.$request['f_rad_d'])) == '1969-12-31'){
 			echo json_encode(array("error"=> "La fecha de radicado no puede ser errada."));
-			exit();
+			exit;
 		}else
 			$request['fecharadicado'] = date('Y-m-d', strtotime($request['f_rad_a'].'-'.$request['f_rad_m'].'-'.$request['f_rad_d']));
 	}else{
 		echo json_encode(array("error"=> "La fecha de radicado no puede ser vacia."));
-		exit();
+		exit;
 	}
 	if((isset($request['f_dil_a']) && !empty($request['f_dil_a'])) && (isset($request['f_dil_m']) && !empty($request['f_dil_m'])) && (isset($request['f_dil_d']) && !empty($request['f_dil_d']))){
 		if(date('Y-m-d', strtotime($request['f_dil_a'].'-'.$request['f_dil_m'].'-'.$request['f_dil_d'])) == '1969-12-31'){
 			echo json_encode(array("error"=> "La fecha de diligenciamiento no puede ser errada."));
-			exit();
+			exit;
 		}else
 			$request['fechasolicitud'] = date('Y-m-d', strtotime($request['f_dil_a'].'-'.$request['f_dil_m'].'-'.$request['f_dil_d']));
 	}else{
 		echo json_encode(array("error"=> "La fecha de diligenciamiento no puede ser vacia."));
-		exit();
+		exit;
 	}
 	if((isset($request['f_exp_a']) && !empty($request['f_exp_a'])) && (isset($request['f_exp_m']) && !empty($request['f_exp_m'])) && (isset($request['f_exp_d']) && !empty($request['f_exp_d']))){
 		if(date('Y-m-d', strtotime($request['f_exp_a'].'-'.$request['f_exp_m'].'-'.$request['f_exp_d'])) == '1969-12-31'){
 			echo json_encode(array("error"=> "La fecha de expedicion no puede ser errada."));
-			exit();
+			exit;
 		}else
 			$request['fechaexpedicion'] = date('Y-m-d', strtotime($request['f_exp_a'].'-'.$request['f_exp_m'].'-'.$request['f_exp_d']));
 	}
 	if((isset($request['f_nac_a']) && !empty($request['f_nac_a'])) && (isset($request['f_nac_m']) && !empty($request['f_nac_m'])) && (isset($request['f_nac_d']) && !empty($request['f_nac_d']))){
 		if(date('Y-m-d', strtotime($request['f_nac_a'].'-'.$request['f_nac_m'].'-'.$request['f_nac_d'])) == '1969-12-31' && ($request['f_nac_a'] != '1969' || $request['f_nac_m'] != '12' || $request['f_nac_d'] != '31')){
 			echo json_encode(array("error"=> "La fecha de nacimento no puede ser errada."));
-			exit();
+			exit;
 		}else
 			$request['fechanacimiento'] = date('Y-m-d', strtotime($request['f_nac_a'].'-'.$request['f_nac_m'].'-'.$request['f_nac_d']));
 	}
 	if((isset($request['f_ini_a']) && !empty($request['f_ini_a'])) && (isset($request['f_ini_m']) && !empty($request['f_ini_m'])) && (isset($request['f_ini_d']) && !empty($request['f_ini_d']))){
 		if(date('Y-m-d', strtotime($request['f_ini_a'].'-'.$request['f_ini_m'].'-'.$request['f_ini_d'])) == '1969-12-31'){
 			echo json_encode(array("error"=> "La fecha inicial no puede ser errada."));
-			exit();
+			exit;
 		}else
 			$request['cargo_politica_ini'] = date('Y-m-d', strtotime($request['f_ini_a'].'-'.$request['f_ini_m'].'-'.$request['f_ini_d']));
 	}
 	if((isset($request['f_fin_a']) && !empty($request['f_fin_a'])) && (isset($request['f_fin_m']) && !empty($request['f_fin_m'])) && (isset($request['f_fin_d']) && !empty($request['f_fin_d']))){
 		if(date('Y-m-d', strtotime($request['f_fin_a'].'-'.$request['f_fin_m'].'-'.$request['f_fin_d'])) == '1969-12-31'){
 			echo json_encode(array("error"=> "La fecha final no puede ser errada."));
-			exit();
+			exit;
 		}else
 			$request['cargo_politica_fin'] = date('Y-m-d', strtotime($request['f_fin_a'].'-'.$request['f_fin_m'].'-'.$request['f_fin_d']));
 	}
 	if((isset($request['f_ent_a']) && !empty($request['f_ent_a'])) && (isset($request['f_ent_m']) && !empty($request['f_ent_m'])) && (isset($request['f_ent_d']) && !empty($request['f_ent_d']))){
 		if(date('Y-m-d', strtotime($request['f_ent_a'].'-'.$request['f_ent_m'].'-'.$request['f_ent_d'])) == '1969-12-31'){
 			echo json_encode(array("error"=> "La fecha de entrevista no puede ser errada."));
-			exit();
+			exit;
 		}else
 			$request['fechaentrevista'] = date('Y-m-d', strtotime($request['f_ent_a'].'-'.$request['f_ent_m'].'-'.$request['f_ent_d']));
 	}
 	if((isset($request['f_ver_a']) && !empty($request['f_ver_a'])) && (isset($request['f_ver_m']) && !empty($request['f_ver_m'])) && (isset($request['f_ver_d']) && !empty($request['f_ver_d']))){
 		if(date('Y-m-d', strtotime($request['f_ver_a'].'-'.$request['f_ver_m'].'-'.$request['f_ver_d'])) == '1969-12-31'){
 			echo json_encode(array("error"=> "La fecha de verificacion no puede ser errada."));
-			exit();
+			exit;
 		}else
 			$request['verificacion_fecha'] = date('Y-m-d', strtotime($request['f_ver_a'].'-'.$request['f_ver_m'].'-'.$request['f_ver_d']));
 	}
@@ -920,13 +921,13 @@ function guardarFormularioAntiguoAction2($request){
 
 
 		echo json_encode(array('cliente_id'=> $cliente_id, 'data'=> $request));
-		exit();
+		exit;
 		if(isset($cliente_id) && !empty($cliente_id) && $cliente_id !== false){
 			Formulario::activeCliente($cliente_id);
 			$exForm = Formulario::verificarFormulario($cliente_id, $request['lote'], $request['planilla1'], $_SESSION['id']);
 			if(isset($exForm) && is_array($exForm) && !empty($exForm) && isset($exForm['id']) && !empty($exForm['id'])){
 				echo json_encode(array("error"=> "5. El formulario que esta intentando registrar, ya se encuentra registrado bajo el id => ".$exForm['id'].", por favor contacte con el administrador."));
-				exit();
+				exit;
 			}
 			//$lastData = Formulario::obtenerUltimoFormData($cliente_id);
 			if($form_id = Formulario::agregarNuevoFormulario($cliente_id, 'FORMULARIO', $request['lote'], $request['planilla1'], $_SESSION['id'], '1', $request['marca'])){
@@ -976,15 +977,15 @@ function guardarFormularioAntiguoAction2($request){
 
 					}else{
 						echo json_encode(array('error'=> 'Ocurrio un error al momento de crear la data del formulario, por favor contacte con el administrador.'));
-						exit();
+						exit;
 					}
 				}else{
 					echo json_encode(array('error'=> 'Ocurrio un error al momento de crear el formulario, por favor contacte con el administrador...'));
-					exit();
+					exit;
 				}
 			}else{
 				echo json_encode(array('error'=> 'Ocurrio un error al momento de crear el formulario, por favor contacte con el administrador.'));
-				exit();
+				exit;
 			}
 		}else{
 			if(!empty($request['nit']) && $request['tipopersona'] == "2")
@@ -998,7 +999,7 @@ function guardarFormularioAntiguoAction2($request){
 				$exForm = Formulario::verificarFormulario($cliente_id, $request['lote'], $request['planilla1'], $_SESSION['id']);
 				if(isset($exForm) && is_array($exForm) && !empty($exForm) && isset($exForm['id']) && !empty($exForm['id'])){
 					echo json_encode(array("error"=> "6. El formulario que esta intentando registrar, ya se encuentra registrado bajo el id => ".$exForm['id'].", por favor contacte con el administrador."));
-					exit();
+					exit;
 				}
 				if($form_id = Formulario::agregarNuevoFormulario($cliente_id, 'FORMULARIO', $request['lote'], $request['planilla1'], $_SESSION['id'], '1', $request['marca'])){
 					if(isset($form_id) && !empty($form_id) && $form_id !== false){
@@ -1047,36 +1048,36 @@ function guardarFormularioAntiguoAction2($request){
 
 						}else{
 							echo json_encode(array('error'=> 'Ocurrio un error al momento de crear la data del formulario, por favor contacte con el administrador.'));
-							exit();
+							exit;
 						}
 					}else{
 						echo json_encode(array('error'=> 'Ocurrio un error al momento de crear el formulario, por favor contacte con el administrador...'));
-						exit();
+						exit;
 					}
 				}else{
 					echo json_encode(array('error'=> 'Ocurrio un error al momento de crear el formulario, por favor contacte con el administrador.'));
-					exit();
+					exit;
 				}
 			}else{
 				echo json_encode(array('error'=> 'Ocurrio un error al momento de crear el cliente, por favor contacte con el administrador.'));
-				exit();
+				exit;
 			}
 		}
 	}else{
 		echo json_encode(array('error'=> 'El numero de documento del cliente no puede estar vacion, por favor verifiquelo.'));
-		exit();
+		exit;
 	}
 }
 function guardarFormularioRenovacionAutosAction($request){
 	if((isset($request['age']) && !empty($request['age'])) && (isset($request['mes_']) && !empty($request['mes_'])) && (isset($request['dia']) && !empty($request['dia']))){
 		if(date('Y-m-d', strtotime($request['age'].'-'.$request['mes_'].'-'.$request['dia'])) == '1969-12-31'){
 			echo json_encode(array("error"=> "La fecha de diligenciamiento no puede ser errada."));
-			exit();
+			exit;
 		}else
 			$request['fechasolicitud'] = date('Y-m-d', strtotime($request['age'].'-'.$request['mes_'].'-'.$request['dia']));
 	}else{
 		echo json_encode(array("error"=> "La fecha de diligenciamiento no puede ser vacia."));
-		exit();
+		exit;
 	}
 
 	if(!isset($request['detalle']))
@@ -1088,7 +1089,7 @@ function guardarFormularioRenovacionAutosAction($request){
 		$cliente_id = Formulario::obtenerIdCliente($request['numero'], 1);
 	}else{
 		echo json_encode(array('error'=> 'Ocurrio un error al momento de verificar el tipo de documento, por favor contacte con el administrador.'));
-		exit();
+		exit;
 	}
 	$form_id = Formulario::obtenerUltimoIdFormulario($cliente_id);
 
@@ -1109,11 +1110,11 @@ function guardarFormularioRenovacionAutosAction($request){
 			echo json_encode(array('exito'=> $mensaje, 'url'=> 'fingering2.php?id_form='.$form_id.'&id_cliente='.$cliente_id));
 		}else{
 			echo json_encode($rIns);
-			exit();
+			exit;
 		}
 	}else{
 		echo json_encode(array('error'=> 'Ocurrio un error al momento de insertar la data de renovacion, contacte con el administrador...'));
-		exit();
+		exit;
 	}
 }
 function guardarDocComplementariaAction($request){
@@ -1145,14 +1146,14 @@ function guardarDocRegimenSimplificadoAction($request){
 			//error_log("formulario_id: ".$form_id, 0);
 			if(!$form_id = Formulario::agregarNuevoFormulario($cliente_id, 'FORMULARIO', $request['lote'], $request['planilla1'], $_SESSION['id'], '1', $request['marca']/*, 2*/)){
 				echo json_encode(array('error'=> 'Ocurrio un error al momento de crear el formulario, por favor contacte con el administrador.'));
-				exit();
+				exit;
 			}
 		}
 	}else{
 		$cliente_id = Formulario::crearNuevoCliente($request['document'], $request['persontype'], $request['firstname'], 2, 1/*, 2*/);
 		if(!$form_id = Formulario::agregarNuevoFormulario($cliente_id, 'FORMULARIO', $request['lote'], $request['planilla1'], $_SESSION['id'], '1', $request['marca']/*, 2*/)){
 			echo json_encode(array('error'=> 'Ocurrio un error al momento de crear el formulario, por favor contacte con el administrador.'));
-			exit();
+			exit;
 		}
 	}
 
@@ -1224,35 +1225,35 @@ function guardarFormularioNuevoCe02720Action($request){
 	if((isset($request['f_rad_a']) && !empty($request['f_rad_a'])) && (isset($request['f_rad_m']) && !empty($request['f_rad_m'])) && (isset($request['f_rad_d']) && !empty($request['f_rad_d']))){
 		if(date('Y-m-d', strtotime($request['f_rad_a'].'-'.$request['f_rad_m'].'-'.$request['f_rad_d'])) == '1969-12-31'){
 			echo json_encode(array("error"=> "La fecha de radicado no puede ser errada."));
-			exit();
+			exit;
 		}else
 			$request['fecharadicado'] = date('Y-m-d', strtotime($request['f_rad_a'].'-'.$request['f_rad_m'].'-'.$request['f_rad_d']));
 	}else{
 		echo json_encode(array("error"=> "La fecha de radicado no puede ser vacia."));
-		exit();
+		exit;
 	}
 	if((isset($request['f_dil_a']) && !empty($request['f_dil_a'])) && (isset($request['f_dil_m']) && !empty($request['f_dil_m'])) && (isset($request['f_dil_d']) && !empty($request['f_dil_d']))){
 		if(date('Y-m-d', strtotime($request['f_dil_a'].'-'.$request['f_dil_m'].'-'.$request['f_dil_d'])) == '1969-12-31'){
 			echo json_encode(array("error"=> "La fecha de diligenciamiento no puede ser errada."));
-			exit();
+			exit;
 		}else
 			$request['fechasolicitud'] = date('Y-m-d', strtotime($request['f_dil_a'].'-'.$request['f_dil_m'].'-'.$request['f_dil_d']));
 	}else{
 		echo json_encode(array("error"=> "La fecha de diligenciamiento no puede ser vacia."));
-		exit();
+		exit;
 	}
 	if($request['tipopersona'] == '1'){
 		if((isset($request['f_exp_a']) && !empty($request['f_exp_a'])) && (isset($request['f_exp_m']) && !empty($request['f_exp_m'])) && (isset($request['f_exp_d']) && !empty($request['f_exp_d']))){
 			if(date('Y-m-d', strtotime($request['f_exp_a'].'-'.$request['f_exp_m'].'-'.$request['f_exp_d'])) == '1969-12-31'){
 				echo json_encode(array("error"=> "La fecha de expedicion no puede ser errada."));
-				exit();
+				exit;
 			}else
 				$request['fechaexpedicion'] = date('Y-m-d', strtotime($request['f_exp_a'].'-'.$request['f_exp_m'].'-'.$request['f_exp_d']));
 		}
 		if((isset($request['f_nac_a']) && !empty($request['f_nac_a'])) && (isset($request['f_nac_m']) && !empty($request['f_nac_m'])) && (isset($request['f_nac_d']) && !empty($request['f_nac_d']))){
 			if(date('Y-m-d', strtotime($request['f_nac_a'].'-'.$request['f_nac_m'].'-'.$request['f_nac_d'])) == '1969-12-31' && ($request['f_nac_a'] != '1969' || $request['f_nac_m'] != '12' || $request['f_nac_d'] != '31')){
 				echo json_encode(array("error"=> "La fecha de nacimento no puede ser errada."));
-				exit();
+				exit;
 			}else
 				$request['fechanacimiento'] = date('Y-m-d', strtotime($request['f_nac_a'].'-'.$request['f_nac_m'].'-'.$request['f_nac_d']));
 		}
@@ -1283,7 +1284,8 @@ function guardarFormularioNuevoCe02720Action($request){
 	}elseif($request['monedaextranjera'] == '0' && $request['tipotransacciones'] != '7'){
 		$request['tipotransacciones_cual'] = 'SD';
 	}
-	if($request['tipopersona'] == '2'){
+	$patrimonio = 0;
+	if ($request['tipopersona'] == '2') {
 		$request['tipoactividad'] = '900';
 		$request['profesion'] = '900';
 		$request['cargo'] = 'SD';
@@ -1296,7 +1298,8 @@ function guardarFormularioNuevoCe02720Action($request){
 		$request['egresosmensuales'] = '13';
 		$request['otrosingresos'] = '13';
 		$request['conceptosotrosingresos'] = 'SD';
-	}elseif($request['tipopersona'] == '1'){
+		$patrimonio = intval($request['activosemp']) - intval($request['pasivosemp']);
+	} else if ($request['tipopersona'] == '1') {
 		$request['razonsocial'] = 'SD';
 		$request['nit'] = '*';
 		$request['digitochequeo'] = '0';
@@ -1314,7 +1317,9 @@ function guardarFormularioNuevoCe02720Action($request){
 		$request['egresosmensualesemp'] = '7';
 		$request['otrosingresosemp'] = '7';
 		$request['concepto_otrosingresosemp'] = 'SD';
+		$patrimonio = intval($request['totalactivos']) - intval($request['totalpasivos']);
 	}
+	$request['patrimonio'] = $patrimonio <= 0 ? '0' : $patrimonio;
 	if(!isset($request['actividadeconomicaempresa']))
 		$request['actividadeconomicaempresa'] = '4';
 	if(!isset($request['tipotransacciones']))
@@ -1338,260 +1343,245 @@ function guardarFormularioNuevoCe02720Action($request){
 		$request['celularoficina'] = '*';
 
 
-	if((!empty($request['documento']) || !empty($request['nit']) ) && !empty($request['tipopersona'])){
-		if($_SESSION['id'] == '1'){
-			error_log(json_encode($request), 0);
+	if ((empty($request['documento']) || empty($request['nit']) ) && empty($request['tipopersona'])) {
+		echo json_encode(['error'=> 'El numero de documento del cliente no puede estar vacion, por favor verifiquelo.']);
+		exit;
+	}
+	if ($_SESSION['id'] == '1') {
+		error_log(json_encode($request), 0);
+		exit;
+	}
+	if (!empty($request['nit']) && $request['tipopersona'] == "2") {
+		$cliente_id = Formulario::obtenerIdCliente($request['nit'], $request['tipopersona']/*, 2*/);
+	} else if (!empty($request['documento']) && $request['tipopersona'] == "1") {
+		$cliente_id = Formulario::obtenerIdCliente($request['documento'], $request['tipopersona']/*, 2*/);
+	}
+
+	if (isset($cliente_id) && !empty($cliente_id) && $cliente_id !== false) {
+		//Formulario::activeCliente($cliente_id);
+		Formulario::actualizarRegimen($cliente_id, 2/*, 2*/);
+		$exForm = Formulario::verificarFormulario($cliente_id, $request['lote'], $request['planilla1'], $_SESSION['id']);
+		if (isset($exForm) && is_array($exForm) && !empty($exForm) && isset($exForm['id']) && !empty($exForm['id'])) {
+			echo json_encode(["error"=> "1. El formulario que esta intentando registrar, ya se encuentra registrado bajo el id => " . $exForm['id'] . ", por favor contacte con el administrador."]);
 			exit;
 		}
-		if(!empty($request['nit']) && $request['tipopersona'] == "2")
-			$cliente_id = Formulario::obtenerIdCliente($request['nit'], $request['tipopersona']/*, 2*/);
-		else if(!empty($request['documento']) && $request['tipopersona'] == "1")
-			$cliente_id = Formulario::obtenerIdCliente($request['documento'], $request['tipopersona']/*, 2*/);
-
-		if(isset($cliente_id) && !empty($cliente_id) && $cliente_id !== false){
-			//Formulario::activeCliente($cliente_id);
-			Formulario::actualizarRegimen($cliente_id, 2/*, 2*/);
-			$exForm = Formulario::verificarFormulario($cliente_id, $request['lote'], $request['planilla1'], $_SESSION['id']);
-			if(isset($exForm) && is_array($exForm) && !empty($exForm) && isset($exForm['id']) && !empty($exForm['id'])){
-				echo json_encode(array("error"=> "1. El formulario que esta intentando registrar, ya se encuentra registrado bajo el id => ".$exForm['id'].", por favor contacte con el administrador."));
-				exit();
+		$form_id = Formulario::agregarNuevoFormulario($cliente_id, 'FORMULARIO', $request['lote'], $request['planilla1'], $_SESSION['id'], '1', $request['marca']/*, 2*/);
+		if ($form_id === false || $form_id === 0) {
+			echo json_encode(['error'=> 'Ocurrio un error al momento de crear el formulario, por favor contacte con el administrador.']);
+			exit;
+		}
+		try{
+			$conn = new Conexion();
+			$idData = Formulario::insertPrimaryDataNew($form_id, $request, $cliente_id, $conn/*, 2*/);
+			if ($idData === false || $idData === 0) {
+				echo json_encode(['error'=> 'Ocurrio un error al momento de crear la data del formulario, por favor contacte con el administrador.']);
+				exit;
 			}
-			if($form_id = Formulario::agregarNuevoFormulario($cliente_id, 'FORMULARIO', $request['lote'], $request['planilla1'], $_SESSION['id'], '1', $request['marca']/*, 2*/)){
-				if(isset($form_id) && !empty($form_id) && $form_id !== false){
-					try{
-						$conn = new Conexion();
-						if($idData = Formulario::insertPrimaryDataNew($form_id, $request, $cliente_id, $conn/*, 2*/)){
-							if($request['tipopersona'] == "2"){
-								//JUNTA DIRECTIVA
-								if(isset($request['si_junta_directiva']) && $request['si_junta_directiva'] == '-1'){
-									for ($i = 0; $i < 3; $i++) { 
-										if(verificarDatoNoDefault($request['ju_identificacion'][$i]) || verificarDatoNoDefault($request['ju_nombre_completo'][$i])){
-											Formulario::insertMiembroJunta($idData, $request['ju_nombre_completo'][$i], $request['ju_tipodocumento_id'][$i], $request['ju_identificacion'][$i], $request['ju_expuesto_politico'][$i], $conn);
-										}
-									}
-								}
-								if(isset($request['si_accionistas_nat']) && $request['si_accionistas_nat'] == '-1'){
-									for($k = 0; $k < 3; $k++){
-										if (verificarDatoNoDefault($request['be_identificacion'][$k]) || verificarDatoNoDefault($request['be_nombre_completo'][$k])) {
-											Formulario::insertNuevoAccionista($idData, $request['be_tipo'][$k], "NULL", "NULL", $request['be_nombre_completo'][$k], $request['be_tipodocumento_id'][$k], $request['be_identificacion'][$k], $request['be_fecha_expedicion'][$k], $request['be_expuesto_politico'][$k], $request['be_poliza_seguro'][$k], $conn);
-										}
-									}
-								}else
-									$k = 0;
-								if(isset($request['si_accionistas_jur']) && $request['si_accionistas_jur'] == '-1'){
-									for($l = $k; $l < ($k + 3); $l++){
-										if (verificarDatoNoDefault($request['be_nit'][$l]) || verificarDatoNoDefault($request['be_razon_social'][$l])) {
-											Formulario::insertNuevoAccionista($idData, $request['be_tipo'][$l], $request['be_razon_social'][$l], $request['be_nit'][$l], $request['be_nombre_completo'][$l], $request['be_tipodocumento_id'][$l], $request['be_identificacion'][$l], "NULL", $request['be_expuesto_politico'][$l], "NULL", $conn);
-										}
-									}
-								}else
-									$l = $k;
-								if(isset($request['si_beneficiarios_nat']) && $request['si_beneficiarios_nat'] == '-1'){
-									for($m = $l; $m < ($l + 4); $m++){
-										if (verificarDatoNoDefault($request['be_identificacion'][$m]) || verificarDatoNoDefault($request['be_nombre_completo'][$m])) {
-											Formulario::insertNuevoAccionista($idData, $request['be_tipo'][$m], "NULL", "NULL", $request['be_nombre_completo'][$m], $request['be_tipodocumento_id'][$m], $request['be_identificacion'][$m], $request['be_fecha_expedicion'][$m], $request['be_expuesto_politico'][$m], $request['be_poliza_seguro'][$m], $conn);
-										}
-									}
-								}else
-									$m = $l;
-								if(isset($request['si_beneficiarios_jur']) && $request['si_beneficiarios_jur'] == '-1'){
-									$ni = 0;
-									for($n = $m; $n < ($m + 4); $n++){
-										if (verificarDatoNoDefault($request['be_nit'][$ni]) || verificarDatoNoDefault($request['be_razon_social'][$ni])) {
-											Formulario::insertNuevoAccionista($idData, $request['be_tipo'][$n], $request['be_razon_social'][$ni], $request['be_nit'][$ni], $request['be_nombre_completo'][$n], $request['be_tipodocumento_id'][$n], $request['be_identificacion'][$n], "NULL", "NULL", $request['be_poliza_seguro'][$n], $conn);
-										}
-										$ni++;
-									}
-								}else
-									$n = $m;
-							}else if($request['tipopersona'] == "1"){
-								if(isset($request['si_beneficiarios_nat']) && $request['si_beneficiarios_nat'] == '-1'){
-									for($m = 0; $m < 4; $m++){
-										if (verificarDatoNoDefault($request['be_identificacion'][$m]) || verificarDatoNoDefault($request['be_nombre_completo'][$m])) {
-											$fecha = crearFechaDePartes($request['f_expbe_a'][$m] ?? '', $request['f_expbe_m'][$m] ?? '', $request['f_expbe_d'][$m] ?? '', '');
-											$fecha = is_array($fecha) ? 'NULL' : $fecha;
-											Formulario::insertNuevoAccionista($idData, $request['be_tipo'][$m], "NULL", "NULL", $request['be_nombre_completo'][$m], $request['be_tipodocumento_id'][$m], $request['be_identificacion'][$m], $fecha, $request['be_expuesto_politico'][$m], $request['be_poliza_seguro'][$m], $conn);
-										}
-									}
-								}else
-									$m = 0;
-								if(isset($request['si_beneficiarios_jur']) && $request['si_beneficiarios_jur'] == '-1'){
-									$ni = 0;
-									for($n = $m; $n < ($m + 4); $n++){
-										if (verificarDatoNoDefault($request['be_nit'][$ni]) || verificarDatoNoDefault($request['be_razon_social'][$ni])) {
-											Formulario::insertNuevoAccionista($idData, $request['be_tipo'][$n], $request['be_razon_social'][$ni], $request['be_nit'][$ni], $request['be_nombre_completo'][$n], $request['be_tipodocumento_id'][$n], $request['be_identificacion'][$n], "NULL", "NULL", $request['be_poliza_seguro'][$n], $conn);
-										}
-										$ni++;
-									}
-								}else
-									$n = $m;
-							}
-							$conn->desconectar();
-							$err_img = '';
-							if($imagen = Formulario::obtenerImagenTemporal($request['id_imagen_tmp'])){
-								$err_img = Formulario::guardarImagenDigitada($imagen['filename'], $form_id, $request['type'], $_SESSION['id'], $request['id_imagen_tmp']/*, 2*/);
-							}else
-								$err_img = 'No se encontro la imagen con el identificador: '.$request['id_imagen_tmp'];
-
-
-							if($request['tipopersona'] == '1')
-								$documentVerf = $request['documento'];
-							else
-								$documentVerf = $request['nit'];
-							Formulario::cambiarEstadoDevolucion($documentVerf, $request['tipopersona']);
-
-							Formulario::guardarPlanillaLote($request['planilla_lote'], $request['lote'], $_SESSION['id']);
-							
-							Formulario::addIndexacion($form_id, $_SESSION['id']);
-
-							$mensaje = 'Se agrego la nueva digitacion';
-							if(!empty($err_img))
-								$mensaje .= ', con el siguiente problema: '.$err_img;
-							echo json_encode(array('exito'=> $mensaje, 'url'=> 'fingering2.php?id_form='.$form_id.'&id_cliente='.$cliente_id));
-
-						}else{
-							echo json_encode(array('error'=> 'Ocurrio un error al momento de crear la data del formulario, por favor contacte con el administrador.'));
-							exit();
+			if($request['tipopersona'] == "2"){
+				//JUNTA DIRECTIVA
+				if(isset($request['si_junta_directiva']) && $request['si_junta_directiva'] == '-1'){
+					for ($i = 0; $i < 3; $i++) { 
+						if(verificarDatoNoDefault($request['ju_identificacion'][$i]) || verificarDatoNoDefault($request['ju_nombre_completo'][$i])){
+							Formulario::insertMiembroJunta($idData, $request['ju_nombre_completo'][$i], $request['ju_tipodocumento_id'][$i], $request['ju_identificacion'][$i], $request['ju_expuesto_politico'][$i], $conn);
 						}
-					}catch(Exception $e){
-						var_dump($e);
-						echo json_encode(array('error'=> $e->getMessage()));
 					}
-				}else{
-					echo json_encode(array('error'=> 'Ocurrio un error al momento de crear el formulario, por favor contacte con el administrador...'));
-					exit();
 				}
-			}else{
-				echo json_encode(array('error'=> 'Ocurrio un error al momento de crear el formulario, por favor contacte con el administrador.'));
-				exit();
-			}
-		}else{
-			if(!empty($request['nit']) && $request['tipopersona'] == "2")
-				$cliente_id = Formulario::crearNuevoCliente($request['nit'], $request['tipopersona'], $request['razonsocial'], 2, 2/*, 2*/);
-			elseif(!empty($request['documento']) && $request['tipopersona'] == "1")
-				$cliente_id = Formulario::crearNuevoCliente($request['documento'], $request['tipopersona'], $request['primerapellido'] . " " . $request['segundoapellido'] . " " . $request['nombres'], 2, 2/*, 2*/);
-
-			if(isset($cliente_id) && !empty($cliente_id) && $cliente_id !== false){
-				$exForm = Formulario::verificarFormulario($cliente_id, $request['lote'], $request['planilla1'], $_SESSION['id']);
-				if(isset($exForm) && is_array($exForm) && !empty($exForm) && isset($exForm['id']) && !empty($exForm['id'])){
-					echo json_encode(array("error"=> "2. El formulario que esta intentando registrar, ya se encuentra registrado bajo el id => ".$exForm['id'].", por favor contacte con el administrador."));
-					exit();
-				}
-				if($form_id = Formulario::agregarNuevoFormulario($cliente_id, 'FORMULARIO', $request['lote'], $request['planilla1'], $_SESSION['id'], '1', $request['marca']/*, 2*/)){
-					if(isset($form_id) && !empty($form_id) && $form_id !== false){
-						try{
-							$conn = new Conexion();
-							if($idData = Formulario::insertPrimaryDataNew($form_id, $request, $cliente_id, $conn/*, 2*/)){
-								if($request['tipopersona'] == "2"){
-									//JUNTA DIRECTIVA
-									if(isset($request['si_junta_directiva']) && $request['si_junta_directiva'] == '-1'){
-										for ($i = 0; $i < 3; $i++) { 
-											if(verificarDatoNoDefault($request['ju_identificacion'][$i]) || verificarDatoNoDefault($request['ju_nombre_completo'][$i])){
-												Formulario::insertMiembroJunta($idData, $request['ju_nombre_completo'][$i], $request['ju_tipodocumento_id'][$i], $request['ju_identificacion'][$i], $request['ju_expuesto_politico'][$i], $conn);
-											}
-										}
-									}
-									if(isset($request['si_accionistas_nat']) && $request['si_accionistas_nat'] == '-1'){
-										for($k = 0; $k < 3; $k++){
-											if (verificarDatoNoDefault($request['be_identificacion'][$k]) || verificarDatoNoDefault($request['be_nombre_completo'][$k])) {
-												Formulario::insertNuevoAccionista($idData, $request['be_tipo'][$k], "NULL", "NULL", $request['be_nombre_completo'][$k], $request['be_tipodocumento_id'][$k], $request['be_identificacion'][$k], $request['be_fecha_expedicion'][$k], $request['be_expuesto_politico'][$k], $request['be_poliza_seguro'][$k], $conn);
-											}
-										}
-									}else
-										$k = 0;
-									if(isset($request['si_accionistas_jur']) && $request['si_accionistas_jur'] == '-1'){
-										for($l = $k; $l < ($k + 3); $l++){
-											if (verificarDatoNoDefault($request['be_nit'][$l]) || verificarDatoNoDefault($request['be_razon_social'][$l])) {
-												Formulario::insertNuevoAccionista($idData, $request['be_tipo'][$l], $request['be_razon_social'][$l], $request['be_nit'][$l], $request['be_nombre_completo'][$l], $request['be_tipodocumento_id'][$l], $request['be_identificacion'][$l], "NULL", $request['be_expuesto_politico'][$l], "NULL", $conn);
-											}
-										}
-									}else
-										$l = $k;
-									if(isset($request['si_beneficiarios_nat']) && $request['si_beneficiarios_nat'] == '-1'){
-										for($m = $l; $m < ($l + 4); $m++){
-											if (verificarDatoNoDefault($request['be_identificacion'][$m]) || verificarDatoNoDefault($request['be_nombre_completo'][$m])) {
-												Formulario::insertNuevoAccionista($idData, $request['be_tipo'][$m], "NULL", "NULL", $request['be_nombre_completo'][$m], $request['be_tipodocumento_id'][$m], $request['be_identificacion'][$m], $request['be_fecha_expedicion'][$m], $request['be_expuesto_politico'][$m], $request['be_poliza_seguro'][$m], $conn);
-											}
-										}
-									}else
-										$m = $l;
-									if(isset($request['si_beneficiarios_jur']) && $request['si_beneficiarios_jur'] == '-1'){
-										$ni = 0;
-										for($n = $m; $n < ($m + 4); $n++){
-											if (verificarDatoNoDefault($request['be_nit'][$ni]) || verificarDatoNoDefault($request['be_razon_social'][$ni])) {
-												Formulario::insertNuevoAccionista($idData, $request['be_tipo'][$n], $request['be_razon_social'][$ni], $request['be_nit'][$ni], $request['be_nombre_completo'][$n], $request['be_tipodocumento_id'][$n], $request['be_identificacion'][$n], "NULL", "NULL", $request['be_poliza_seguro'][$n], $conn);
-											}
-											$ni++;
-										}
-									}else
-										$n = $m;
-								}else if($request['tipopersona'] == "1"){
-									if(isset($request['si_beneficiarios_nat']) && $request['si_beneficiarios_nat'] == '-1'){
-										for($m = 0; $m < 4; $m++){
-											if (verificarDatoNoDefault($request['be_identificacion'][$m]) || verificarDatoNoDefault($request['be_nombre_completo'][$m])) {
-												$fecha = crearFechaDePartes($request['f_expbe_a'][$m] ?? '', $request['f_expbe_m'][$m] ?? '', $request['f_expbe_d'][$m] ?? '', '');
-												$fecha = is_array($fecha) ? 'NULL' : $fecha;
-												Formulario::insertNuevoAccionista($idData, $request['be_tipo'][$m], "NULL", "NULL", $request['be_nombre_completo'][$m], $request['be_tipodocumento_id'][$m], $request['be_identificacion'][$m], $fecha, $request['be_expuesto_politico'][$m], $request['be_poliza_seguro'][$m], $conn);
-											}
-										}
-									}else
-										$m = 0;
-									if(isset($request['si_beneficiarios_jur']) && $request['si_beneficiarios_jur'] == '-1'){
-										$ni = 0;
-										for($n = $m; $n < ($m + 4); $n++){
-											if (verificarDatoNoDefault($request['be_nit'][$ni]) || verificarDatoNoDefault($request['be_razon_social'][$ni])) {
-												Formulario::insertNuevoAccionista($idData, $request['be_tipo'][$n], $request['be_razon_social'][$ni], $request['be_nit'][$ni], $request['be_nombre_completo'][$n], $request['be_tipodocumento_id'][$n], $request['be_identificacion'][$n], "NULL", "NULL", $request['be_poliza_seguro'][$n], $conn);
-											}
-											$ni++;
-										}
-									}else
-										$n = $m;
-								}
-								$conn->desconectar();
-								$err_img = '';
-								if($imagen = Formulario::obtenerImagenTemporal($request['id_imagen_tmp'])){
-									$err_img = Formulario::guardarImagenDigitada($imagen['filename'], $form_id, $request['type'], $_SESSION['id'], $request['id_imagen_tmp']/*, 2*/);
-								}else
-									$err_img = 'No se encontro la imagen con el identificador: '.$request['id_imagen_tmp'];
-
-								if($request['tipopersona'] == '1')
-									$documentVerf = $request['documento'];
-								else
-									$documentVerf = $request['nit'];
-								Formulario::cambiarEstadoDevolucion($documentVerf, $request['tipopersona']);
-
-								Formulario::guardarPlanillaLote($request['planilla_lote'], $request['lote'], $_SESSION['id']);
-							
-								Formulario::addIndexacion($form_id, $_SESSION['id']);
-
-								$mensaje = 'Se agrego la nueva digitacion';
-								if(!empty($err_img))
-									$mensaje .= ', con el siguiente problema: '.$err_img;
-								echo json_encode(array('exito'=> $mensaje, 'url'=> 'fingering2.php?id_form='.$form_id.'&id_cliente='.$cliente_id));
-
-							}else{
-								echo json_encode(array('error'=> 'Ocurrio un error al momento de crear la data del formulario, por favor contacte con el administrador.'));
-								exit();
-							}
-						}catch(Exception $e){
-							echo json_encode(array('error'=> $e->getMessage()));
+				if(isset($request['si_accionistas_nat']) && $request['si_accionistas_nat'] == '-1'){
+					for($k = 0; $k < 3; $k++){
+						if (verificarDatoNoDefault($request['be_identificacion'][$k]) || verificarDatoNoDefault($request['be_nombre_completo'][$k])) {
+							Formulario::insertNuevoAccionista($idData, $request['be_tipo'][$k], "NULL", "NULL", $request['be_nombre_completo'][$k], $request['be_tipodocumento_id'][$k], $request['be_identificacion'][$k], $request['be_fecha_expedicion'][$k], $request['be_expuesto_politico'][$k], $request['be_poliza_seguro'][$k], $conn);
 						}
-					}else{
-						echo json_encode(array('error'=> 'Ocurrio un error al momento de crear el formulario, por favor contacte con el administrador...'));
-						exit();
 					}
-				}else{
-					echo json_encode(array('error'=> 'Ocurrio un error al momento de crear el formulario, por favor contacte con el administrador.'));
-					exit();
-				}
-			}else{
-				echo json_encode(array('error'=> 'Ocurrio un error al momento de crear el cliente, por favor contacte con el administrador.'));
-				exit();
+				}else
+					$k = 0;
+				if(isset($request['si_accionistas_jur']) && $request['si_accionistas_jur'] == '-1'){
+					for($l = $k; $l < ($k + 3); $l++){
+						if (verificarDatoNoDefault($request['be_nit'][$l]) || verificarDatoNoDefault($request['be_razon_social'][$l])) {
+							Formulario::insertNuevoAccionista($idData, $request['be_tipo'][$l], $request['be_razon_social'][$l], $request['be_nit'][$l], $request['be_nombre_completo'][$l], $request['be_tipodocumento_id'][$l], $request['be_identificacion'][$l], "NULL", $request['be_expuesto_politico'][$l], "NULL", $conn);
+						}
+					}
+				}else
+					$l = $k;
+				if(isset($request['si_beneficiarios_nat']) && $request['si_beneficiarios_nat'] == '-1'){
+					for($m = $l; $m < ($l + 4); $m++){
+						if (verificarDatoNoDefault($request['be_identificacion'][$m]) || verificarDatoNoDefault($request['be_nombre_completo'][$m])) {
+							Formulario::insertNuevoAccionista($idData, $request['be_tipo'][$m], "NULL", "NULL", $request['be_nombre_completo'][$m], $request['be_tipodocumento_id'][$m], $request['be_identificacion'][$m], $request['be_fecha_expedicion'][$m], $request['be_expuesto_politico'][$m], $request['be_poliza_seguro'][$m], $conn);
+						}
+					}
+				}else
+					$m = $l;
+				if(isset($request['si_beneficiarios_jur']) && $request['si_beneficiarios_jur'] == '-1'){
+					$ni = 0;
+					for($n = $m; $n < ($m + 4); $n++){
+						if (verificarDatoNoDefault($request['be_nit'][$ni]) || verificarDatoNoDefault($request['be_razon_social'][$ni])) {
+							Formulario::insertNuevoAccionista($idData, $request['be_tipo'][$n], $request['be_razon_social'][$ni], $request['be_nit'][$ni], $request['be_nombre_completo'][$n], $request['be_tipodocumento_id'][$n], $request['be_identificacion'][$n], "NULL", "NULL", $request['be_poliza_seguro'][$n], $conn);
+						}
+						$ni++;
+					}
+				}else
+					$n = $m;
+			}else if($request['tipopersona'] == "1"){
+				if(isset($request['si_beneficiarios_nat']) && $request['si_beneficiarios_nat'] == '-1'){
+					for($m = 0; $m < 4; $m++){
+						if (verificarDatoNoDefault($request['be_identificacion'][$m]) || verificarDatoNoDefault($request['be_nombre_completo'][$m])) {
+							$fecha = crearFechaDePartes($request['f_expbe_a'][$m] ?? '', $request['f_expbe_m'][$m] ?? '', $request['f_expbe_d'][$m] ?? '', '');
+							$fecha = is_array($fecha) ? 'NULL' : $fecha;
+							Formulario::insertNuevoAccionista($idData, $request['be_tipo'][$m], "NULL", "NULL", $request['be_nombre_completo'][$m], $request['be_tipodocumento_id'][$m], $request['be_identificacion'][$m], $fecha, $request['be_expuesto_politico'][$m], $request['be_poliza_seguro'][$m], $conn);
+						}
+					}
+				}else
+					$m = 0;
+				if(isset($request['si_beneficiarios_jur']) && $request['si_beneficiarios_jur'] == '-1'){
+					$ni = 0;
+					for($n = $m; $n < ($m + 4); $n++){
+						if (verificarDatoNoDefault($request['be_nit'][$ni]) || verificarDatoNoDefault($request['be_razon_social'][$ni])) {
+							Formulario::insertNuevoAccionista($idData, $request['be_tipo'][$n], $request['be_razon_social'][$ni], $request['be_nit'][$ni], $request['be_nombre_completo'][$n], $request['be_tipodocumento_id'][$n], $request['be_identificacion'][$n], "NULL", "NULL", $request['be_poliza_seguro'][$n], $conn);
+						}
+						$ni++;
+					}
+				}else
+					$n = $m;
 			}
+			$conn->desconectar();
+			$err_img = '';
+			$imagen = Formulario::obtenerImagenTemporal($request['id_imagen_tmp']);
+			if ($imagen === false) {
+				$err_img = 'No se encontro la imagen con el identificador: ' . $request['id_imagen_tmp'];
+			} else {
+				$err_img = Formulario::guardarImagenDigitada($imagen['filename'], $form_id, $request['type'], $_SESSION['id'], $request['id_imagen_tmp']/*, 2*/);
+			}
+
+			$documentVerf = $request['tipopersona'] == '1' ? $request['documento'] : $request['nit']
+			;
+			Formulario::cambiarEstadoDevolucion($documentVerf, $request['tipopersona']);
+
+			Formulario::guardarPlanillaLote($request['planilla_lote'], $request['lote'], $_SESSION['id']);
+			
+			Formulario::addIndexacion($form_id, $_SESSION['id']);
+
+			$mensaje = 'Se agrego la nueva digitacion';
+			if (!empty($err_img)) $mensaje .= ', con el siguiente problema: ' . $err_img;
+
+			echo json_encode(['exito'=> $mensaje, 'url'=> 'fingering2.php?id_form='.$form_id.'&id_cliente='.$cliente_id]);
+
+		} catch (Exception $e) {
+			var_dump($e);
+			echo json_encode(['error'=> $e->getMessage()]);
 		}
 	}else{
-		echo json_encode(array('error'=> 'El numero de documento del cliente no puede estar vacion, por favor verifiquelo.'));
-		exit();
+		if (!empty($request['nit']) && $request['tipopersona'] == "2") {
+			$cliente_id = Formulario::crearNuevoCliente($request['nit'], $request['tipopersona'], $request['razonsocial'], 2, 2/*, 2*/);
+		} else if (!empty($request['documento']) && $request['tipopersona'] == "1") {
+			$cliente_id = Formulario::crearNuevoCliente($request['documento'], $request['tipopersona'], $request['primerapellido'] . " " . $request['segundoapellido'] . " " . $request['nombres'], 2, 2/*, 2*/);
+		}
+
+		if (!isset($cliente_id) || empty($cliente_id) || $cliente_id === false) {
+			echo json_encode(['error'=> 'Ocurrio un error al momento de crear el cliente, por favor contacte con el administrador.']);
+			exit;
+		}
+		$exForm = Formulario::verificarFormulario($cliente_id, $request['lote'], $request['planilla1'], $_SESSION['id']);
+		if (isset($exForm) && is_array($exForm) && !empty($exForm) && isset($exForm['id']) && !empty($exForm['id'])) {
+			echo json_encode(["error"=> "2. El formulario que esta intentando registrar, ya se encuentra registrado bajo el id => ".$exForm['id'].", por favor contacte con el administrador."]);
+			exit;
+		}
+	$form_id = Formulario::agregarNuevoFormulario($cliente_id, 'FORMULARIO', $request['lote'], $request['planilla1'], $_SESSION['id'], '1', $request['marca']/*, 2*/);
+		if ($form_id === false || $form_id === 0) {
+			echo json_encode(['error'=> 'Ocurrio un error al momento de crear el formulario, por favor contacte con el administrador.']);
+			exit;
+		}
+		try{
+			$conn = new Conexion();
+			$idData = Formulario::insertPrimaryDataNew($form_id, $request, $cliente_id, $conn/*, 2*/);
+			if ($idData === false || $idData === 0) {
+				echo json_encode(['error'=> 'Ocurrio un error al momento de crear la data del formulario, por favor contacte con el administrador.']);
+				exit;
+			}
+			if ($request['tipopersona'] == "2") {
+				//JUNTA DIRECTIVA
+				if(isset($request['si_junta_directiva']) && $request['si_junta_directiva'] == '-1'){
+					for ($i = 0; $i < 3; $i++) { 
+						if(verificarDatoNoDefault($request['ju_identificacion'][$i]) || verificarDatoNoDefault($request['ju_nombre_completo'][$i])){
+							Formulario::insertMiembroJunta($idData, $request['ju_nombre_completo'][$i], $request['ju_tipodocumento_id'][$i], $request['ju_identificacion'][$i], $request['ju_expuesto_politico'][$i], $conn);
+						}
+					}
+				}
+				if(isset($request['si_accionistas_nat']) && $request['si_accionistas_nat'] == '-1'){
+					for($k = 0; $k < 3; $k++){
+						if (verificarDatoNoDefault($request['be_identificacion'][$k]) || verificarDatoNoDefault($request['be_nombre_completo'][$k])) {
+							Formulario::insertNuevoAccionista($idData, $request['be_tipo'][$k], "NULL", "NULL", $request['be_nombre_completo'][$k], $request['be_tipodocumento_id'][$k], $request['be_identificacion'][$k], $request['be_fecha_expedicion'][$k], $request['be_expuesto_politico'][$k], $request['be_poliza_seguro'][$k], $conn);
+						}
+					}
+				}else
+					$k = 0;
+				if(isset($request['si_accionistas_jur']) && $request['si_accionistas_jur'] == '-1'){
+					for($l = $k; $l < ($k + 3); $l++){
+						if (verificarDatoNoDefault($request['be_nit'][$l]) || verificarDatoNoDefault($request['be_razon_social'][$l])) {
+							Formulario::insertNuevoAccionista($idData, $request['be_tipo'][$l], $request['be_razon_social'][$l], $request['be_nit'][$l], $request['be_nombre_completo'][$l], $request['be_tipodocumento_id'][$l], $request['be_identificacion'][$l], "NULL", $request['be_expuesto_politico'][$l], "NULL", $conn);
+						}
+					}
+				}else
+					$l = $k;
+				if(isset($request['si_beneficiarios_nat']) && $request['si_beneficiarios_nat'] == '-1'){
+					for($m = $l; $m < ($l + 4); $m++){
+						if (verificarDatoNoDefault($request['be_identificacion'][$m]) || verificarDatoNoDefault($request['be_nombre_completo'][$m])) {
+							Formulario::insertNuevoAccionista($idData, $request['be_tipo'][$m], "NULL", "NULL", $request['be_nombre_completo'][$m], $request['be_tipodocumento_id'][$m], $request['be_identificacion'][$m], $request['be_fecha_expedicion'][$m], $request['be_expuesto_politico'][$m], $request['be_poliza_seguro'][$m], $conn);
+						}
+					}
+				}else
+					$m = $l;
+				if(isset($request['si_beneficiarios_jur']) && $request['si_beneficiarios_jur'] == '-1'){
+					$ni = 0;
+					for($n = $m; $n < ($m + 4); $n++){
+						if (verificarDatoNoDefault($request['be_nit'][$ni]) || verificarDatoNoDefault($request['be_razon_social'][$ni])) {
+							Formulario::insertNuevoAccionista($idData, $request['be_tipo'][$n], $request['be_razon_social'][$ni], $request['be_nit'][$ni], $request['be_nombre_completo'][$n], $request['be_tipodocumento_id'][$n], $request['be_identificacion'][$n], "NULL", "NULL", $request['be_poliza_seguro'][$n], $conn);
+						}
+						$ni++;
+					}
+				}else
+					$n = $m;
+			}else if($request['tipopersona'] == "1"){
+				if(isset($request['si_beneficiarios_nat']) && $request['si_beneficiarios_nat'] == '-1'){
+					for($m = 0; $m < 4; $m++){
+						if (verificarDatoNoDefault($request['be_identificacion'][$m]) || verificarDatoNoDefault($request['be_nombre_completo'][$m])) {
+							$fecha = crearFechaDePartes($request['f_expbe_a'][$m] ?? '', $request['f_expbe_m'][$m] ?? '', $request['f_expbe_d'][$m] ?? '', '');
+							$fecha = is_array($fecha) ? 'NULL' : $fecha;
+							Formulario::insertNuevoAccionista($idData, $request['be_tipo'][$m], "NULL", "NULL", $request['be_nombre_completo'][$m], $request['be_tipodocumento_id'][$m], $request['be_identificacion'][$m], $fecha, $request['be_expuesto_politico'][$m], $request['be_poliza_seguro'][$m], $conn);
+						}
+					}
+				}else
+					$m = 0;
+				if(isset($request['si_beneficiarios_jur']) && $request['si_beneficiarios_jur'] == '-1'){
+					$ni = 0;
+					for($n = $m; $n < ($m + 4); $n++){
+						if (verificarDatoNoDefault($request['be_nit'][$ni]) || verificarDatoNoDefault($request['be_razon_social'][$ni])) {
+							Formulario::insertNuevoAccionista($idData, $request['be_tipo'][$n], $request['be_razon_social'][$ni], $request['be_nit'][$ni], $request['be_nombre_completo'][$n], $request['be_tipodocumento_id'][$n], $request['be_identificacion'][$n], "NULL", "NULL", $request['be_poliza_seguro'][$n], $conn);
+						}
+						$ni++;
+					}
+				}else
+					$n = $m;
+			}
+			$conn->desconectar();
+			$err_img = 'No se encontro la imagen con el identificador: ' . $request['id_imagen_tmp'];
+			$imagen = Formulario::obtenerImagenTemporal($request['id_imagen_tmp']);
+			if ($imagen !== false) {
+				$err_img = Formulario::guardarImagenDigitada($imagen['filename'], $form_id, $request['type'], $_SESSION['id'], $request['id_imagen_tmp']/*, 2*/);
+			}
+			$documentVerf = $request['tipopersona'] == '1' ? $request['documento'] : $request['nit'];
+			Formulario::cambiarEstadoDevolucion($documentVerf, $request['tipopersona']);
+
+			Formulario::guardarPlanillaLote($request['planilla_lote'], $request['lote'], $_SESSION['id']);
+		
+			Formulario::addIndexacion($form_id, $_SESSION['id']);
+
+			$mensaje = 'Se agrego la nueva digitacion';
+			if (!empty($err_img)) $mensaje .= ', con el siguiente problema: ' . $err_img;
+
+			echo json_encode(array('exito'=> $mensaje, 'url'=> 'fingering2.php?id_form='.$form_id.'&id_cliente='.$cliente_id));
+
+		}catch(Exception $e){
+			echo json_encode(array('error'=> $e->getMessage()));
+		}
 	}
 }
 function guardarFormularioSectorAseguradoAction($request){
@@ -1606,41 +1596,41 @@ function guardarFormularioSectorAseguradoAction($request){
 	if((isset($request['f_rad_a']) && !empty($request['f_rad_a'])) && (isset($request['f_rad_m']) && !empty($request['f_rad_m'])) && (isset($request['f_rad_d']) && !empty($request['f_rad_d']))){
 		if(date('Y-m-d', strtotime($request['f_rad_a'].'-'.$request['f_rad_m'].'-'.$request['f_rad_d'])) == '1969-12-31'){
 			echo json_encode(array("error"=> "La fecha de radicado no puede ser errada."));
-			exit();
+			exit;
 		}else
 			$request['fecharadicado'] = date('Y-m-d', strtotime($request['f_rad_a'].'-'.$request['f_rad_m'].'-'.$request['f_rad_d']));
 	}else{
 		echo json_encode(array("error"=> "La fecha de radicado no puede ser vacia."));
-		exit();
+		exit;
 	}
 	if((isset($request['f_dil_a']) && !empty($request['f_dil_a'])) && (isset($request['f_dil_m']) && !empty($request['f_dil_m'])) && (isset($request['f_dil_d']) && !empty($request['f_dil_d']))){
 		if(date('Y-m-d', strtotime($request['f_dil_a'].'-'.$request['f_dil_m'].'-'.$request['f_dil_d'])) == '1969-12-31'){
 			echo json_encode(array("error"=> "La fecha de diligenciamiento no puede ser errada."));
-			exit();
+			exit;
 		}else
 			$request['fechasolicitud'] = date('Y-m-d', strtotime($request['f_dil_a'].'-'.$request['f_dil_m'].'-'.$request['f_dil_d']));
 	}else{
 		echo json_encode(array("error"=> "La fecha de diligenciamiento no puede ser vacia."));
-		exit();
+		exit;
 	}
 	if((isset($request['f_exp_a']) && !empty($request['f_exp_a'])) && (isset($request['f_exp_m']) && !empty($request['f_exp_m'])) && (isset($request['f_exp_d']) && !empty($request['f_exp_d']))){
 		if(date('Y-m-d', strtotime($request['f_exp_a'].'-'.$request['f_exp_m'].'-'.$request['f_exp_d'])) == '1969-12-31'){
 			echo json_encode(array("error"=> "La fecha de expedicion no puede ser errada."));
-			exit();
+			exit;
 		}else
 			$request['fechaexpedicion'] = date('Y-m-d', strtotime($request['f_exp_a'].'-'.$request['f_exp_m'].'-'.$request['f_exp_d']));
 	}
 	if((isset($request['f_nac_a']) && !empty($request['f_nac_a'])) && (isset($request['f_nac_m']) && !empty($request['f_nac_m'])) && (isset($request['f_nac_d']) && !empty($request['f_nac_d']))){
 		if(date('Y-m-d', strtotime($request['f_nac_a'].'-'.$request['f_nac_m'].'-'.$request['f_nac_d'])) == '1969-12-31' && ($request['f_nac_a'] != '1969' || $request['f_nac_m'] != '12' || $request['f_nac_d'] != '31')){
 			echo json_encode(array("error"=> "La fecha de nacimento no puede ser errada."));
-			exit();
+			exit;
 		}else
 			$request['fechanacimiento'] = date('Y-m-d', strtotime($request['f_nac_a'].'-'.$request['f_nac_m'].'-'.$request['f_nac_d']));
 	}
 	if((isset($request['f_ver_a']) && !empty($request['f_ver_a'])) && (isset($request['f_ver_m']) && !empty($request['f_ver_m'])) && (isset($request['f_ver_d']) && !empty($request['f_ver_d']))){
 		if(date('Y-m-d', strtotime($request['f_ver_a'].'-'.$request['f_ver_m'].'-'.$request['f_ver_d'])) == '1969-12-31'){
 			echo json_encode(array("error"=> "La fecha de verificacion no puede ser errada."));
-			exit();
+			exit;
 		}else
 			$request['verificacion_fecha'] = date('Y-m-d', strtotime($request['f_ver_a'].'-'.$request['f_ver_m'].'-'.$request['f_ver_d']));
 	}
@@ -1674,7 +1664,8 @@ function guardarFormularioSectorAseguradoAction($request){
 	}elseif($request['monedaextranjera'] == '0' && $request['tipotransacciones'] != '7'){
 		$request['tipotransacciones_cual'] = 'SD';
 	}
-	if($request['tipopersona'] == '2'){
+	$patrimonio = 0;
+	if ($request['tipopersona'] == '2') {
 		$request['tipoactividad'] = '900';
 		$request['profesion'] = '900';
 		$request['cargo'] = 'SD';
@@ -1687,7 +1678,8 @@ function guardarFormularioSectorAseguradoAction($request){
 		$request['egresosmensuales'] = '13';
 		$request['otrosingresos'] = '13';
 		$request['conceptosotrosingresos'] = 'SD';
-	}elseif($request['tipopersona'] == '1'){
+		$patrimonio = intval($request['activosemp']) - intval($request['pasivosemp']);
+	} else if ($request['tipopersona'] == '1') {
 		$request['razonsocial'] = 'SD';
 		$request['nit'] = '*';
 		$request['digitochequeo'] = '0';
@@ -1705,7 +1697,9 @@ function guardarFormularioSectorAseguradoAction($request){
 		$request['egresosmensualesemp'] = '7';
 		$request['otrosingresosemp'] = '7';
 		$request['concepto_otrosingresosemp'] = 'SD';
+		$patrimonio = intval($request['totalactivos']) - intval($request['totalpasivos']);
 	}
+	$request['patrimonio'] = $patrimonio <= 0 ? '0' : $patrimonio;
 	if(!isset($request['actividadeconomicaempresa']))
 		$request['actividadeconomicaempresa'] = '4';
 	if(!isset($request['tipotransacciones']))
@@ -1733,231 +1727,205 @@ function guardarFormularioSectorAseguradoAction($request){
 	if(!isset($request['observacionesentrevista']))
 		$request['observacionesentrevista'] = $request['verificacion_observacion'];
 	
+	if((empty($request['documento']) || empty($request['nit']) ) && empty($request['tipopersona'])){
+		echo json_encode(array('error'=> 'El numero de documento del cliente no puede estar vacion, por favor verifiquelo.'));
+		exit;
+	}
+	if (!empty($request['nit']) && $request['tipopersona'] == "2") {
+		$cliente_id = Formulario::obtenerIdCliente($request['nit'], $request['tipopersona']/*, 2*/);
+	} else if (!empty($request['documento']) && $request['tipopersona'] == "1") {
+		$cliente_id = Formulario::obtenerIdCliente($request['documento'], $request['tipopersona']/*, 2*/);
+	}
 
-
-
-	if((!empty($request['documento']) || !empty($request['nit']) ) && !empty($request['tipopersona'])){
-		if(!empty($request['nit']) && $request['tipopersona'] == "2")
-			$cliente_id = Formulario::obtenerIdCliente($request['nit'], $request['tipopersona']/*, 2*/);
-		else if(!empty($request['documento']) && $request['tipopersona'] == "1")
-			$cliente_id = Formulario::obtenerIdCliente($request['documento'], $request['tipopersona']/*, 2*/);
-
-		if(isset($cliente_id) && !empty($cliente_id) && $cliente_id !== false){
-			Formulario::activeCliente($cliente_id);
-			Formulario::actualizarRegimen($cliente_id, 2/*, 2*/);
-			$exForm = Formulario::verificarFormulario($cliente_id, $request['lote'], $request['planilla1'], $_SESSION['id']);
-			if(isset($exForm) && is_array($exForm) && !empty($exForm) && isset($exForm['id']) && !empty($exForm['id'])){
-				echo json_encode(array("error"=> "1. El formulario que esta intentando registrar, ya se encuentra registrado bajo el id => ".$exForm['id'].", por favor contacte con el administrador."));
-				exit();
+	if(isset($cliente_id) && !empty($cliente_id) && $cliente_id !== false){
+		Formulario::activeCliente($cliente_id);
+		Formulario::actualizarRegimen($cliente_id, 2/*, 2*/);
+		$exForm = Formulario::verificarFormulario($cliente_id, $request['lote'], $request['planilla1'], $_SESSION['id']);
+		if(isset($exForm) && is_array($exForm) && !empty($exForm) && isset($exForm['id']) && !empty($exForm['id'])){
+			echo json_encode(array("error"=> "1. El formulario que esta intentando registrar, ya se encuentra registrado bajo el id => ".$exForm['id'].", por favor contacte con el administrador."));
+			exit;
+		}
+		$form_id = Formulario::agregarNuevoFormulario($cliente_id, 'FORMULARIO', $request['lote'], $request['planilla1'], $_SESSION['id'], '1', $request['marca']/*, 2*/);
+		if ($form_id === false || $form_id === 0) {
+			echo json_encode(['error'=> 'Ocurrio un error al momento de crear el formulario, por favor contacte con el administrador.']);
+			exit;
+		}
+		try {
+			$conn = new Conexion();
+			$idData = Formulario::insertPrimaryDataNew($form_id, $request, $cliente_id, $conn/*, 2*/);
+			if ($idData === false || $idData === 0) {
+				echo json_encode(['error'=> 'Ocurrio un error al momento de crear la data del formulario, por favor contacte con el administrador.']);
+				exit;
 			}
-			if($form_id = Formulario::agregarNuevoFormulario($cliente_id, 'FORMULARIO', $request['lote'], $request['planilla1'], $_SESSION['id'], '1', $request['marca']/*, 2*/)){
-				if(isset($form_id) && !empty($form_id) && $form_id !== false){
-					try{
-						$conn = new Conexion();
-						if($idData = Formulario::insertPrimaryDataNew($form_id, $request, $cliente_id, $conn/*, 2*/)){
-							if($request['tipopersona'] == "2"){
-								if(isset($request['si_accionistas_nat']) && $request['si_accionistas_nat'] == '-1'){
-									for ($i = 0; $i < 5; $i++) { 
-										if(verificarDatoNoDefault($request['identificacion'][$i]) || verificarDatoNoDefault($request['nombre_accionista'][$i])){
-											Formulario::insertAccionistas($idData, $request['tipo_id'][$i], $request['identificacion'][$i], $request['nombre_accionista'][$i], $request['porcentaje'][$i], "NULL", $request['publico_reconocimiento'][$i], $request['publico_expuesta'][$i], "NULL");
-										}
-									}
-								}
-								//JUNTA DIRECTIVA
-								if(isset($request['si_junta_directiva']) && $request['si_junta_directiva'] == '-1'){
-									for ($i = 0; $i < 5; $i++) {
-										if(verificarDatoNoDefault($request['ju_identificacion'][$i]) || verificarDatoNoDefault($request['ju_nombre_completo'][$i])){
-											Formulario::insertMiembroJunta($idData, $request['ju_nombre_completo'][$i], $request['ju_tipodocumento_id'][$i], $request['ju_identificacion'][$i], $request['ju_expuesto_politico'][$i], $conn);
-										}
-									}
-								}
-								if(isset($request['si_beneficiarios_nat']) && $request['si_beneficiarios_nat'] == '-1'){
-									for($m = 0; $m < 4; $m++){
-										if (verificarDatoNoDefault($request['be_identificacion'][$m]) || verificarDatoNoDefault($request['be_nombre_completo'][$m])) {
-											Formulario::insertNuevoAccionista($idData, $request['be_tipo'][$m], "NULL", "NULL", $request['be_nombre_completo'][$m], $request['be_tipodocumento_id'][$m], $request['be_identificacion'][$m], "NULL", $request['be_expuesto_politico'][$m], $request['be_poliza_seguro'][$m], $conn);
-										}
-									}
-								}
-							}else if($request['tipopersona'] == "1"){
-								if(isset($request['si_beneficiarios_nat']) && $request['si_beneficiarios_nat'] == '-1'){
-									for($m = 0; $m < 4; $m++){
-										if (verificarDatoNoDefault($request['be_identificacion'][$m]) || verificarDatoNoDefault($request['be_nombre_completo'][$m])) {
-											Formulario::insertNuevoAccionista($idData, $request['be_tipo'][$m], "NULL", "NULL", $request['be_nombre_completo'][$m], $request['be_tipodocumento_id'][$m], $request['be_identificacion'][$m], "NULL", $request['be_expuesto_politico'][$m], $request['be_poliza_seguro'][$m], $conn);
-										}
-									}
-								}
-							}
-							if(isset($request['si_peps_nat']) && $request['si_peps_nat'] == "-1"){
-								for($k = 0; $k < 5; $k++){
-									if (verificarDatoNoDefault($request['pep_identificacion'][$k]) || verificarDatoNoDefault($request['pep_nombre_razon'][$k])) {
-										Formulario::insertNuevoPep($idData, $request['pep_vinculo_relacion'][$k], $request['pep_tipo_pep'][$k], $request['pep_nombre_razon'][$k], $request['pep_tipodocumento_id'][$k], $request['pep_identificacion'][$k], $request['pep_nacionalidad_id'][$k], $request['pep_entidad'][$k], $request['pep_cargo'][$k], $request['pep_fecha_vinculacion'][$k], $request['pep_fecha_desvinculacion'][$k], $request['pep_cuentas_otros_paises'][$k], $conn);
-									}
-								}
-							}else
-								$k = 0;
-							if(isset($request['si_peps_vinculados']) && $request['si_peps_vinculados'] == "-1"){
-								for($l = $k; $l < ($k + 5); $l++){
-									if (verificarDatoNoDefault($request['pep_identificacion'][$l]) || verificarDatoNoDefault($request['pep_nombre_razon'][$l])) {
-										Formulario::insertNuevoPep($idData, $request['pep_vinculo_relacion'][$l], "NULL", $request['pep_nombre_razon'][$l], $request['pep_tipodocumento_id'][$l], $request['pep_identificacion'][$l], $request['pep_nacionalidad_id'][$l], "NULL", "NULL", "NULL", "NULL", "NULL", $conn);
-									}
-								}
-							}else
-								$l = $k;
-							$conn->desconectar();
-							$err_img = '';
-							if($imagen = Formulario::obtenerImagenTemporal($request['id_imagen_tmp'])){
-								$err_img = Formulario::guardarImagenDigitada($imagen['filename'], $form_id, $request['type'], $_SESSION['id'], $request['id_imagen_tmp']/*, 2*/);
-							}else
-								$err_img = 'No se encontro la imagen con el identificador: '.$request['id_imagen_tmp'];
-
-
-							if($request['tipopersona'] == '1')
-								$documentVerf = $request['documento'];
-							else
-								$documentVerf = $request['nit'];
-							Formulario::cambiarEstadoDevolucion($documentVerf, $request['tipopersona']);
-
-							Formulario::guardarPlanillaLote($request['planilla_lote'], $request['lote'], $_SESSION['id']);
-							
-							Formulario::addIndexacion($form_id, $_SESSION['id']);
-							$mensaje = 'Se agrego la nueva digitacion';
-							if(!empty($err_img))
-								$mensaje .= ', con el siguiente problema: '.$err_img;
-							echo json_encode(array('exito'=> $mensaje, 'url'=> 'fingering2.php?id_form='.$form_id.'&id_cliente='.$cliente_id));
-
-						}else{
-							echo json_encode(array('error'=> 'Ocurrio un error al momento de crear la data del formulario, por favor contacte con el administrador.'));
-							exit();
+			if ($request['tipopersona'] == "2") {
+				if (isset($request['si_accionistas_nat']) && $request['si_accionistas_nat'] == '-1') {
+					for ($i = 0; $i < 5; $i++) { 
+						if (verificarDatoNoDefault($request['identificacion'][$i]) || verificarDatoNoDefault($request['nombre_accionista'][$i])) {
+							Formulario::insertAccionistas($idData, $request['tipo_id'][$i], $request['identificacion'][$i], $request['nombre_accionista'][$i], $request['porcentaje'][$i], "NULL", $request['publico_reconocimiento'][$i], $request['publico_expuesta'][$i], "NULL");
 						}
-					}catch(Exception $e){
-						var_dump($e);
-						echo json_encode(array('error'=> $e->getMessage()));
 					}
-				}else{
-					echo json_encode(array('error'=> 'Ocurrio un error al momento de crear el formulario, por favor contacte con el administrador...'));
-					exit();
 				}
-			}else{
-				echo json_encode(array('error'=> 'Ocurrio un error al momento de crear el formulario, por favor contacte con el administrador.'));
-				exit();
-			}
-		}else{
-			if(!empty($request['nit']) && $request['tipopersona'] == "2")
-				$cliente_id = Formulario::crearNuevoCliente($request['nit'], $request['tipopersona'], $request['razonsocial'], 2, 2/*, 2*/);
-			elseif(!empty($request['documento']) && $request['tipopersona'] == "1")
-				$cliente_id = Formulario::crearNuevoCliente($request['documento'], $request['tipopersona'], $request['primerapellido'] . " " . $request['segundoapellido'] . " " . $request['nombres'], 2, 2/*, 2*/);
-
-			if(isset($cliente_id) && !empty($cliente_id) && $cliente_id !== false){
-				$exForm = Formulario::verificarFormulario($cliente_id, $request['lote'], $request['planilla1'], $_SESSION['id']);
-				if(isset($exForm) && is_array($exForm) && !empty($exForm) && isset($exForm['id']) && !empty($exForm['id'])){
-					echo json_encode(array("error"=> "2. El formulario que esta intentando registrar, ya se encuentra registrado bajo el id => ".$exForm['id'].", por favor contacte con el administrador."));
-					exit();
-				}
-				if($form_id = Formulario::agregarNuevoFormulario($cliente_id, 'FORMULARIO', $request['lote'], $request['planilla1'], $_SESSION['id'], '1', $request['marca']/*, 2*/)){
-					if(isset($form_id) && !empty($form_id) && $form_id !== false){
-						try{
-							$conn = new Conexion();
-							if($idData = Formulario::insertPrimaryDataNew($form_id, $request, $cliente_id, $conn/*, 2*/)){
-								if($request['tipopersona'] == "2"){
-									if(isset($request['si_accionistas_nat']) && $request['si_accionistas_nat'] == '-1'){
-										for ($i = 0; $i < 5; $i++) { 
-											if(verificarDatoNoDefault($request['identificacion'][$i]) || verificarDatoNoDefault($request['nombre_accionista'][$i])){
-												Formulario::insertAccionistas($idData, $request['tipo_id'][$i], $request['identificacion'][$i], $request['nombre_accionista'][$i], $request['porcentaje'][$i], "NULL", $request['publico_reconocimiento'][$i], $request['publico_expuesta'][$i], "NULL");
-											}
-										}
-									}
-									//JUNTA DIRECTIVA
-									if(isset($request['si_junta_directiva']) && $request['si_junta_directiva'] == '-1'){
-										for ($i = 0; $i < 5; $i++) {
-											if(verificarDatoNoDefault($request['ju_identificacion'][$i]) || verificarDatoNoDefault($request['ju_nombre_completo'][$i])){
-												Formulario::insertMiembroJunta($idData, $request['ju_nombre_completo'][$i], $request['ju_tipodocumento_id'][$i], $request['ju_identificacion'][$i], $request['ju_expuesto_politico'][$i], $conn);
-											}
-										}
-									}
-									if(isset($request['si_beneficiarios_nat']) && $request['si_beneficiarios_nat'] == '-1'){
-										for($m = 0; $m < 4; $m++){
-											if (verificarDatoNoDefault($request['be_identificacion'][$m]) || verificarDatoNoDefault($request['be_nombre_completo'][$m])) {
-												Formulario::insertNuevoAccionista($idData, $request['be_tipo'][$m], "NULL", "NULL", $request['be_nombre_completo'][$m], $request['be_tipodocumento_id'][$m], $request['be_identificacion'][$m], "NULL", $request['be_expuesto_politico'][$m], $request['be_poliza_seguro'][$m], $conn);
-											}
-										}
-									}
-								}else if($request['tipopersona'] == "1"){
-									if(isset($request['si_beneficiarios_nat']) && $request['si_beneficiarios_nat'] == '-1'){
-										for($m = 0; $m < 4; $m++){
-											if (verificarDatoNoDefault($request['be_identificacion'][$m]) || verificarDatoNoDefault($request['be_nombre_completo'][$m])) {
-												Formulario::insertNuevoAccionista($idData, $request['be_tipo'][$m], "NULL", "NULL", $request['be_nombre_completo'][$m], $request['be_tipodocumento_id'][$m], $request['be_identificacion'][$m], "NULL", $request['be_expuesto_politico'][$m], $request['be_poliza_seguro'][$m], $conn);
-											}
-										}
-									}
-								}
-								if(isset($request['si_peps_nat']) && $request['si_peps_nat'] == "-1"){
-									for($k = 0; $k < 5; $k++){
-										if (verificarDatoNoDefault($request['pep_identificacion'][$k]) || verificarDatoNoDefault($request['pep_nombre_razon'][$k])) {
-											Formulario::insertNuevoPep($idData, $request['pep_vinculo_relacion'][$k], $request['pep_tipo_pep'][$k], $request['pep_nombre_razon'][$k], $request['pep_tipodocumento_id'][$k], $request['pep_identificacion'][$k], $request['pep_nacionalidad_id'][$k], $request['pep_entidad'][$k], $request['pep_cargo'][$k], $request['pep_fecha_vinculacion'][$k], $request['pep_fecha_desvinculacion'][$k], $request['pep_cuentas_otros_paises'][$k], $conn);
-										}
-									}
-								}else
-									$k = 0;
-								if(isset($request['si_peps_vinculados']) && $request['si_peps_vinculados'] == "-1"){
-									for($l = $k; $l < ($k + 5); $l++){
-										if (verificarDatoNoDefault($request['pep_identificacion'][$l]) || verificarDatoNoDefault($request['pep_nombre_razon'][$l])) {
-											Formulario::insertNuevoPep($idData, $request['pep_vinculo_relacion'][$l], "NULL", $request['pep_nombre_razon'][$l], $request['pep_tipodocumento_id'][$l], $request['pep_identificacion'][$l], $request['pep_nacionalidad_id'][$l], "NULL", "NULL", "NULL", "NULL", "NULL", $conn);
-										}
-									}
-								}else
-									$l = $k;
-								$conn->desconectar();
-								$err_img = '';
-								if($imagen = Formulario::obtenerImagenTemporal($request['id_imagen_tmp'])){
-									$err_img = Formulario::guardarImagenDigitada($imagen['filename'], $form_id, $request['type'], $_SESSION['id'], $request['id_imagen_tmp']/*, 2*/);
-								}else
-									$err_img = 'No se encontro la imagen con el identificador: '.$request['id_imagen_tmp'];
-
-								if($request['tipopersona'] == '1')
-									$documentVerf = $request['documento'];
-								else
-									$documentVerf = $request['nit'];
-								Formulario::cambiarEstadoDevolucion($documentVerf, $request['tipopersona']);
-
-								Formulario::guardarPlanillaLote($request['planilla_lote'], $request['lote'], $_SESSION['id']);
-							
-								Formulario::addIndexacion($form_id, $_SESSION['id']);
-
-								$mensaje = 'Se agrego la nueva digitacion';
-								if(!empty($err_img))
-									$mensaje .= ', con el siguiente problema: '.$err_img;
-								echo json_encode(array('exito'=> $mensaje, 'url'=> 'fingering2.php?id_form='.$form_id.'&id_cliente='.$cliente_id));
-
-							}else{
-								echo json_encode(array('error'=> 'Ocurrio un error al momento de crear la data del formulario, por favor contacte con el administrador.'));
-								exit();
-							}
-						}catch(Exception $e){
-							echo json_encode(array('error'=> $e->getMessage()));
+				//JUNTA DIRECTIVA
+				if (isset($request['si_junta_directiva']) && $request['si_junta_directiva'] == '-1') {
+					for ($i = 0; $i < 5; $i++) {
+						if (verificarDatoNoDefault($request['ju_identificacion'][$i]) || verificarDatoNoDefault($request['ju_nombre_completo'][$i])) {
+							Formulario::insertMiembroJunta($idData, $request['ju_nombre_completo'][$i], $request['ju_tipodocumento_id'][$i], $request['ju_identificacion'][$i], $request['ju_expuesto_politico'][$i], $conn);
 						}
-					}else{
-						echo json_encode(array('error'=> 'Ocurrio un error al momento de crear el formulario, por favor contacte con el administrador...'));
-						exit();
 					}
-				}else{
-					echo json_encode(array('error'=> 'Ocurrio un error al momento de crear el formulario, por favor contacte con el administrador.'));
-					exit();
 				}
-			}else{
-				echo json_encode(array('error'=> 'Ocurrio un error al momento de crear el cliente, por favor contacte con el administrador.'));
-				exit();
+				if (isset($request['si_beneficiarios_nat']) && $request['si_beneficiarios_nat'] == '-1') {
+					for ($m = 0; $m < 4; $m++) {
+						if (verificarDatoNoDefault($request['be_identificacion'][$m]) || verificarDatoNoDefault($request['be_nombre_completo'][$m])) {
+							Formulario::insertNuevoAccionista($idData, $request['be_tipo'][$m], "NULL", "NULL", $request['be_nombre_completo'][$m], $request['be_tipodocumento_id'][$m], $request['be_identificacion'][$m], "NULL", $request['be_expuesto_politico'][$m], $request['be_poliza_seguro'][$m], $conn);
+						}
+					}
+				}
+			} else if ($request['tipopersona'] == "1") {
+				if (isset($request['si_beneficiarios_nat']) && $request['si_beneficiarios_nat'] == '-1') {
+					for ($m = 0; $m < 4; $m++) {
+						if (verificarDatoNoDefault($request['be_identificacion'][$m]) || verificarDatoNoDefault($request['be_nombre_completo'][$m])) {
+							Formulario::insertNuevoAccionista($idData, $request['be_tipo'][$m], "NULL", "NULL", $request['be_nombre_completo'][$m], $request['be_tipodocumento_id'][$m], $request['be_identificacion'][$m], "NULL", $request['be_expuesto_politico'][$m], $request['be_poliza_seguro'][$m], $conn);
+						}
+					}
+				}
 			}
+			if (isset($request['si_peps_nat']) && $request['si_peps_nat'] == "-1") {
+				for ($k = 0; $k < 5; $k++) {
+					if (verificarDatoNoDefault($request['pep_identificacion'][$k]) || verificarDatoNoDefault($request['pep_nombre_razon'][$k])) {
+						Formulario::insertNuevoPep($idData, $request['pep_vinculo_relacion'][$k], $request['pep_tipo_pep'][$k], $request['pep_nombre_razon'][$k], $request['pep_tipodocumento_id'][$k], $request['pep_identificacion'][$k], $request['pep_nacionalidad_id'][$k], $request['pep_entidad'][$k], $request['pep_cargo'][$k], $request['pep_fecha_vinculacion'][$k], $request['pep_fecha_desvinculacion'][$k], $request['pep_cuentas_otros_paises'][$k], $conn);
+					}
+				}
+			} else
+				$k = 0;
+			if (isset($request['si_peps_vinculados']) && $request['si_peps_vinculados'] == "-1") {
+				for ($l = $k; $l < ($k + 5); $l++) {
+					if (verificarDatoNoDefault($request['pep_identificacion'][$l]) || verificarDatoNoDefault($request['pep_nombre_razon'][$l])) {
+						Formulario::insertNuevoPep($idData, $request['pep_vinculo_relacion'][$l], "NULL", $request['pep_nombre_razon'][$l], $request['pep_tipodocumento_id'][$l], $request['pep_identificacion'][$l], $request['pep_nacionalidad_id'][$l], "NULL", "NULL", "NULL", "NULL", "NULL", $conn);
+					}
+				}
+			} else
+				$l = $k;
+			$conn->desconectar();
+			$err_img = 'No se encontro la imagen con el identificador: ' . $request['id_imagen_tmp'];
+			$imagen = Formulario::obtenerImagenTemporal($request['id_imagen_tmp']);
+			if ($imagen !== false) {
+				$err_img = Formulario::guardarImagenDigitada($imagen['filename'], $form_id, $request['type'], $_SESSION['id'], $request['id_imagen_tmp']/*, 2*/);
+			}
+			$documentVerf = $request['tipopersona'] == '1' ? $request['documento'] : $request['nit'];
+			Formulario::cambiarEstadoDevolucion($documentVerf, $request['tipopersona']);
+
+			Formulario::guardarPlanillaLote($request['planilla_lote'], $request['lote'], $_SESSION['id']);
+			
+			Formulario::addIndexacion($form_id, $_SESSION['id']);
+			$mensaje = 'Se agrego la nueva digitacion';
+			if (!empty($err_img)) $mensaje .= ', con el siguiente problema: ' . $err_img;
+
+			echo json_encode(['exito'=> $mensaje, 'url'=> 'fingering2.php?id_form=' . $form_id . '&id_cliente=' . $cliente_id]);
+		} catch (Exception $e) {
+			var_dump($e);
+			echo json_encode(['error'=> $e->getMessage()]);
 		}
 	}else{
-		echo json_encode(array('error'=> 'El numero de documento del cliente no puede estar vacion, por favor verifiquelo.'));
-		exit();
+		if (!empty($request['nit']) && $request['tipopersona'] == "2") {
+			$cliente_id = Formulario::crearNuevoCliente($request['nit'], $request['tipopersona'], $request['razonsocial'], 2, 2/*, 2*/);
+		} else if (!empty($request['documento']) && $request['tipopersona'] == "1") {
+			$cliente_id = Formulario::crearNuevoCliente($request['documento'], $request['tipopersona'], $request['primerapellido'] . " " . $request['segundoapellido'] . " " . $request['nombres'], 2, 2/*, 2*/);
+		}
+
+		if (!isset($cliente_id) || empty($cliente_id) || $cliente_id === false) {
+			echo json_encode(array('error'=> 'Ocurrio un error al momento de crear el cliente, por favor contacte con el administrador.'));
+			exit;
+		}
+		$exForm = Formulario::verificarFormulario($cliente_id, $request['lote'], $request['planilla1'], $_SESSION['id']);
+		if(isset($exForm) && is_array($exForm) && !empty($exForm) && isset($exForm['id']) && !empty($exForm['id'])){
+			echo json_encode(array("error"=> "2. El formulario que esta intentando registrar, ya se encuentra registrado bajo el id => ".$exForm['id'].", por favor contacte con el administrador."));
+			exit;
+		}
+		$form_id = Formulario::agregarNuevoFormulario($cliente_id, 'FORMULARIO', $request['lote'], $request['planilla1'], $_SESSION['id'], '1', $request['marca']/*, 2*/);
+		if ($form_id === false || $form_id === 0) {
+			echo json_encode(['error'=> 'Ocurrio un error al momento de crear el formulario, por favor contacte con el administrador.']);
+			exit;
+		}
+		try {
+			$conn = new Conexion();
+			$idData = Formulario::insertPrimaryDataNew($form_id, $request, $cliente_id, $conn/*, 2*/);
+			if ($idData === false || $idData === 0) {
+				echo json_encode(['error'=> 'Ocurrio un error al momento de crear la data del formulario, por favor contacte con el administrador.']);
+				exit;
+			}
+			if ($request['tipopersona'] == "2") {
+				if (isset($request['si_accionistas_nat']) && $request['si_accionistas_nat'] == '-1') {
+					for ($i = 0; $i < 5; $i++) { 
+						if (verificarDatoNoDefault($request['identificacion'][$i]) || verificarDatoNoDefault($request['nombre_accionista'][$i])) {
+							Formulario::insertAccionistas($idData, $request['tipo_id'][$i], $request['identificacion'][$i], $request['nombre_accionista'][$i], $request['porcentaje'][$i], "NULL", $request['publico_reconocimiento'][$i], $request['publico_expuesta'][$i], "NULL");
+						}
+					}
+				}
+				//JUNTA DIRECTIVA
+				if (isset($request['si_junta_directiva']) && $request['si_junta_directiva'] == '-1') {
+					for ($i = 0; $i < 5; $i++) {
+						if (verificarDatoNoDefault($request['ju_identificacion'][$i]) || verificarDatoNoDefault($request['ju_nombre_completo'][$i])) {
+							Formulario::insertMiembroJunta($idData, $request['ju_nombre_completo'][$i], $request['ju_tipodocumento_id'][$i], $request['ju_identificacion'][$i], $request['ju_expuesto_politico'][$i], $conn);
+						}
+					}
+				}
+				if (isset($request['si_beneficiarios_nat']) && $request['si_beneficiarios_nat'] == '-1') {
+					for ($m = 0; $m < 4; $m++) {
+						if (verificarDatoNoDefault($request['be_identificacion'][$m]) || verificarDatoNoDefault($request['be_nombre_completo'][$m])) {
+							Formulario::insertNuevoAccionista($idData, $request['be_tipo'][$m], "NULL", "NULL", $request['be_nombre_completo'][$m], $request['be_tipodocumento_id'][$m], $request['be_identificacion'][$m], "NULL", $request['be_expuesto_politico'][$m], $request['be_poliza_seguro'][$m], $conn);
+						}
+					}
+				}
+			} else if ($request['tipopersona'] == "1") {
+				if (isset($request['si_beneficiarios_nat']) && $request['si_beneficiarios_nat'] == '-1') {
+					for ($m = 0; $m < 4; $m++) {
+						if (verificarDatoNoDefault($request['be_identificacion'][$m]) || verificarDatoNoDefault($request['be_nombre_completo'][$m])) {
+							Formulario::insertNuevoAccionista($idData, $request['be_tipo'][$m], "NULL", "NULL", $request['be_nombre_completo'][$m], $request['be_tipodocumento_id'][$m], $request['be_identificacion'][$m], "NULL", $request['be_expuesto_politico'][$m], $request['be_poliza_seguro'][$m], $conn);
+						}
+					}
+				}
+			}
+			if (isset($request['si_peps_nat']) && $request['si_peps_nat'] == "-1") {
+				for ($k = 0; $k < 5; $k++) {
+					if (verificarDatoNoDefault($request['pep_identificacion'][$k]) || verificarDatoNoDefault($request['pep_nombre_razon'][$k])) {
+						Formulario::insertNuevoPep($idData, $request['pep_vinculo_relacion'][$k], $request['pep_tipo_pep'][$k], $request['pep_nombre_razon'][$k], $request['pep_tipodocumento_id'][$k], $request['pep_identificacion'][$k], $request['pep_nacionalidad_id'][$k], $request['pep_entidad'][$k], $request['pep_cargo'][$k], $request['pep_fecha_vinculacion'][$k], $request['pep_fecha_desvinculacion'][$k], $request['pep_cuentas_otros_paises'][$k], $conn);
+					}
+				}
+			} else
+				$k = 0;
+			if (isset($request['si_peps_vinculados']) && $request['si_peps_vinculados'] == "-1") {
+				for ($l = $k; $l < ($k + 5); $l++) {
+					if (verificarDatoNoDefault($request['pep_identificacion'][$l]) || verificarDatoNoDefault($request['pep_nombre_razon'][$l])) {
+						Formulario::insertNuevoPep($idData, $request['pep_vinculo_relacion'][$l], "NULL", $request['pep_nombre_razon'][$l], $request['pep_tipodocumento_id'][$l], $request['pep_identificacion'][$l], $request['pep_nacionalidad_id'][$l], "NULL", "NULL", "NULL", "NULL", "NULL", $conn);
+					}
+				}
+			} else
+				$l = $k;
+
+			$conn->desconectar();
+			$err_img = 'No se encontro la imagen con el identificador: ' . $request['id_imagen_tmp'];
+			$imagen = Formulario::obtenerImagenTemporal($request['id_imagen_tmp']);
+			if ($imagen !== false) {
+				$err_img = Formulario::guardarImagenDigitada($imagen['filename'], $form_id, $request['type'], $_SESSION['id'], $request['id_imagen_tmp']/*, 2*/);
+			}
+			$documentVerf = $request['tipopersona'] == '1' ? $request['documento'] : $request['nit'];
+			Formulario::cambiarEstadoDevolucion($documentVerf, $request['tipopersona']);
+
+			Formulario::guardarPlanillaLote($request['planilla_lote'], $request['lote'], $_SESSION['id']);
+		
+			Formulario::addIndexacion($form_id, $_SESSION['id']);
+
+			$mensaje = 'Se agrego la nueva digitacion';
+			if (!empty($err_img)) $mensaje .= ', con el siguiente problema: ' . $err_img;
+
+			echo json_encode(['exito'=> $mensaje, 'url'=> 'fingering2.php?id_form=' . $form_id . '&id_cliente=' . $cliente_id]);
+		} catch (Exception $e) {
+			echo json_encode(['error'=> $e->getMessage()]);
+		}
 	}
 }
 function verificarDatoNoDefault($dato){
-	if(!empty($dato) && $dato != 'SD' && $dato != 'NA' && $dato != 'N/A' && $dato != '*')
-		return true;
-	else
-		return false;
+	return (!empty($dato) && $dato != 'SD' && $dato != 'NA' && $dato != 'N/A' && $dato != '*');
 }
 function crearFechaDePartes($anio, $mes, $dia, $fechaNombre)
 {
@@ -1967,4 +1935,3 @@ function crearFechaDePartes($anio, $mes, $dia, $fechaNombre)
 	}
 	return date('Y-m-d', strtotime($fec));
 }
-?>
