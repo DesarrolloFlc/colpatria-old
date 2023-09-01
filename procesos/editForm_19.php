@@ -175,7 +175,7 @@ $paises = General::getPaisesID();
     <tr>
         <td>
 <?php
-require_once 'editForm_19_'.$type_person.'.php';
+require_once 'editForm_19_' . $type_person . '.php';
 ?>
         </td>
     </tr>
@@ -253,7 +253,7 @@ require_once 'editForm_19_'.$type_person.'.php';
     <tr>
         <td>
 <?php
-require_once 'editForm_19_Economica_'.$type_person.'.php';
+require_once 'editForm_19_Economica_' . $type_person . '.php';
 ?>
         </td>
     </tr>
@@ -370,61 +370,63 @@ $(document).ready(function(){
     });
     $('form#saveEditNew').submit(function(event) {
         (event.preventDefault) ? event.preventDefault() : event.returnValue = false;
-        var datos = {};
+        const datos = {};
         $(this).find("[data-oldvalue]").each(function(index, el) {
-            //console.log($(el).attr('name'));
-            if($(el).val() != $(el).attr('data-oldvalue')){
+
+            if ($(el).val() !== $(el).attr('data-oldvalue')) {
                 datos[$(el).attr('name')] = $(el).val();
-                console.log($(el).attr('name') + '->' + $(el).val() + ':::' + $(el).attr('data-oldvalue'));
             }
         });
-        if($(this).find('select[name="f_rad_a"]').val() != '' && $(this).find('select[name="f_rad_m"]').val() != '' && $(this).find('select[name="f_rad_d"]').val() != ''){
-            var fecharadicado = $(this).find('select[name="f_rad_a"]').val() + '-' + $(this).find('select[name="f_rad_m"]').val() + '-' + $(this).find('select[name="f_rad_d"]').val();
-            if($(this).find('input[name="fecharadicado"]').val() != fecharadicado)
-                datos['fecharadicado'] = fecharadicado;
-        }else{
+        if ($('select[name="f_rad_a"]', this).val() === '' || $('select[name="f_rad_m"]', this).val() === '' || $('select[name="f_rad_d"]', this).val() === '') {
             alert('La fecha de radicado no puede estar vacia o incompleta.');
             return false;
         }
+        const fecharadicado = `${$('select[name="f_rad_a"]', this).val()}-${$('select[name="f_rad_m"]', this).val()}-${$('select[name="f_rad_d"]', this).val()}`;
+        if ($('input[name="fecharadicado"]', this).val() !== fecharadicado) {
+            datos['fecharadicado'] = fecharadicado;
+        }
 
-        if($(this).find('select[name="f_dil_a"]').val() != '' && $(this).find('select[name="f_dil_m"]').val() != ''&& $(this).find('select[name="f_dil_d"]').val() != ''){
-            var fechasolicitud = $(this).find('select[name="f_dil_a"]').val() + '-' + $(this).find('select[name="f_dil_m"]').val() + '-' + $(this).find('select[name="f_dil_d"]').val();
-            if($(this).find('input[name="fechasolicitud"]').val() != fechasolicitud)
-                datos['fechasolicitud'] = fechasolicitud;
-        }else{
+        if ($('select[name="f_dil_a"]', this).val() === '' || $('select[name="f_dil_m"]', this).val() === '' || $('select[name="f_dil_d"]', this).val() === '') {
             alert('La fecha de diligenciamiento no puede estar vacia o incompleta.');
             return false;
         }
-
-        if($(this).find('input[name="type_person"]').val() == '1' && $(this).find('select[name="f_exp_a"]').val() != '' && $(this).find('select[name="f_exp_m"]').val() != '' && $(this).find('select[name="f_exp_d"]').val() != ''){
-            var fechaexpedicion = $(this).find('select[name="f_exp_a"]').val() + '-' + $(this).find('select[name="f_exp_m"]').val() + '-' + $(this).find('select[name="f_exp_d"]').val();
-            if($(this).find('input[name="fechaexpedicion"]').val() != fechaexpedicion)
-                datos['fechaexpedicion'] = fechaexpedicion;
-        }else if($(this).find('input[name="type_person"]').val() == '1' && ($(this).find('select[name="f_exp_a"]').val() == '' || $(this).find('select[name="f_exp_m"]').val() == '' || $(this).find('select[name="f_exp_d"]').val() == '')){
-            alert('La fecha de expedicion no puede estar vacia o incompleta.');
-            return false;
+        const fechasolicitud = `${$('select[name="f_dil_a"]', this).val()}-${$('select[name="f_dil_m"]', this).val()}-${$('select[name="f_dil_d"]', this).val()}`;
+        if ($('input[name="fechasolicitud"]', this).val() !== fechasolicitud) {
+            datos['fechasolicitud'] = fechasolicitud;
         }
 
-        if($(this).find('input[name="type_person"]').val() == '1' && $(this).find('select[name="f_nac_a"]').val() != '' && $(this).find('select[name="f_nac_m"]').val() != '' && $(this).find('select[name="f_nac_d"]').val() != ''){
-            var fechanacimiento = $(this).find('select[name="f_nac_a"]').val() + '-' + $(this).find('select[name="f_nac_m"]').val() + '-' + $(this).find('select[name="f_nac_d"]').val();
-            if($(this).find('input[name="fechanacimiento"]').val() != fechanacimiento)
+        if ($('input[name="type_person"]', this).val() === '1') {
+
+            if (($('select[name="f_exp_a"]', this).val() === '' || $('select[name="f_exp_m"]', this).val() === '' || $('select[name="f_exp_d"]', this).val() === '')) {
+                alert('La fecha de expedicion no puede estar vacia o incompleta.');
+                return false;
+            }
+            const fechaexpedicion = `${$('select[name="f_exp_a"]', this).val()}-${$('select[name="f_exp_m"]', this).val()}-${$('select[name="f_exp_d"]', this).val()}`;
+            if ($('input[name="fechaexpedicion"]', this).val() !== fechaexpedicion) {
+                datos['fechaexpedicion'] = fechaexpedicion; 
+            }
+
+            if (($('select[name="f_nac_a"]', this).val() === '' || $('select[name="f_nac_m"]', this).val() === '' || $('select[name="f_nac_d"]', this).val() === '')) {
+                alert('La fecha de nacimiento no puede estar vacia o incompleta.');
+                return false;
+            }
+            const fechanacimiento = `${$('select[name="f_nac_a"]', this).val()}-${$('select[name="f_nac_m"]', this).val()}-${$('select[name="f_nac_d"]', this).val()}`;
+            if ($('input[name="fechanacimiento"]', this).val() != fechanacimiento) {
                 datos['fechanacimiento'] = fechanacimiento;
-        }else if($(this).find('input[name="type_person"]').val() == '1' && ($(this).find('select[name="f_nac_a"]').val() == '' || $(this).find('select[name="f_nac_m"]').val() == '' || $(this).find('select[name="f_nac_d"]').val() == '')){
-            alert('La fecha de nacimiento no puede estar vacia o incompleta.');
-            return false;
+            }
         }
-        if($.isEmptyObject(datos)){
+        if ($.isEmptyObject(datos)) {
             alert('No esta efectuando ningun cambio en la data del cliente.');
             return false;
         }
-        datos['id_form'] = $(this).find('input[name="id_form"]').val();
-        datos['type_person'] = $(this).find('input[name="type_person"]').val();
-        datos['id_data'] = $(this).find('input[name="id_data"]').val();
-        datos['action'] = $(this).find('input[name="action"]').val();
-        datos['domain'] = $(this).find('input[name="domain"]').val();
-        datos['meth'] = $(this).find('input[name="meth"]').val();
-        datos['respOut'] = $(this).find('input[name="respOut"]').val();
-        var form = this;
+        datos['id_form'] = $('input[name="id_form"]', this).val();
+        datos['type_person'] = $('input[name="type_person"]', this).val();
+        datos['id_data'] = $('input[name="id_data"]', this).val();
+        datos['action'] = $('input[name="action"]', this).val();
+        datos['domain'] = $('input[name="domain"]', this).val();
+        datos['meth'] = $('input[name="meth"]', this).val();
+        datos['respOut'] = $('input[name="respOut"]', this).val();
+        const form = this;
         $.ajax({
             beforeSend: function(){
                 //$('table#table_list_result tbody tr td button#drea_button_add_'+posicion).button('loading');
@@ -434,8 +436,7 @@ $(document).ready(function(){
             url: 'includes/Controller.php',
             dataType: 'json',
             success: function(dato){
-                console.log(dato);
-                if(dato.exito){
+                if (dato.exito) {
                     alert(dato.exito);
 
                     /*$.each(datos, function(key, value){
@@ -444,15 +445,14 @@ $(document).ready(function(){
                         //alert( key + ": " + value );
                     });*/
                     location.reload(true);
-                }else if(dato.error)
-                    alert(dato.error);
-                else
-                    alert('Ocurrio un error, contacte con el administrador...');
+                    return false;
+                }
+                
+                alert(dato.error ? dato.error : 'Ocurrio un error, contacte con el administrador...');
+                if (!dato.error) console.log(dato)
             },
             error: function(xhr, ajaxOptions, thrownError) {
-                console.log(xhr);
-                console.log(ajaxOptions);
-                console.log(thrownError);
+                console.log(xhr, ajaxOptions, thrownError);
                 alert("Error(saveEditNew): "+xhr.status+" Error: "+xhr.responseText);
             }
         });
@@ -460,75 +460,71 @@ $(document).ready(function(){
     });
 });
 $.fn.convertTime12to24 = function(time12h){
-    var tPart = time12h.split(' ');
-    var hPart = tPart[0].split(':');
+    const tPart = time12h.split(' ');
+    let hPart = tPart[0].split(':');
 
-    if(hPart[0] === '12')
-        hPart[0] = '00';
+    if (hPart[0] === '12') hPart[0] = '00';
 
-    if(tPart[1] === 'PM')
-        hPart[0] = parseInt(hPart[0], 10) + 12;
+    if (tPart[1] === 'PM') hPart[0] = parseInt(hPart[0], 10) + 12;
 
-    return hPart[0] + ':' + hPart[1] + ':00';
+    return `${hPart[0]}:${hPart[1]}:00`;
 }
 $.fn.verificarFecha = function(e, call, tipo){
     (e.preventDefault) ? e.preventDefault() : e.returnValue = false;
-    var f_a = $('select#f_'+call+'_a').val();
-    var f_m = $('select#f_'+call+'_m').val();
-    //alert('ano:'+f_a+' mes:'+f_m);
-    if((f_a != '' && f_a != 'ND') && (f_m != '' && f_m != 'ND')){
-        var d = new Date(f_a, f_m, 0).getDate();
-        //alert(); // last day in January
-        var d_str = '';
-        str_d = '<option value="">Dia</option>';
-        for(var i=1;i<=d;i++){
-            d_str = '0'+i;
-            if(i > 9)
-                d_str = i;
-            str_d += '<option value="'+i+'">'+d_str+'</option>';
+    const f_a = $(`select#f_${call}_a`).val();
+    const f_m = $(`select#f_${call}_m`).val();
+    if ((f_a !== '' && f_a !== 'ND') && (f_m !== '' && f_m !== 'ND')) {
+        
+        const d = new Date(f_a, f_m, 0).getDate();
+        let d_str = '';
+        let str_d = '<option value="">Dia</option>';
+        for (let i = 1; i <= d; i++) {
+            d_str = '0' + i;
+            if (i > 9) d_str = i;
+            str_d += `<option value="${i}">${d_str}</option>`;
         }
-        $('select#f_'+call+'_d').html(str_d);
-    }else if(f_a == 'ND' || f_m == 'ND'){
-        //$('select#f_'+call+'_a option[value="ND"]').prop('selected', true);
-        $('select#f_'+call+'_m option[value="ND"]').prop('selected', true);
-        $('select#f_'+call+'_d').html('<option value="">Dia</option><option value="ND">ND</option>');
-        $('select#f_'+call+'_d option[value="ND"]').prop('selected', true);
+        $(`select#f_${call}_d`).html(str_d);
+    } else if (f_a === 'ND' || f_m === 'ND') {
+
+        $(`select#f_${call}_m option[value="ND"]`).prop('selected', true);
+        $(`select#f_${call}_d`).html('<option value="">Dia</option><option value="ND">ND</option>');
+        $(`select#f_${call}_d option[value="ND"]`).prop('selected', true);
     }
 }
 $.fn.verificarFechaDoble = function(e, call, tipo){
     (e.preventDefault) ? e.preventDefault() : e.returnValue = false;
-    if(tipo == '1'){
-        var f_a = $('select#f_'+call+'_a').val();
-        var f_m = $('select#f_'+call+'_m').val();
-        var f_d = $(this).val();
-        if(f_a != '' && f_m != '' && f_d != ''){
-            $('select#f_'+call+'_a').hide();
-            $('select#f_'+call+'_m').hide();
+    if (tipo === '1') {
+        const f_a = $(`select#f_${call}_a`).val();
+        const f_m = $(`select#f_${call}_m`).val();
+        const f_d = $(this).val();
+        if (f_a !== '' && f_m !== '' && f_d !== '') {
+            $(`select#f_${call}_a`).hide();
+            $(`select#f_${call}_m`).hide();
             $(this).hide();
         }
-    }else if(tipo == '2'){
-        var f_1 = $('select#f_'+call+'_a').val()+'-'+$('select#f_'+call+'_m').val()+'-'+$('select#f_'+call+'_d').val();
-        var f_2 = $('select#f_'+call+'2_a').val()+'-'+$('select#f_'+call+'2_m').val()+'-'+$('select#f_'+call+'2_d').val();
-        if(f_1 != f_2){
+    } else if (tipo === '2') {
+        const f_1 = `${$(`select#f_${call}_a`).val()}-${$(`select#f_${call}_m`).val()}-${$(`select#f_${call}_d`).val()}`;
+        const f_2 = `${$(`select#f_${call}2_a`).val()}-${$(`select#f_${call}2_m`).val()}-${$(`select#f_${call}2_d`).val()}`;
+        if (f_1 !== f_2) {
             alert("Las fechas no coinciden, por favor validelas.");
-            $('select#f_'+call+'_a').show();
-            $('select#f_'+call+'_a').val('');
-            $('select#f_'+call+'_a').change();
-            $('select#f_'+call+'_m').show();
-            $('select#f_'+call+'_m').val('');
-            $('select#f_'+call+'_m').change();
-            $('select#f_'+call+'_d').show();
-            $('select#f_'+call+'_d').val('');
-            $('select#f_'+call+'_d').change();
+            $(`select#f_${call}_a`).show();
+            $(`select#f_${call}_a`).val('');
+            $(`select#f_${call}_a`).change();
+            $(`select#f_${call}_m`).show();
+            $(`select#f_${call}_m`).val('');
+            $(`select#f_${call}_m`).change();
+            $(`select#f_${call}_d`).show();
+            $(`select#f_${call}_d`).val('');
+            $(`select#f_${call}_d`).change();
 
-            $('select#f_'+call+'2_a').val('');
-            $('select#f_'+call+'2_a').change();
-            $('select#f_'+call+'2_m').val('');
-            $('select#f_'+call+'2_m').change();
-            $('select#f_'+call+'2_d').val('');
-            $('select#f_'+call+'2_d').change();
+            $(`select#f_${call}2_a`).val('');
+            $(`select#f_${call}2_a`).change();
+            $(`select#f_${call}2_m`).val('');
+            $(`select#f_${call}2_m`).change();
+            $(`select#f_${call}2_d`).val('');
+            $(`select#f_${call}2_d`).change();
 
-            $('select#f_'+call+'_a').focus();
+            $(`select#f_${call}_a`).focus();
         }
     }
 }
