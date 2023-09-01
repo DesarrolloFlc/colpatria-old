@@ -973,32 +973,29 @@ class Formulario
 				   AND f.log_lote = :log_lote
 				   AND f.status = :status
 				 ORDER BY f.date_created DESC";
-		$data = array(
+		$data = [
 			':id_client'=> $id_client,  
 			':id_user'=> $id_user, 
 			':log_planilla'=> ($planilla != '0') ? explode('.', substr($planilla, 8, strlen($planilla)))[0] : "0", 
 			':log_lote'=> substr($lote, 5, strlen($lote)), 
 			':status'=> '1'
-		);
-		if($conn->consultar($SQL, $data)){
-			if($conn->getNumeroRegistros() > 0){
-				$row = $conn->sacarRegistro('str');
-				$conn->desconectar();
-				return $row;
-			}else{
-				$conn->desconectar();
-				return false;
-			}
-		}else{
+		];
+		if (!$conn->consultar($SQL, $data)) {
 			$conn->desconectar();
 			return false;
 		}
+		if ($conn->getNumeroRegistros() <= 0) {
+			$conn->desconectar();
+			return false;
+		}
+		$row = $conn->sacarRegistro('str');
+		$conn->desconectar();
+		return $row;
 	}
-	public static function agregarNuevoFormulario($id_client, $type, $lote, $planilla, $id_user, $num_images, $marca, $tipo = 1){
+	public static function agregarNuevoFormulario($id_client, $type, $lote, $planilla, $id_user, $num_images, $marca, $tipo = 1)
+	{
 		$conn = new Conexion();
-		$tabla = "form";
-		if($tipo == 2)
-			$tabla = "form_";
+		$tabla = $tipo == 2 ? "form_" : "form";
 		$SQL = "INSERT INTO $tabla
 				(
 					id_client, type, lote,planilla, id_user, log_planilla, log_lote, num_images, marca
@@ -1007,7 +1004,7 @@ class Formulario
 				(
 					:id_client, :type, :lote, :planilla, :id_user, :log_planilla, :log_lote, :num_images, :marca
 				)";
-		$data = array(
+		$data = [
 			':id_client'=> $id_client, 
 			':type'=> $type, 
 			':lote'=> $lote, 
@@ -1017,15 +1014,14 @@ class Formulario
 			':log_lote'=> substr($lote, 5, strlen($lote)), 
 			':num_images'=> $num_images, 
 			':marca'=> $marca
-		);
-		if($conn->ejecutar($SQL, $data)){
-			$lastId = $conn->ultimaId();
-			$conn->desconectar();
-			return $lastId;
-		}else{
+		];
+		if (!$conn->ejecutar($SQL, $data)) {
 			$conn->desconectar();
 			return false;
 		}
+		$lastId = $conn->ultimaId();
+		$conn->desconectar();
+		return intval($lastId);
 	}
 	public static function insertarCuenta($data_id, $producto_tipo, $producto_identificacion, $producto_entidad, $producto_monto, $producto_ciudad, $producto_pais, $producto_moneda){
 		$conn = new Conexion();
@@ -1115,19 +1111,17 @@ class Formulario
 		$SQL = "SELECT * 
 				  FROM image_tmp 
 				 WHERE id = :id";
-		if($conn->consultar($SQL, array(':id'=> $id_imagen_tmp))){
-			if($conn->getNumeroRegistros() == 1){
-				$dat = $conn->sacarRegistro('str');
-				$conn->desconectar();
-				return $dat;
-			}else{
-				$conn->desconectar();
-				return false;
-			}
-		}else{
+		if (!$conn->consultar($SQL, [':id'=> $id_imagen_tmp])) {
 			$conn->desconectar();
 			return false;
 		}
+		if ($conn->getNumeroRegistros() !== 1) {
+			$conn->desconectar();
+			return false;
+		}
+		$dat = $conn->sacarRegistro('str');
+		$conn->desconectar();
+		return $dat;
 	}
 	public static function obtenerInformacionRadicado($id){
 		$conn = new Conexion();
@@ -1189,9 +1183,7 @@ class Formulario
 	}
 	public static function crearNuevoCliente($document, $persontype, $firstname, $tipo_norma_id = 1, $regimen_id = 2, $tipo = 1){
 		$conn = new Conexion();
-		$tabla = "client";
-		if($tipo == 2)
-			$tabla = "client_";
+		$tabla = $tipo === 2 ? "client_" : "client";
 
 		$SQL = "INSERT INTO $tabla
 				(
@@ -1201,76 +1193,34 @@ class Formulario
 				(
 					:document, :persontype, :firstname, :tipo_norma_id, :regimen_id
 				)";
-		$data = array(
+		$data = [
 			':document'=> $document, 
 			':persontype'=> $persontype, 
 			':firstname'=> $firstname,
 			':tipo_norma_id'=> $tipo_norma_id, 
 			':regimen_id'=> $regimen_id
-		);
-		if($conn->ejecutar($SQL, $data)){
-			$lastId = $conn->ultimaId();
-			$conn->desconectar();
-			return $lastId;
-		}else{
+		];
+		if (!$conn->ejecutar($SQL, $data)) {
 			$conn->desconectar();
 			return false;
 		}
+		$lastId = $conn->ultimaId();
+		$conn->desconectar();
+		return intval($lastId);
 	}
 	public static function insertPrimaryDataNew($form_id, $da, $cliente_id, $conn = null, $tipo = 1){
-		if($conn === null)
-			$conn = new Conexion();
-		$tabla = "data";
-		if($tipo == 2)
-			$tabla = "data_";
+		if ($conn === null) $conn = new Conexion();
+		$tabla = $tipo === 2 ? "data_" : "data";
 		$SQL = "INSERT INTO $tabla
 				(
-					id_form, fecharadicado, fechasolicitud, sucursal, area, lote, formulario, id_official, clasecliente, primerapellido, segundoapellido, 
-					nombres, tipodocumento, documento, fechaexpedicion, lugarexpedicion, fechanacimiento, paisnacimiento, lugarnacimiento, nacionalidad_otra, 
-					nacionalidad_cual, sexo, nacionalidad, numerohijos, estadocivil, direccionresidencia, ciudadresidencia, telefonoresidencia, nombreempresa, 
-					ciudadempresa, direccionempresa, nomenclatura, telefonolaboral, celular, correoelectronico, cargo, actividadeconomicaempresa, profesion, 
-					ocupacion, detalleocupacion, ciiu, ingresosmensuales, otrosingresos, egresosmensuales, conceptosotrosingresos, tipoactividad, 
-					detalletipoactividad, nivelestudios, tipovivienda, estrato, totalactivos, totalpasivos, razonsocial, nit, digitochequeo, ciudadoficina, 
-					direccionoficinappal, nomenclatura_emp, telefonoficina, faxoficina, celularoficina, ciudadsucursal, direccionsucursal, nomenclatura_emp2, 
-					telefonosucursal, faxsucursal, actividadeconomicappal, detalleactividadeconomicappal, tipoempresaemp, activosemp, pasivosemp, 
-					ingresosmensualesemp, egresosmensualesemp, otrosingresosemp, concepto_otrosingresosemp, 
-					monedaextranjera, tipotransacciones, productos_exterior, cuentas_monedaextranjera, firma, huella, lugarentrevista, fechaentrevista, 
-					horaentrevista, tipohoraentrevista, resultadoentrevista, observacionesentrevista, nombreintermediario, socio1, socio2, socio3, 
-					ciudad, tipo_solicitud, cual_clasecliente, celularoficinappal, tipoempresaemp_cual, 
-					recursos_publicos, poder_publico, reconocimiento_publico, reconocimiento_cual, servidor_publico, expuesta_politica, cargo_politica, 
-					cargo_politica_ini, cargo_politica_fin, expuesta_publica, publica_nombre, publica_cargo, repre_internacional, internacional_indique, 
-					tributarias_otro_pais, tributarias_paises, ciiu_otro, telefonoficinappal, patrimonio, tipoempresajur, tipoempresajur_otra, 
-					correoelectronico_otro, origen_fondos, procedencia_fondos, tipotransacciones_cual, otras_operaciones, reclamaciones, clave_inter, 
-					firma_entrevista, verificacion_ciudad, verificacion_fecha, verificacion_hora, verificacion_nombre, verificacion_observacion, 
-					verificacion_firma, auto_correo, auto_sms, producto_seguro, pep_expuesto, expuesta_extrangero, expuesta_internacional, conyuge_expuesto,
-					asociado_expuesto, pep_familiar, pep_familia_nombre, pep_familia_cargo, accionista_beneficios, cotiza_rnve, beneficiarios_diferentes, beneficiarios_naturales, beneficiarios_jur,
-					verificacion_cargo, verificacion_documento, responsable_rut, codigo_rut, tipo_norma_id, regimen_id
+					id_form, fecharadicado, fechasolicitud, sucursal, area, lote, formulario, id_official, clasecliente, primerapellido, segundoapellido, nombres, tipodocumento, documento, fechaexpedicion, lugarexpedicion, fechanacimiento, paisnacimiento, lugarnacimiento, nacionalidad_otra, nacionalidad_cual, sexo, nacionalidad, numerohijos, estadocivil, direccionresidencia, ciudadresidencia, telefonoresidencia, nombreempresa, ciudadempresa, direccionempresa, nomenclatura, telefonolaboral, celular, correoelectronico, cargo, actividadeconomicaempresa, profesion, ocupacion, detalleocupacion, ciiu, ingresosmensuales, otrosingresos, egresosmensuales, conceptosotrosingresos, tipoactividad, detalletipoactividad, nivelestudios, tipovivienda, estrato, totalactivos, totalpasivos, razonsocial, nit, digitochequeo, ciudadoficina, direccionoficinappal, nomenclatura_emp, telefonoficina, faxoficina, celularoficina, ciudadsucursal, direccionsucursal, nomenclatura_emp2, telefonosucursal, faxsucursal, actividadeconomicappal, detalleactividadeconomicappal, tipoempresaemp, activosemp, pasivosemp, ingresosmensualesemp, egresosmensualesemp, otrosingresosemp, concepto_otrosingresosemp, monedaextranjera, tipotransacciones, productos_exterior, cuentas_monedaextranjera, firma, huella, lugarentrevista, fechaentrevista, horaentrevista, tipohoraentrevista, resultadoentrevista, observacionesentrevista, nombreintermediario, socio1, socio2, socio3, ciudad, tipo_solicitud, cual_clasecliente, celularoficinappal, tipoempresaemp_cual, recursos_publicos, poder_publico, reconocimiento_publico, reconocimiento_cual, servidor_publico, expuesta_politica, cargo_politica, cargo_politica_ini, cargo_politica_fin, expuesta_publica, publica_nombre, publica_cargo, repre_internacional, internacional_indique, tributarias_otro_pais, tributarias_paises, ciiu_otro, telefonoficinappal, patrimonio, tipoempresajur, tipoempresajur_otra, correoelectronico_otro, origen_fondos, procedencia_fondos, tipotransacciones_cual, otras_operaciones, reclamaciones, clave_inter, firma_entrevista, verificacion_ciudad, verificacion_fecha, verificacion_hora, verificacion_nombre, verificacion_observacion, verificacion_firma, auto_correo, auto_sms, producto_seguro, pep_expuesto, expuesta_extrangero, expuesta_internacional, conyuge_expuesto, asociado_expuesto, pep_familiar, pep_familia_nombre, pep_familia_cargo, accionista_beneficios, cotiza_rnve, beneficiarios_diferentes, beneficiarios_naturales, beneficiarios_jur, verificacion_cargo, verificacion_documento, responsable_rut, codigo_rut, tipo_norma_id, regimen_id
 				)
 				VALUES
 				(
-					:id_form, :fecharadicado, :fechasolicitud, :sucursal, :area, :lote, :formulario, :id_official, :clasecliente, :primerapellido, :segundoapellido, 
-					:nombres, :tipodocumento, :documento, :fechaexpedicion, :lugarexpedicion, :fechanacimiento, :paisnacimiento, :lugarnacimiento, :nacionalidad_otra, 
-					:nacionalidad_cual, :sexo, :nacionalidad, :numerohijos, :estadocivil, :direccionresidencia, :ciudadresidencia, :telefonoresidencia, :nombreempresa, 
-					:ciudadempresa, :direccionempresa, :nomenclatura, :telefonolaboral, :celular, :correoelectronico, :cargo, :actividadeconomicaempresa, :profesion, 
-					:ocupacion, :detalleocupacion, :ciiu, :ingresosmensuales, :otrosingresos, :egresosmensuales, :conceptosotrosingresos, :tipoactividad, 
-					:detalletipoactividad, :nivelestudios, :tipovivienda, :estrato, :totalactivos, :totalpasivos, :razonsocial, :nit, :digitochequeo, :ciudadoficina, 
-					:direccionoficinappal, :nomenclatura_emp, :telefonoficina, :faxoficina, :celularoficina, :ciudadsucursal, :direccionsucursal, :nomenclatura_emp2, 
-					:telefonosucursal, :faxsucursal, :actividadeconomicappal, :detalleactividadeconomicappal, :tipoempresaemp, :activosemp, :pasivosemp, 
-					:ingresosmensualesemp, :egresosmensualesemp, :otrosingresosemp, :concepto_otrosingresosemp,  
-					:monedaextranjera, :tipotransacciones, :productos_exterior, :cuentas_monedaextranjera, :firma, :huella, :lugarentrevista, :fechaentrevista, 
-					:horaentrevista, :tipohoraentrevista, :resultadoentrevista, :observacionesentrevista, :nombreintermediario, :socio1, :socio2, :socio3, 
-					:ciudad, :tipo_solicitud, :cual_clasecliente, :celularoficinappal, :tipoempresaemp_cual, 
-					:recursos_publicos, :poder_publico, :reconocimiento_publico, :reconocimiento_cual, :servidor_publico, :expuesta_politica, :cargo_politica, 
-					:cargo_politica_ini, :cargo_politica_fin, :expuesta_publica, :publica_nombre, :publica_cargo, :repre_internacional, :internacional_indique, 
-					:tributarias_otro_pais, :tributarias_paises, :ciiu_otro, :telefonoficinappal, :patrimonio, :tipoempresajur, :tipoempresajur_otra, 
-					:correoelectronico_otro, :origen_fondos, :procedencia_fondos, :tipotransacciones_cual, :otras_operaciones, :reclamaciones, :clave_inter, 
-					:firma_entrevista, :verificacion_ciudad, :verificacion_fecha, :verificacion_hora, :verificacion_nombre, :verificacion_observacion, 
-					:verificacion_firma, :auto_correo, :auto_sms, :producto_seguro, :pep_expuesto, :expuesta_extrangero, :expuesta_internacional, :conyuge_expuesto,
-					:asociado_expuesto, :pep_familiar, :pep_familia_nombre, :pep_familia_cargo, :accionista_beneficios, :cotiza_rnve, :beneficiarios_diferentes, :beneficiarios_naturales, :beneficiarios_jur,
-					:verificacion_cargo, :verificacion_documento, :responsable_rut, :codigo_rut, :tipo_norma_id, :regimen_id
+					:id_form, :fecharadicado, :fechasolicitud, :sucursal, :area, :lote, :formulario, :id_official, :clasecliente, :primerapellido, :segundoapellido, :nombres, :tipodocumento, :documento, :fechaexpedicion, :lugarexpedicion, :fechanacimiento, :paisnacimiento, :lugarnacimiento, :nacionalidad_otra, :nacionalidad_cual, :sexo, :nacionalidad, :numerohijos, :estadocivil, :direccionresidencia, :ciudadresidencia, :telefonoresidencia, :nombreempresa, :ciudadempresa, :direccionempresa, :nomenclatura, :telefonolaboral, :celular, :correoelectronico, :cargo, :actividadeconomicaempresa, :profesion, :ocupacion, :detalleocupacion, :ciiu, :ingresosmensuales, :otrosingresos, :egresosmensuales, :conceptosotrosingresos, :tipoactividad, :detalletipoactividad, :nivelestudios, :tipovivienda, :estrato, :totalactivos, :totalpasivos, :razonsocial, :nit, :digitochequeo, :ciudadoficina, :direccionoficinappal, :nomenclatura_emp, :telefonoficina, :faxoficina, :celularoficina, :ciudadsucursal, :direccionsucursal, :nomenclatura_emp2, :telefonosucursal, :faxsucursal, :actividadeconomicappal, :detalleactividadeconomicappal, :tipoempresaemp, :activosemp, :pasivosemp, :ingresosmensualesemp, :egresosmensualesemp, :otrosingresosemp, :concepto_otrosingresosemp,  :monedaextranjera, :tipotransacciones, :productos_exterior, :cuentas_monedaextranjera, :firma, :huella, :lugarentrevista, :fechaentrevista, :horaentrevista, :tipohoraentrevista, :resultadoentrevista, :observacionesentrevista, :nombreintermediario, :socio1, :socio2, :socio3, :ciudad, :tipo_solicitud, :cual_clasecliente, :celularoficinappal, :tipoempresaemp_cual, :recursos_publicos, :poder_publico, :reconocimiento_publico, :reconocimiento_cual, :servidor_publico, :expuesta_politica, :cargo_politica, :cargo_politica_ini, :cargo_politica_fin, :expuesta_publica, :publica_nombre, :publica_cargo, :repre_internacional, :internacional_indique, :tributarias_otro_pais, :tributarias_paises, :ciiu_otro, :telefonoficinappal, :patrimonio, :tipoempresajur, :tipoempresajur_otra, :correoelectronico_otro, :origen_fondos, :procedencia_fondos, :tipotransacciones_cual, :otras_operaciones, :reclamaciones, :clave_inter, :firma_entrevista, :verificacion_ciudad, :verificacion_fecha, :verificacion_hora, :verificacion_nombre, :verificacion_observacion, :verificacion_firma, :auto_correo, :auto_sms, :producto_seguro, :pep_expuesto, :expuesta_extrangero, :expuesta_internacional, :conyuge_expuesto, :asociado_expuesto, :pep_familiar, :pep_familia_nombre, :pep_familia_cargo, :accionista_beneficios, :cotiza_rnve, :beneficiarios_diferentes, :beneficiarios_naturales, :beneficiarios_jur, :verificacion_cargo, :verificacion_documento, :responsable_rut, :codigo_rut, :tipo_norma_id, :regimen_id
 				)";
 		$sdCiudad = (in_array(intval($da['formulario']), [15, 19, 20])) ? '99999' : '2000';
-		$data = array(
+		$data = [
 			':id_form'=> $form_id, 
 			':fecharadicado'=> $da['fecharadicado'], 
 			':fechasolicitud'=> $da['fechasolicitud'], 
@@ -1424,105 +1374,103 @@ class Formulario
 			':codigo_rut'=> (isset($da['codigo_rut']) && $da['codigo_rut'] != '') ? $da['codigo_rut'] : 'SD',
 			':tipo_norma_id'=> (isset($da['tipo_norma_id']) && $da['tipo_norma_id'] != '') ? $da['tipo_norma_id'] : '1', 
 			':regimen_id'=> (isset($da['regimen_id']) && $da['regimen_id'] != '') ? $da['regimen_id'] : '2'
-		);
-		try{
-			if($conn->ejecutar($SQL, $data)){
-				$lastId = $conn->ultimaId();
-				if($tipo != 2){
-					$ct = array(
-						'cliente_id'=> $cliente_id,
-						'telefono'=> '',
-						'cod_ciudad'=> "NULL",
-						'ciudad'=> "NULL",
-						'tipo_demografico_id'=> 1,
-						'origen_id'=> 4
-					);
-					if(isset($data[':telefonoresidencia']) && !empty(trim($data[':telefonoresidencia'])) && trim($data[':telefonoresidencia']) != '*'){
-						$ct['telefono'] = $data[':telefonoresidencia'];
-						$ct['cod_ciudad'] = (isset($data[':ciudadresidencia']) && !empty(trim($data[':ciudadresidencia']))) ? trim($data[':ciudadresidencia']) : "NULL";
-						$telId = self::verificarTelefono($ct);
-					}
-					if(isset($data[':telefonolaboral']) && !empty(trim($data[':telefonolaboral'])) && trim($data[':telefonolaboral']) != '*'){
-						$ct['telefono'] = $data[':telefonolaboral'];
-						$ct['cod_ciudad'] = (isset($data[':ciudadempresa']) && !empty(trim($data[':ciudadempresa']))) ? trim($data[':ciudadempresa']) : "NULL";
-						$telId = self::verificarTelefono($ct);
-					}
-					if(isset($data[':celular']) && !empty(trim($data[':celular'])) && trim($data[':celular']) != '*'){
-						$ct['telefono'] = $data[':celular'];
-						$ct['cod_ciudad'] = "NULL";
-						$ct['tipo_demografico_id'] = "5";
-						$telId = self::verificarTelefono($ct);
-					}
-					if(isset($data[':telefonoficina']) && !empty(trim($data[':telefonoficina'])) && trim($data[':telefonoficina']) != '*'){
-						$ct['telefono'] = $data[':telefonoficina'];
-						$ct['cod_ciudad'] = (isset($data[':ciudadoficina']) && !empty(trim($data[':ciudadoficina']))) ? trim($data[':ciudadoficina']) : "NULL";
-						$telId = self::verificarTelefono($ct);
-					}
-					if(isset($data[':celularoficina']) && !empty(trim($data[':celularoficina'])) && trim($data[':celularoficina']) != '*'){
-						$ct['telefono'] = $data[':celularoficina'];
-						$ct['cod_ciudad'] = "NULL";
-						$ct['tipo_demografico_id'] = "5";
-						$telId = self::verificarTelefono($ct);
-					}
-					if(isset($data[':celularoficinappal']) && !empty(trim($data[':celularoficinappal'])) && trim($data[':celularoficinappal']) != '*'){
-						$ct['telefono'] = $data[':celularoficinappal'];
-						$ct['cod_ciudad'] = "NULL";
-						$ct['tipo_demografico_id'] = "5";
-						$telId = self::verificarTelefono($ct);
-					}
-					if(isset($data[':telefonoficinappal']) && !empty(trim($data[':telefonoficinappal'])) && trim($data[':telefonoficinappal']) != '*'){
-						$ct['telefono'] = $data[':telefonoficinappal'];
-						$ct['cod_ciudad'] = (isset($data[':ciudadoficina']) && !empty(trim($data[':ciudadoficina']))) ? trim($data[':ciudadoficina']) : "NULL";
-						$telId = self::verificarTelefono($ct);
-					}
-					$cd = array(
-						'cliente_id'=> $cliente_id,
-						'direccion'=> '',
-						'cod_ciudad'=> "NULL",
-						'ciudad'=> "NULL",
-						'tipo_demografico_id'=> 2,
-						'origen_id'=> 4
-					);
-					if(isset($data[':direccionresidencia']) && !empty($data[':direccionresidencia']) && strlen($data[':direccionresidencia']) > 1 && strtoupper(trim($data[':direccionresidencia'])) != 'SD' && strtoupper(trim($data[':direccionresidencia'])) != 'NA' && strtoupper(trim($data[':direccionresidencia'])) != 'N/A'){
-						$cd['direccion'] = $data[':direccionresidencia'];
-						$cd['cod_ciudad'] = (isset($data[':ciudadresidencia']) && !empty(trim($data[':ciudadresidencia']))) ? trim($data[':ciudadresidencia']) : "NULL";
-						$ciuId = self::verificarDireccion($cd);
-					}
-					if(isset($data[':direccionempresa']) && !empty($data[':direccionempresa']) && strlen($data[':direccionempresa']) > 1 && strtoupper(trim($data[':direccionempresa'])) != 'SD' && strtoupper(trim($data[':direccionempresa'])) != 'NA' && strtoupper(trim($data[':direccionempresa'])) != 'N/A'){
-						$cd['direccion'] = $data[':direccionempresa'];
-						$cd['cod_ciudad'] = (isset($data[':ciudadempresa']) && !empty(trim($data[':ciudadempresa']))) ? trim($data[':ciudadempresa']) : "NULL";
-						$ciuId = self::verificarDireccion($cd);
-					}
-					if(isset($data[':direccionoficinappal']) && !empty($data[':direccionoficinappal']) && strlen($data[':direccionoficinappal']) > 1 && strtoupper(trim($data[':direccionoficinappal'])) != 'SD' && strtoupper(trim($data[':direccionoficinappal'])) != 'NA' && strtoupper(trim($data[':direccionoficinappal'])) != 'N/A'){
-						$cd['direccion'] = $data[':direccionoficinappal'];
-						$cd['cod_ciudad'] = (isset($data[':ciudadoficina']) && !empty(trim($data[':ciudadoficina']))) ? trim($data[':ciudadoficina']) : "NULL";
-						$ciuId = self::verificarDireccion($cd);
-					}
-					if(isset($data[':direccionsucursal']) && !empty($data[':direccionsucursal']) && strlen($data[':direccionsucursal']) > 1 && strtoupper(trim($data[':direccionsucursal'])) != 'SD' && strtoupper(trim($data[':direccionsucursal'])) != 'NA' && strtoupper(trim($data[':direccionsucursal'])) != 'N/A'){
-						$cd['direccion'] = $data[':direccionsucursal'];
-						$cd['cod_ciudad'] = "NULL";
-						$ciuId = self::verificarDireccion($cd);
-					}
-					if(isset($data[':correoelectronico']) && !empty(trim($data[':correoelectronico'])) && trim($data[':correoelectronico']) != 'NULL' && strtoupper(trim($data[':correoelectronico'])) != 'SD' && strtoupper(trim($data[':correoelectronico'])) != 'NA' && strtoupper(trim($data[':correoelectronico'])) != 'N/A'){
-						$cd['direccion'] = $data[':correoelectronico'];
-						$cd['ciudad'] = "NULL";
-						$cd['tipo_demografico_id'] = "5";
-						$ciuId = self::verificarDireccion($cd);
-					}
-					if(isset($data[':correoelectronico_otro']) && !empty(trim($data[':correoelectronico_otro'])) && trim($data[':correoelectronico_otro']) != 'NULL' && strtoupper(trim($data[':correoelectronico_otro'])) != 'SD' && strtoupper(trim($data[':correoelectronico_otro'])) != 'NA' && strtoupper(trim($data[':correoelectronico_otro'])) != 'N/A'){
-						$cd['direccion'] = $data[':correoelectronico_otro'];
-						$cd['ciudad'] = "NULL";
-						$cd['tipo_demografico_id'] = "5";
-						$ciuId = self::verificarDireccion($cd);
-					}
-				}
-				return $lastId;
-			}else{
-				return false;
-			}
-		}catch(\Exception $e){
-			throw new \Exception("Ocurrio un error(Exception):".$e->getMessage(), (int)$e->getCode());
+		];
+		try {
+			if (!$conn->ejecutar($SQL, $data)) return false;
+		} catch (\Exception $e) {
+			throw new \Exception("Ocurrio un error(Exception):" . $e->getMessage(), (int) $e->getCode());
 		}
+		$lastId = $conn->ultimaId();
+
+		if ($tipo != 2) return intval($lastId);
+
+		$ct = [
+			'cliente_id'=> $cliente_id,
+			'telefono'=> '',
+			'cod_ciudad'=> "NULL",
+			'ciudad'=> "NULL",
+			'tipo_demografico_id'=> 1,
+			'origen_id'=> 4
+		];
+		if (isset($data[':telefonoresidencia']) && !empty(trim($data[':telefonoresidencia'])) && trim($data[':telefonoresidencia']) != '*') {
+			$ct['telefono'] = $data[':telefonoresidencia'];
+			$ct['cod_ciudad'] = (isset($data[':ciudadresidencia']) && !empty(trim($data[':ciudadresidencia']))) ? trim($data[':ciudadresidencia']) : "NULL";
+			$telId = self::verificarTelefono($ct);
+		}
+		if (isset($data[':telefonolaboral']) && !empty(trim($data[':telefonolaboral'])) && trim($data[':telefonolaboral']) != '*') {
+			$ct['telefono'] = $data[':telefonolaboral'];
+			$ct['cod_ciudad'] = (isset($data[':ciudadempresa']) && !empty(trim($data[':ciudadempresa']))) ? trim($data[':ciudadempresa']) : "NULL";
+			$telId = self::verificarTelefono($ct);
+		}
+		if (isset($data[':celular']) && !empty(trim($data[':celular'])) && trim($data[':celular']) != '*') {
+			$ct['telefono'] = $data[':celular'];
+			$ct['cod_ciudad'] = "NULL";
+			$ct['tipo_demografico_id'] = "5";
+			$telId = self::verificarTelefono($ct);
+		}
+		if (isset($data[':telefonoficina']) && !empty(trim($data[':telefonoficina'])) && trim($data[':telefonoficina']) != '*') {
+			$ct['telefono'] = $data[':telefonoficina'];
+			$ct['cod_ciudad'] = (isset($data[':ciudadoficina']) && !empty(trim($data[':ciudadoficina']))) ? trim($data[':ciudadoficina']) : "NULL";
+			$telId = self::verificarTelefono($ct);
+		}
+		if (isset($data[':celularoficina']) && !empty(trim($data[':celularoficina'])) && trim($data[':celularoficina']) != '*') {
+			$ct['telefono'] = $data[':celularoficina'];
+			$ct['cod_ciudad'] = "NULL";
+			$ct['tipo_demografico_id'] = "5";
+			$telId = self::verificarTelefono($ct);
+		}
+		if (isset($data[':celularoficinappal']) && !empty(trim($data[':celularoficinappal'])) && trim($data[':celularoficinappal']) != '*') {
+			$ct['telefono'] = $data[':celularoficinappal'];
+			$ct['cod_ciudad'] = "NULL";
+			$ct['tipo_demografico_id'] = "5";
+			$telId = self::verificarTelefono($ct);
+		}
+		if (isset($data[':telefonoficinappal']) && !empty(trim($data[':telefonoficinappal'])) && trim($data[':telefonoficinappal']) != '*') {
+			$ct['telefono'] = $data[':telefonoficinappal'];
+			$ct['cod_ciudad'] = (isset($data[':ciudadoficina']) && !empty(trim($data[':ciudadoficina']))) ? trim($data[':ciudadoficina']) : "NULL";
+			$telId = self::verificarTelefono($ct);
+		}
+		$cd = [
+			'cliente_id'=> $cliente_id,
+			'direccion'=> '',
+			'cod_ciudad'=> "NULL",
+			'ciudad'=> "NULL",
+			'tipo_demografico_id'=> 2,
+			'origen_id'=> 4
+		];
+		if(isset($data[':direccionresidencia']) && !empty($data[':direccionresidencia']) && strlen($data[':direccionresidencia']) > 1 && strtoupper(trim($data[':direccionresidencia'])) != 'SD' && strtoupper(trim($data[':direccionresidencia'])) != 'NA' && strtoupper(trim($data[':direccionresidencia'])) != 'N/A'){
+			$cd['direccion'] = $data[':direccionresidencia'];
+			$cd['cod_ciudad'] = (isset($data[':ciudadresidencia']) && !empty(trim($data[':ciudadresidencia']))) ? trim($data[':ciudadresidencia']) : "NULL";
+			$ciuId = self::verificarDireccion($cd);
+		}
+		if(isset($data[':direccionempresa']) && !empty($data[':direccionempresa']) && strlen($data[':direccionempresa']) > 1 && strtoupper(trim($data[':direccionempresa'])) != 'SD' && strtoupper(trim($data[':direccionempresa'])) != 'NA' && strtoupper(trim($data[':direccionempresa'])) != 'N/A'){
+			$cd['direccion'] = $data[':direccionempresa'];
+			$cd['cod_ciudad'] = (isset($data[':ciudadempresa']) && !empty(trim($data[':ciudadempresa']))) ? trim($data[':ciudadempresa']) : "NULL";
+			$ciuId = self::verificarDireccion($cd);
+		}
+		if(isset($data[':direccionoficinappal']) && !empty($data[':direccionoficinappal']) && strlen($data[':direccionoficinappal']) > 1 && strtoupper(trim($data[':direccionoficinappal'])) != 'SD' && strtoupper(trim($data[':direccionoficinappal'])) != 'NA' && strtoupper(trim($data[':direccionoficinappal'])) != 'N/A'){
+			$cd['direccion'] = $data[':direccionoficinappal'];
+			$cd['cod_ciudad'] = (isset($data[':ciudadoficina']) && !empty(trim($data[':ciudadoficina']))) ? trim($data[':ciudadoficina']) : "NULL";
+			$ciuId = self::verificarDireccion($cd);
+		}
+		if(isset($data[':direccionsucursal']) && !empty($data[':direccionsucursal']) && strlen($data[':direccionsucursal']) > 1 && strtoupper(trim($data[':direccionsucursal'])) != 'SD' && strtoupper(trim($data[':direccionsucursal'])) != 'NA' && strtoupper(trim($data[':direccionsucursal'])) != 'N/A'){
+			$cd['direccion'] = $data[':direccionsucursal'];
+			$cd['cod_ciudad'] = "NULL";
+			$ciuId = self::verificarDireccion($cd);
+		}
+		if(isset($data[':correoelectronico']) && !empty(trim($data[':correoelectronico'])) && trim($data[':correoelectronico']) != 'NULL' && strtoupper(trim($data[':correoelectronico'])) != 'SD' && strtoupper(trim($data[':correoelectronico'])) != 'NA' && strtoupper(trim($data[':correoelectronico'])) != 'N/A'){
+			$cd['direccion'] = $data[':correoelectronico'];
+			$cd['ciudad'] = "NULL";
+			$cd['tipo_demografico_id'] = "5";
+			$ciuId = self::verificarDireccion($cd);
+		}
+		if(isset($data[':correoelectronico_otro']) && !empty(trim($data[':correoelectronico_otro'])) && trim($data[':correoelectronico_otro']) != 'NULL' && strtoupper(trim($data[':correoelectronico_otro'])) != 'SD' && strtoupper(trim($data[':correoelectronico_otro'])) != 'NA' && strtoupper(trim($data[':correoelectronico_otro'])) != 'N/A'){
+			$cd['direccion'] = $data[':correoelectronico_otro'];
+			$cd['ciudad'] = "NULL";
+			$cd['tipo_demografico_id'] = "5";
+			$ciuId = self::verificarDireccion($cd);
+		}
+		return intval($lastId);
 	}
 	public static function cambiarEstadoDevolucion($documento, $persontype){
 		$conn = new Conexion();
@@ -1530,19 +1478,17 @@ class Formulario
 				  FROM workflow 
 				 WHERE documento = :documento 
 				   AND persontype = :persontype";
-		if($conn->consultar($SQL, array(':documento'=> $documento, ':persontype'=> $persontype))){
-			if($conn->getNumeroRegistros() > 0){
-				$conn->ejecutar("UPDATE workflow SET estado = :estado WHERE documento = :documento AND persontype = :persontype", array(':estado'=> '1', ':documento'=> $documento, ':persontype'=> $persontype));
-				$conn->desconectar();
-				return true;
-			}else{
-				$conn->desconectar();
-				return false;
-			}
-		}else{
+		if (!$conn->consultar($SQL, [':documento'=> $documento, ':persontype'=> $persontype])) {
 			$conn->desconectar();
 			return false;
 		}
+		if ($conn->getNumeroRegistros() <= 0) {
+			$conn->desconectar();
+			return false;
+		}
+		$conn->ejecutar("UPDATE workflow SET estado = :estado WHERE documento = :documento AND persontype = :persontype", [':estado'=> '1', ':documento'=> $documento, ':persontype'=> $persontype]);
+		$conn->desconectar();
+		return true;
 	}
 	public static function addIndexacion($id_form, $id_user){
 		$conn = new Conexion();
@@ -1554,114 +1500,96 @@ class Formulario
 				(
 					:id_form, :id_user
 				)";
-		if($conn->ejecutar($SQL, array(':id_form'=> $id_form, ':id_user'=> $id_user))){
-			$conn->desconectar();
-			return true;
-		}else{
-			$conn->desconectar();
-			return false;
-		}
+		$resp = $conn->ejecutar($SQL, [':id_form'=> $id_form, ':id_user'=> $id_user]);
+		$conn->desconectar();
+		return $resp;
 	}
 	public static function verificarTelefono($dato, $tipo = 1, $conn = null){
-		if($conn === null)
-			$conn = new Conexion();
-		$tabla = "telefono";
-		if($tipo == 2)
-			$tabla = "telefono_";
+		if ($conn === null) $conn = new Conexion();
+		$tabla = $tipo === 2 ? "telefono_" : "telefono";
 		$SQL = "SELECT id 
 				  FROM $tabla 
 				 WHERE cliente_id = :cliente_id
 				   AND telefono = :telefono";
-		if($conn->consultar($SQL, array(':cliente_id'=> $dato['cliente_id'], ':telefono'=> trim($dato['telefono'])))){
-			$cantReg = $conn->getNumeroRegistros();
-			if($cantReg >= 1){
-				$da = $conn->sacarRegistro('str');
-				return $da['id'];
-			}else{
-				$SQU = "INSERT INTO $tabla 
-						(
-							cliente_id, telefono, cod_ciudad, ciudad, tipo_demografico_id, origen_id
-						) 
-						VALUES 
-						(
-							:cliente_id, :telefono, :cod_ciudad, :ciudad, :tipo_demografico_id, :origen_id
-						)";
-				$data = array(
-					':cliente_id'=> $dato['cliente_id'],
-					':telefono'=> trim($dato['telefono']),
-					':cod_ciudad'=> trim($dato['cod_ciudad']),
-					':ciudad'=> trim($dato['ciudad']),
-					':tipo_demografico_id'=> $dato['tipo_demografico_id'],
-					':origen_id'=> $dato['origen_id']
-				);
-				try{
-					if($conn->ejecutar($SQU, $data)){
-						$ultimaId = $conn->ultimaId();
-						return $ultimaId;
-					}else{
-						return false;
-					}
-				}catch(PDOException $Exception){
-					$SQU = "INSERT INTO telefono_excepcion(excepcion, error, codigo, datos) VALUES (:excepcion, :error, :codigo, :datos)";
-					$conn->ejecutar($SQU, array(':excepcion'=> 'PDOException', ':error'=> $Exception->getMessage(), ':codigo'=> $Exception->getCode(), ':datos'=> json_encode($data)));
-					//throw new PDOException($Exception->getMessage(), (int)$Exception->getCode());
-				}catch(Exception $e){
-					$SQU = "INSERT INTO telefono_excepcion(excepcion, error, codigo, datos) VALUES (:excepcion, :error, :codigo, :datos)";
-					$conn->ejecutar($SQU, array(':excepcion'=> 'Exception', ':error'=> $e->getMessage(), ':codigo'=> $e->getCode(), ':datos'=> json_encode($data)));
-					//throw new Exception($e->getMessage(), (int)$e->getCode());
-				}
+		if (!$conn->consultar($SQL, [':cliente_id'=> $dato['cliente_id'], ':telefono'=> trim($dato['telefono'])])) {
+			return 0;
+		}
+		if ($conn->getNumeroRegistros() >= 1) {
+			$da = $conn->sacarRegistro('str');
+			return $da['id'];
+		}
+		$SQU = "INSERT INTO $tabla 
+				(
+					cliente_id, telefono, cod_ciudad, ciudad, tipo_demografico_id, origen_id
+				) 
+				VALUES 
+				(
+					:cliente_id, :telefono, :cod_ciudad, :ciudad, :tipo_demografico_id, :origen_id
+				)";
+		$data = [
+			':cliente_id'=> $dato['cliente_id'],
+			':telefono'=> trim($dato['telefono']),
+			':cod_ciudad'=> trim($dato['cod_ciudad']),
+			':ciudad'=> trim($dato['ciudad']),
+			':tipo_demografico_id'=> $dato['tipo_demografico_id'],
+			':origen_id'=> $dato['origen_id']
+		];
+		try {
+			if (!$conn->ejecutar($SQU, $data)) {
+				return 0;
 			}
+			$ultimaId = $conn->ultimaId();
+			return intval($ultimaId);
+		} catch (PDOException $Exception) {
+			$SQU = "INSERT INTO telefono_excepcion(excepcion, error, codigo, datos) VALUES (:excepcion, :error, :codigo, :datos)";
+			$conn->ejecutar($SQU, [':excepcion'=> 'PDOException', ':error'=> $Exception->getMessage(), ':codigo'=> $Exception->getCode(), ':datos'=> json_encode($data)]);
+		} catch (Exception $e) {
+			$SQU = "INSERT INTO telefono_excepcion(excepcion, error, codigo, datos) VALUES (:excepcion, :error, :codigo, :datos)";
+			$conn->ejecutar($SQU, [':excepcion'=> 'Exception', ':error'=> $e->getMessage(), ':codigo'=> $e->getCode(), ':datos'=> json_encode($data)]);
 		}
 	}
 	public static function verificarDireccion($dato, $tipo = 1, $conn = null){
-		if($conn === null)
-			$conn = new Conexion();
-		$tabla = "direccion";
-		if($tipo == 2)
-			$tabla = "direccion_";
+		if ($conn === null) $conn = new Conexion();
+		$tabla = $tipo === 2 ? "direccion_" : "direccion";
 		$SQL = "SELECT id 
 				  FROM $tabla 
 				 WHERE cliente_id = :cliente_id
 				   AND direccion = :direccion";
-		if($conn->consultar($SQL, array(':cliente_id'=> $dato['cliente_id'], ':direccion'=> trim($dato['direccion'])))){
-			$cantReg = $conn->getNumeroRegistros();
-			if($cantReg >= 1){
-				$da = $conn->sacarRegistro('str');
-				return $da['id'];
-			}else{
-				$SQU = "INSERT INTO $tabla 
-						(
-							cliente_id, direccion, cod_ciudad, ciudad, tipo_demografico_id, origen_id
-						) 
-						VALUES 
-						(
-							:cliente_id, :direccion, :cod_ciudad, :ciudad, :tipo_demografico_id, :origen_id
-						)";
-				$data = array(
-					':cliente_id'=> $dato['cliente_id'],
-					':direccion'=> trim($dato['direccion']),
-					':cod_ciudad'=> trim($dato['cod_ciudad']),
-					':ciudad'=> trim($dato['ciudad']),
-					':tipo_demografico_id'=> $dato['tipo_demografico_id'],
-					':origen_id'=> $dato['origen_id']
-				);
-				try{
-					if($conn->ejecutar($SQU, $data)){
-						$ultimaId = $conn->ultimaId();
-						return $ultimaId;
-					}else{
-						return false;
-					}
-				}catch(PDOException $Exception){
-					$SQU = "INSERT INTO direccion_exception(excepcion, error, codigo, datos) VALUES (:excepcion, :error, :codigo, :datos)";
-					$conn->ejecutar($SQU, array(':excepcion'=> 'PDOException', ':error'=> $Exception->getMessage(), ':codigo'=> $Exception->getCode(), ':datos'=> json_encode($data)));
-					//throw new PDOException($Exception->getMessage(), (int)$Exception->getCode());
-				}catch(Exception $e){
-					$SQU = "INSERT INTO direccion_exception(excepcion, error, codigo, datos) VALUES (:excepcion, :error, :codigo, :datos)";
-					$conn->ejecutar($SQU, array(':excepcion'=> 'Exception', ':error'=> $e->getMessage(), ':codigo'=> $e->getCode(), ':datos'=> json_encode($data)));
-					//throw new Exception($e->getMessage(), (int)$e->getCode());
-				}
+		if (!$conn->consultar($SQL, [':cliente_id'=> $dato['cliente_id'], ':direccion'=> trim($dato['direccion'])])) {
+			return 0;
+		}
+		if ($conn->getNumeroRegistros() >= 1) {
+			$da = $conn->sacarRegistro('str');
+			return intval($da['id']);
+		}
+		$SQU = "INSERT INTO $tabla 
+				(
+					cliente_id, direccion, cod_ciudad, ciudad, tipo_demografico_id, origen_id
+				) 
+				VALUES 
+				(
+					:cliente_id, :direccion, :cod_ciudad, :ciudad, :tipo_demografico_id, :origen_id
+				)";
+		$data = [
+			':cliente_id'=> $dato['cliente_id'],
+			':direccion'=> trim($dato['direccion']),
+			':cod_ciudad'=> trim($dato['cod_ciudad']),
+			':ciudad'=> trim($dato['ciudad']),
+			':tipo_demografico_id'=> $dato['tipo_demografico_id'],
+			':origen_id'=> $dato['origen_id']
+		];
+		try {
+			if (!$conn->ejecutar($SQU, $data)) {
+				return 0;
 			}
+			$ultimaId = $conn->ultimaId();
+			return intval($ultimaId);
+		} catch (PDOException $Exception) {
+			$SQU = "INSERT INTO direccion_exception(excepcion, error, codigo, datos) VALUES (:excepcion, :error, :codigo, :datos)";
+			$conn->ejecutar($SQU, [':excepcion'=> 'PDOException', ':error'=> $Exception->getMessage(), ':codigo'=> $Exception->getCode(), ':datos'=> json_encode($data)]);
+		} catch (Exception $e) {
+			$SQU = "INSERT INTO direccion_exception(excepcion, error, codigo, datos) VALUES (:excepcion, :error, :codigo, :datos)";
+			$conn->ejecutar($SQU, [':excepcion'=> 'Exception', ':error'=> $e->getMessage(), ':codigo'=> $e->getCode(), ':datos'=> json_encode($data)]);
 		}
 	}
 	public static function insertarFormAutos($dat, $form_id){
@@ -1918,19 +1846,14 @@ class Formulario
 				(
 					:data_id, :ju_nombre_completo, :ju_tipodocumento_id, :ju_identificacion, :ju_expuesto_politico
 				)";
-		$data = array(
+		$data = [
 			':data_id'=> $data_id, 
 			':ju_nombre_completo'=> $ju_nombre_completo, 
 			':ju_tipodocumento_id'=> $ju_tipodocumento_id, 
 			':ju_identificacion'=> $ju_identificacion, 
 			':ju_expuesto_politico'=> $ju_expuesto_politico
-		);
-		if($conn->ejecutar($SQL, $data)){
-			$lastId = $conn->ultimaId();
-			return true;
-		}else{
-			return false;
-		}
+		];
+		return $conn->ejecutar($SQL, $data);
 	}
 	public static function insertNuevoAccionista($data_id, $be_tipo, $be_razon_social, $be_nit, $be_nombre_completo, $be_tipodocumento_id, $be_identificacion, $be_fecha_expedicion, $be_expuesto_politico, $be_poliza_seguro, $conn){
 		$SQL = "INSERT INTO data_beneficiarios 
