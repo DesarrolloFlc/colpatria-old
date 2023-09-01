@@ -176,12 +176,12 @@ if(isset($paises) && !empty($paises) && is_array($paises)){
 		<td style="width: 100px;display: table-cell;">Re-escribir Direccion residencia:</td>
 		<td><input type="text" id="direccionresidencia2" name="direccionresidencia2" style="width: 240px" onkeypress="return validar_letra(event)" title="Direccion residencia" onblur="$(this).validarCampoReescrito(event, 'input', 'form_fingering', 'direccionresidencia', 'Las direcciones de residencia no coinciden por favor validelas.');"></td>
 	</tr>
-	<tr>
+	<!-- <tr>
 		<td style="width: 100px;display: table-cell;">Patrimonio:</td>
 		<td>
 			<input type="text" id="patrimonio" name="patrimonio" style="width: 100px" title="Patrimonio" onkeypress="return validar_num(event)">
 		</td>
-	</tr>
+	</tr> -->
 	<tr>
 		<td style="width: 100px;display: table-cell;">Re-escribir Telefono:</td>
 		<td>

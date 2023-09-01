@@ -199,11 +199,15 @@
 			</select>
 		</td>
 	</tr>
-	<tr>
+	<!-- <tr>
 		<td style="width: 100px;display: table-cell;">Patrimonio:</td>
 		<td>
 			<input type="text" id="patrimonio" name="patrimonio" style="width: 100px" title="Patrimonio" onkeypress="return validar_num(event)">
-			Egresos mensuales:
+		</td>
+	</tr> -->
+	<tr>
+		<td style="width: 100px;display: table-cell;">Egresos mensuales:</td>
+		<td>
 			<select id="egresosmensualesemp" name="egresosmensualesemp" style="font-size: 12px; margin-right: 5px" title="Egresos mensuales">
 				<option value="">Seleccione...</option>
 <?php

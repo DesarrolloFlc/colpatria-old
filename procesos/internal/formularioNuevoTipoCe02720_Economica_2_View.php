@@ -125,12 +125,12 @@ if(isset($tipoDocumentos) && !empty($tipoDocumentos) && is_array($tipoDocumentos
 			<input type="text" id="pasivosemp" name="pasivosemp" style="width: 100px" onkeypress="return validar_num(event)" title="Pasivos">
 		</td>
 	</tr>
-	<tr>
+	<!-- <tr>
 		<td style="width: 100px;display: table-cell;">Patrimonio:</td>
 		<td>
 			<input type="text" id="patrimonio" name="patrimonio" style="width: 100px" title="Patrimonio" onkeypress="return validar_num(event)">
 		</td>
-	</tr>
+	</tr> -->
 	<tr>
 		<td style="width: 100px;display: table-cell;">Re-escribir Nacionalidad 2:</td>
 		<td>
