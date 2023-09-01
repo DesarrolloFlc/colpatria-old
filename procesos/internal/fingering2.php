@@ -160,7 +160,7 @@ if($mimeTipeForm == 'application/pdf'){
                         <option value="">-- Seleccione un tipo de documento --</option>
                         <option value="1">Formulario</option>
 						<option value="6">Formulario nuevo</option>
-						<option value="7">Formulario nuevo(CE027/20)</option>
+						<option value="7">Formulario nuevo(Jul/2022)</option>
 						<option value="8">Formato regimen simplificado(tirilla)</option>
 						<option value="9">Formato sector asegurado(CE027/20)</option>
                         <!-- <option value="2">Formulario Cara B</option>
