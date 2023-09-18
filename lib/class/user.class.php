@@ -47,7 +47,7 @@ class User
 		$sql = "SELECT * FROM user WHERE status = '1' ORDER BY date_created DESC LIMIT 20";
 		return mysqli_query($GLOBALS['link'], $sql);
 	}
-	function add( $id_group,$username,$password,$identificacion,$name, $sucursal,$correoelectronico,$cargo,$oficial = '',$correojefe='') {
+	function add($id_group, $username, $password, $identificacion, $name, $sucursal, $correoelectronico, $cargo, $oficial = '', $correojefe='') {
 		$username = mysqli_real_escape_string($GLOBALS['link'],  $username);
 		$password = mysqli_real_escape_string($GLOBALS['link'],  $password);
 		$sucursal = mysqli_real_escape_string($GLOBALS['link'],  $sucursal);
@@ -57,21 +57,19 @@ class User
 		$name = mysqli_real_escape_string($GLOBALS['link'], $name);
 		$sql = "INSERT INTO user
 				(
-					id_group,username,password,identificacion,name,sucursal,correoelectronico,cargo
+					id_group, username, password, identificacion, name, sucursal, correoelectronico, cargo
 				) 
 				VALUES
 				(
-					'$id_group','$username','$password','$identificacion','$name','$sucursal','$correoelectronico','$cargo'
+					'$id_group', '$username', '$password', '$identificacion', '$name', '$sucursal', '$correoelectronico', '$cargo'
 				)";
-		if( mysqli_query($GLOBALS['link'],  $sql )){
-			if($oficial != ''){
-				$ultimId = @mysqli_insert_id($GLOBALS['link']);
-				if(Official::addOficial($ultimId, $identificacion, $name, $correoelectronico, $correojefe))
-					return 0;
-			}
-			return 0;
-		}else 
-			return -1;
+		if (!mysqli_query($GLOBALS['link'],  $sql )) return -1;
+
+		if ($oficial != '') {
+			$ultimId = @mysqli_insert_id($GLOBALS['link']);
+			Official::addOficial($ultimId, $identificacion, $name, $correoelectronico, $correojefe);
+		}
+		return 0;
 	}
 	function search($type,$text) {
 		$sql = "SELECT * FROM user WHERE 1 ";
@@ -152,5 +150,16 @@ class User
 		}
 		return $objs;
 	}
+	static function actualizarPasswordPorId(Conexion $conn, int $id, string $password, string $nuevoPassword): array
+	{
+		$SQL = "SELECT id FROM user WHERE id = :id AND password = :password";
+		$conn->consultar($SQL, [':id'=> $id, ':password'=> $password]);
+		if ($conn->getNumeroRegistros() !== 1) return ['error'=> 'Los datos del usuario con concuerda, probablemente esa no sea su contraseña actual.'];
+
+		$row = $conn->sacarRegistro('str');
+
+		return $conn->ejecutar("UPDATE user SET password = :password WHERE id = :id", [':id'=> $row['id'], ':password'=> $nuevoPassword])
+			? ['exito'=> 'Se realizo la actualizacion de la contraseña satisfactoriamente.']
+			: ['error'=> 'Ocurrio un error al momento de actualizar la contraseña, contacte con el administrador.'];
+	}
 }
-?>
