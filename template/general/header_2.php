@@ -318,36 +318,42 @@ if (isset($_SESSION['group']) && $_SESSION['group'] == "1" OR $_SESSION['group']
 ?>
                 </ul> <!-- End #main-nav -->
                 <div id="change_password" style="display: none"> <!-- Messages are shown when a link with these attributes are clicked: href="#messages" rel="modal"  -->
-
                     <h3>CAMBIAR CONTRASEÑA PERSONAL</h3>
                     <p>
                         El cambio de su contraseña periodicamente ayuda a mantener su cuenta 
                         más segura, evitando así que otras personas accedan sin su concentimiento.
                     </p>
-
-                    <form action="../../lib/general/procesos.php" method="POST" name="password_form" id="password_form">
+                    <form method="POST" name="password_form" id="password_form" onsubmit="$(this).cambiarPassword(event);">
                         <h4>Realizar el cambio ...</h4>
-                        <br />
+                        <br>
                         <fieldset>
                             <b>Contraseña actual:</b><br/>
-                            <input class="text-input medium-input" type="password" name="medium-input" />
+                            <input class="text-input medium-input" type="password" name="anterior_password" />
                         </fieldset>
-                        <br />
+                        <br>
                         <fieldset>
                             <b>Nuevo contraseña:</b><br/>
-                            <input class="text-input medium-input" type="password" name="medium-input" />
+                            <input class="text-input medium-input" type="password" name="nuevo_password" />
                         </fieldset>
-                        <br />
+                        <br>
                         <fieldset>
                             <b>Re-escribir nueva contraseña:</b></br>
-                            <input class="text-input medium-input" type="password" name="medium-input" />
+                            <input class="text-input medium-input" type="password" name="nuevo_password2" />
                         </fieldset>                            
-                        <br /><br />
-                        <fieldset>
-                            <center><input class="button" type="submit" id="cambiar_pass" value="Cambiar contraseña >>" /></center>
+                        <br><br>
+                        <fieldset style="display: flex; align-items: center;">
+                            <input class="button" type="submit" id="cambiar_pass" value="Cambiar contraseña >>" />
+                            <div style="width: 16px; height: 16px; padding-left: 5px;">
+                                <img id="imgloading-cambiar-password" src="../images/icons/loading.gif" style="display: none;" />
+                            </div>
                         </fieldset>
+                        <input type="hidden" name="domain" value="user">
+                        <input type="hidden" name="action" value="cambiarPassword">
+                        <input type="hidden" name="meth" value="js">
                     </form>
-
+                    <div class="notification error png_bg" id="cambiar-password-resultado-error" style="display: none; margin-top: 15px;">
+                        <div id="mensaje-error" style="margin: 10px 10px;"></div>
+                    </div>
                 </div> <!-- End #messages -->
             </div></div> <!-- End #sidebar -->
         <div id="main-content"> <!-- Main Content Section with everything -->

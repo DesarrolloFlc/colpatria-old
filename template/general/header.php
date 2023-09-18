@@ -330,7 +330,7 @@ if(isset($_SESSION['group']) && $_SESSION['group'] == 6){
                             Mis opciones
                         </a>
                         <ul>
-                            <li><a href="#change_password" rel="modal" title="3 Messages">Cambiar contraseña</a></li>
+                            <li><a href="#" onclick="$(this).mostrarCambiarPassword(event);" title="3 Messages">Cambiar contraseña</a></li>
                             <li><a href="<?=SITE_ROOT?>/lib/general/logout.php">Salir</a></li> <!-- Add class "current" to sub menu items also -->
                         </ul>
                     </li>
@@ -344,28 +344,37 @@ if(isset($_SESSION['group']) && $_SESSION['group'] == 6){
                         El cambio de su contraseña periodicamente ayuda a mantener su cuenta 
                         más segura, evitando así que otras personas accedan sin su concentimiento.
                     </p>
-                    <form action="../../lib/general/procesos.php" method="POST" name="password_form" id="password_form">
+                    <form method="POST" name="password_form" id="password_form" onsubmit="$(this).cambiarPassword(event);">
                         <h4>Realizar el cambio ...</h4>
                         <br>
                         <fieldset>
                             <b>Contraseña actual:</b><br/>
-                            <input class="text-input medium-input" type="password" name="medium-input" />
+                            <input class="text-input medium-input" type="password" name="anterior_password" />
                         </fieldset>
                         <br>
                         <fieldset>
                             <b>Nuevo contraseña:</b><br/>
-                            <input class="text-input medium-input" type="password" name="medium-input" />
+                            <input class="text-input medium-input" type="password" name="nuevo_password" />
                         </fieldset>
                         <br>
                         <fieldset>
                             <b>Re-escribir nueva contraseña:</b></br>
-                            <input class="text-input medium-input" type="password" name="medium-input" />
+                            <input class="text-input medium-input" type="password" name="nuevo_password2" />
                         </fieldset>                            
                         <br><br>
-                        <fieldset>
-                            <center><input class="button" type="submit" id="cambiar_pass" value="Cambiar contraseña >>" /></center>
+                        <fieldset style="display: flex; align-items: center;">
+                            <input class="button" type="submit" id="cambiar_pass" value="Cambiar contraseña >>" />
+                            <div style="width: 16px; height: 16px; padding-left: 5px;">
+                                <img id="imgloading-cambiar-password" src="../images/icons/loading.gif" style="display: none;" />
+                            </div>
                         </fieldset>
+                        <input type="hidden" name="domain" value="user">
+                        <input type="hidden" name="action" value="cambiarPassword">
+                        <input type="hidden" name="meth" value="js">
                     </form>
+                    <div class="notification error png_bg" id="cambiar-password-resultado-error" style="display: none; margin-top: 15px;">
+                        <div id="mensaje-error" style="margin: 10px 10px;"></div>
+                    </div>
                 </div> <!-- End #messages -->
             </div>
         </div> <!-- End #sidebar -->
