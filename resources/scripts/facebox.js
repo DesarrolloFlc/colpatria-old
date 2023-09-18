@@ -66,8 +66,12 @@
 
     if (data.ajax) fillFaceboxFromAjax(data.ajax)
     else if (data.image) fillFaceboxFromImage(data.image)
-    else if (data.div) fillFaceboxFromHref(data.div)
-    else if ($.isFunction(data)) data.call($)
+    else if (data.div) {
+      fillFaceboxFromHref(data.div);
+      if (data.checkClose) {
+        $(`#facebox .body .content ${data.div}`).parent().parent().children('.footer').children('.close').attr('onclick', '$.fn.cerrarVentana(true);');
+      }
+    } else if ($.isFunction(data)) data.call($)
     else $.facebox.reveal(data, klass)
   }
 
