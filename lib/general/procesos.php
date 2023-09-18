@@ -1,13 +1,12 @@
 <?php
-//print_r($_POST);
 session_start();
 ini_set('memory_limit', '-1');
 set_time_limit(0);
-require_once '../../includes.php';
-require_once PATH_CLASS.DS.'_conexion.php';
-require_once '../class/user.class.php';
-require_once '../class/ordenproduccion.class.php';
-require_once '../class/meta.class.php';
+require_once dirname(dirname(dirname(__FILE__))) . DIRECTORY_SEPARATOR . "includes.php";
+require_once PATH_CLASS . DS . '_conexion.php';
+require_once PATH_CCLASS . DS . 'user.class.php';
+require_once PATH_CCLASS . DS . 'ordenproduccion.class.php';
+require_once PATH_CCLASS . DS . 'meta.class.php';
 
 if (isset($_GET['actionadmin']) && $_GET['actionadmin'] == "desactivaruser") {
     $user = new User();
@@ -28,21 +27,9 @@ else if(isset($_GET['action']) && !empty($_GET['action']))
  */
 if ($action == "add_user") {
     $user = new User();
-    if (isset($oficial) && $oficial != '') {
-        if ($user->add($id_group, $username, $password, $identificacion, $name, $sucursal, $correoelectronico, $cargo, $oficial, $correojefe) == 0) {
-            echo "0";
-        } else {
-            echo "-1";
-            exit;
-        }
-    } else {
-        if ($user->add($id_group, $username, $password, $identificacion, $name, $sucursal, $correoelectronico, $cargo) == 0) {
-            echo "0";
-        } else {
-            echo "-1";
-            exit;
-        }
-    }
+    $user->add($id_group, $username, $password, $identificacion, $name, $sucursal, $correoelectronico, $cargo, $oficial ?? '', $correojefe ?? '') === 0
+        ? "0"
+        : "-1";
 }
 
 
@@ -50,41 +37,42 @@ if ($action == "add_user") {
  * EDITAR UN DOCUMENTO
  */
 if ($action == "editardocumento") {
-    if (!empty($nuevodocumento) && !empty($id_client) && !empty($_SESSION['id'])) {
-        $exist_client = mysqli_fetch_array(mysqli_query($GLOBALS['link'], "SELECT COUNT(*) as total FROM client WHERE document = '$nuevodocumento'"));
-        if ($exist_client['total'] > 0) {
-            echo "El cliente ya existe, contacte por favor al administrador"; //El cliente ya existe
-        } else {
-            //Hacer la query para cambiar el documento
-            $sql = "UPDATE client 
-                       SET document = '$nuevodocumento',
-                           last_updater = '".$_SESSION['id']."', 
-                           date_updated_document = '".date('y-m-d h:m:s')."' 
-                     WHERE id = '$id_client'";
-            if (mysqli_query($GLOBALS['link'], $sql)) {
-                $sq1 = "UPDATE data_confirm
-                           SET documento = '$nuevodocumento',
-                               nit = '$nuevodocumento'
-                         WHERE id_client = '$id_client'";
-                mysqli_query($GLOBALS['link'], $sq1);
-                $sq2 = "SELECT f.id,
-                               c.persontype
-                          FROM form AS f
-                         INNER JOIN client AS c ON(c.id = f.id_client)
-                         WHERE f.id_client = '$id_client'";
-                $rest = mysqli_query($GLOBALS['link'], $sq2);
-                while($fila = mysqli_fetch_array($rest, MYSQLI_ASSOC)){
-                    $sq3 = "UPDATE data SET documento = '$nuevodocumento' WHERE id_form = ".$fila['id'];
-                    if($fila['persontype'] == '2')
-                        $sq3 = "UPDATE data SET nit = '$nuevodocumento' WHERE id_form = ".$fila['id'];
-                    mysqli_query($GLOBALS['link'], $sq3);
-                }
-                echo "Actualizacion exitosa.";
-            } else
-                echo "No se pudo realizar la actualizacion del cliente.";
-        }
-    } else
-        echo "Hubo problemas con el documento, contacte al administrador."; //El cliente no existe
+    if (empty($nuevodocumento) || empty($id_client) || empty($_SESSION['id'])) {
+        echo "Hubo problemas con el documento, contacte al administrador.";
+        exit;
+    }
+    $exist_client = mysqli_fetch_array(mysqli_query($GLOBALS['link'], "SELECT COUNT(*) as total FROM client WHERE document = '$nuevodocumento'"));
+    if ($exist_client['total'] > 0) {
+        echo "El cliente ya existe, contacte por favor al administrador";
+        exit;
+    }
+    $sql = "UPDATE client 
+               SET document = '$nuevodocumento',
+                   last_updater = '".$_SESSION['id']."', 
+                   date_updated_document = '".date('y-m-d h:m:s')."' 
+             WHERE id = '$id_client'";
+    if (!mysqli_query($GLOBALS['link'], $sql)) {
+        echo "No se pudo realizar la actualizacion del cliente.";
+        exit;
+    }
+    $sq1 = "UPDATE data_confirm
+               SET documento = '$nuevodocumento',
+                   nit = '$nuevodocumento'
+             WHERE id_client = '$id_client'";
+    mysqli_query($GLOBALS['link'], $sq1);
+    $sq2 = "SELECT f.id,
+                   c.persontype
+              FROM form AS f
+             INNER JOIN client AS c ON(c.id = f.id_client)
+             WHERE f.id_client = '$id_client'";
+    $rest = mysqli_query($GLOBALS['link'], $sq2);
+    while ($fila = mysqli_fetch_array($rest, MYSQLI_ASSOC)) {
+        $fila['persontype'] == '2'
+            ? "UPDATE data SET nit = '$nuevodocumento' WHERE id_form = " . $fila['id']
+            : "UPDATE data SET documento = '$nuevodocumento' WHERE id_form = " . $fila['id'];
+        mysqli_query($GLOBALS['link'], $sq3);
+    }
+    echo "Actualizacion exitosa.";
 }
 
 
