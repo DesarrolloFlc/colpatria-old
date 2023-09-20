@@ -34,9 +34,9 @@
 		</td>
 	</tr>
 </table>
-<input type="hidden" name="type" value="8">
-<input type="hidden" name="tipo_norma_id" value="2">
-<input type="hidden" name="regimen_id" value="1">
+<input type="hidden" name="type" value="10">
+<input type="hidden" name="tipo_norma_id" value="1">
+<input type="hidden" name="regimen_id" value="2">
 <input type="hidden" name="num_images" value="">
 <input type="hidden" name="domain" value="form">
 <input type="hidden" name="action" value="guardarDocComplementarioPorRegimen">
@@ -46,47 +46,44 @@
 $(document).ready(function(){
 	$('form#form_fingering').submit(function(event){
 		(event.preventDefault) ? event.preventDefault() : event.returnValue = false;
-		if($(this).find('select[name="persontype"]').val() == ''){
+		if($('select[name="persontype"]', this).val() == ''){
 			alert('Por favor seleccione el tipo de persona.');
-			$(this).find('select[name="persontype"]').focus();
+			$('select[name="persontype"]', this).focus();
 			return false;
 		}
-		if($(this).find('input[name="document"]').val() == ''){
+		if($('input[name="document"]', this).val() == ''){
 			alert('Por favor digite el numero de identificacion del cliente.');
-			$(this).find('input[name="document"]').focus();
+			$('input[name="document"]', this).focus();
 			return false;
 		}
-		if($(this).find('select[name="firstname"]').val() == '2'){
+		if($('select[name="firstname"]', this).val() == '2'){
 			alert('Por favor digite el nombre y/o razon social del cliente.');
-			$(this).find('input[name="firstname"]').focus();
+			$('input[name="firstname"]', this).focus();
 			return false;
 		}
-		var data = $(this).serialize();
+		const form = this;
 		$.ajax({
 			beforeSend: function(){
-				$('form#form_fingering button#button_form_fingering').attr('disabled', 'disabled');
+				$('form#form_fingering button#button_form_fingering').attr('disabled', true);
 			},
-			data: data,
+			data: $(form).serialize(),
 			type: 'POST',
 			url: '../includes/Controller.php',
 			dataType: 'json',
 			success: function(dato){
-				if(dato.exito && dato.url){
-					alert(dato.exito);
-					window.location.href = dato.url;
-				}else if(dato.error){
-					alert(dato.error);
-				}else{
-					alert('Ocurrio un error al momento de agregar el nuevo formulario, contacte con el administrador por favor.');
-					console.log(dato);
+				if (!dato.url) {
+					alert(dato.error ? dato.error : 'Ocurrio un error al momento de agregar el nuevo formulario, contacte con el administrador por favor.');
+					if (!dato.error) console.log(dato);
+					return false;
 				}
+				alert(dato.exito);
+				window.location.href = dato.url;
 			},
 			complete: function(jqXHR, textStatus){
 				$('form#form_fingering button#button_form_fingering').removeAttr('disabled');
 			},
 			error: function(xhr, ajaxOptions, thrownError) {
 				console.log(xhr, ajaxOptions, thrownError);
-				$('form#form_fingering button#button_form_fingering').removeAttr('disabled');
 				alert("Error(form_fingering): "+xhr.status+" Error: "+xhr.responseText);
 			}
 		});

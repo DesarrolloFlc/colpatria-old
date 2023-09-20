@@ -21,7 +21,7 @@ function formularioDigitarAction($request){
 			# code...
 			break;
 	}
-	require_once PATH_INTERNAL.DS.$request['action'].'_'.$request['type'].'_'.'View.php';
+	require_once PATH_INTERNAL . DS . $request['action'] . '_' . $request['type'] . '_' . 'View.php';
 }
 function formularioNuevoTipoAction($request){
 	$lote = (isset($request['lote']) && $request['lote'] != '' && strlen($request['lote']) > 5) ? substr($request['lote'], 5, strlen($request['lote'])) : 'NULL';
@@ -1138,43 +1138,41 @@ function guardarDocComplementariaAction($request){
 		echo json_encode(array('error'=> 'El cliente con este numero de documento no existe, no se puede guardar la informacion como documentacion complementaria.'));
 	}
 }
-function guardarDocRegimenSimplificadoAction($request){
-	if($cliente_id = Formulario::obtenerIdCliente($request['document'], $request['persontype']/*, 2*/)){
+function guardarDocComplementarioPorRegimenAction($request){
+	$cliente_id = Formulario::obtenerIdCliente($request['document'], $request['persontype']/*, 2*/);
+
+	if ($cliente_id === 0) {
+		$cliente_id = Formulario::crearNuevoCliente($request['document'], $request['persontype'], $request['firstname'], $request['tipo_norma_id'], $request['regimen_id']/*, 2*/);
+		$form_id = Formulario::agregarNuevoFormulario($cliente_id, 'FORMULARIO', $request['lote'], $request['planilla1'], $_SESSION['id'], '1', $request['marca']/*, 2*/);
+	} else {
 		Formulario::activeCliente($cliente_id);
-		//Formulario::actualizarRegimen($cliente_id, 1/*, 2*/);
-		if(!$form_id = Formulario::obtenerUltimoIdFormulario($cliente_id/*, 2*/)){
-			//error_log("formulario_id: ".$form_id, 0);
-			if(!$form_id = Formulario::agregarNuevoFormulario($cliente_id, 'FORMULARIO', $request['lote'], $request['planilla1'], $_SESSION['id'], '1', $request['marca']/*, 2*/)){
-				echo json_encode(array('error'=> 'Ocurrio un error al momento de crear el formulario, por favor contacte con el administrador.'));
-				exit;
-			}
-		}
-	}else{
-		$cliente_id = Formulario::crearNuevoCliente($request['document'], $request['persontype'], $request['firstname'], 2, 1/*, 2*/);
-		if(!$form_id = Formulario::agregarNuevoFormulario($cliente_id, 'FORMULARIO', $request['lote'], $request['planilla1'], $_SESSION['id'], '1', $request['marca']/*, 2*/)){
-			echo json_encode(array('error'=> 'Ocurrio un error al momento de crear el formulario, por favor contacte con el administrador.'));
-			exit;
+		$form_id = Formulario::obtenerUltimoIdFormulario($cliente_id/*, 2*/);
+		if ($form_id === false) {
+			$form_id = Formulario::agregarNuevoFormulario($cliente_id, 'FORMULARIO', $request['lote'], $request['planilla1'], $_SESSION['id'], '1', $request['marca']/*, 2*/);
 		}
 	}
+	if ($form_id === false) {
+		echo json_encode(['error'=> 'Ocurrio un error al momento de crear el formulario, por favor contacte con el administrador.']);
+		exit;
+	}
 
-	$err_img = '';
-	if($imagen = Formulario::obtenerImagenTemporal($request['id_imagen_tmp'])){
-		$err_img = Formulario::guardarImagenDigitada($imagen['filename'], $form_id, '8', $_SESSION['id'], $request['id_imagen_tmp']/*, 2*/);
-	}else
-		$err_img = 'No se encontro la imagen con el identificador: '.$request['id_imagen_tmp'];
+	$err_img = 'No se encontro la imagen con el identificador: ' . $request['id_imagen_tmp'];
+	$imagen = Formulario::obtenerImagenTemporal($request['id_imagen_tmp']);
+	if ($imagen !== false) {
+		$err_img = Formulario::guardarImagenDigitada($imagen['filename'], $form_id, $request['type'], $_SESSION['id'], $request['id_imagen_tmp']/*, 2*/);
+	}
 
 	Formulario::addIndexacion($form_id, $_SESSION['id']);
 
 	$mensaje = 'Se agrego la nueva digitacion';
-	if(!empty($err_img))
+	if (!empty($err_img)) {
 		$mensaje .= ', con el siguiente problema: '.$err_img;
-	echo json_encode(array('exito'=> $mensaje, 'url'=> 'fingering2.php?id_form='.$form_id.'&id_cliente='.$cliente_id));
+	}
+	echo json_encode(['exito'=> $mensaje, 'url'=> 'fingering2.php?id_form=' . $form_id . '&id_cliente=' . $cliente_id]);
 }
 function desactivarPlanillasAction($request){
-	if($resp = Formulario::desactivarPlanillas($request['id_user']))
-		echo json_encode($resp);
-	else
-		echo json_encode(array('error'=> 'Ocurrio un error al momento de desactivar la planilla, contacte con el administrador...'));
+	$resp = Formulario::desactivarPlanillas($request['id_user']);
+	echo json_encode($resp);
 }
 function saveEditNewAction($request){
 	$dat = [];

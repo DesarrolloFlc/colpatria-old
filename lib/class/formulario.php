@@ -836,7 +836,8 @@ class Formulario
 			return false;
 		}
 	}
-	public static function obtenerIdCliente($documento, $tipoCliente, $tipo = 1){
+	public static function obtenerIdCliente(string $documento, int $tipoCliente, int $tipo = 1): int
+	{
 		$conn = new Conexion();
 		$tabla = "client";
 		if($tipo == 2)
@@ -846,25 +847,22 @@ class Formulario
 				  FROM $tabla 
 				 WHERE document = :document 
 				   AND persontype = :persontype";
-		if($conn->consultar($SQL, array(':document'=> $documento, ':persontype'=> $tipoCliente))){
-			if($conn->getNumeroRegistros() > 0){
-				$dat = $conn->sacarRegistro('str');
-				$conn->desconectar();
-				return $dat['id'];
-			}else{
-				$conn->desconectar();
-				return false;
-			}
-		}else{
+		if(!$conn->consultar($SQL, array(':document'=> $documento, ':persontype'=> $tipoCliente))){
 			$conn->desconectar();
-			return false;
+			return 0;
 		}
+		if($conn->getNumeroRegistros() <= 0){
+			$conn->desconectar();
+			return 0;
+		}
+		$dat = $conn->sacarRegistro('str');
+		$conn->desconectar();
+		return $dat['id'];
 	}
-	public static function activeCliente($cliente_id, $tipo = 1) {
+	public static function activeCliente(int $cliente_id, int $tipo = 1): bool
+	{
 		$conn = new Conexion();
-		$tabla = "client";
-		if($tipo == 2)
-			$tabla = "client_";
+		$tabla = $tipo === 2 ? "client_" : "client";
 
 		$SQL = "UPDATE $tabla 
 				   SET estado = :estado, 
@@ -873,13 +871,9 @@ class Formulario
 				   	   date_updated = :date_updated, 
 				   	   flag = :flag 
 				 WHERE id = :id";
-		if($conn->ejecutar($SQL, array(':estado'=> "0", ':type'=> "SGV", ':vigente'=> "0", ':date_updated'=> date('Y-m-d'), ':flag'=> "NULL", ':id'=> $cliente_id))){
-			$conn->desconectar();
-			return true;
-		}else{
-			$conn->desconectar();
-			return false;
-		}
+		$resp =$conn->ejecutar($SQL, [':estado'=> "0", ':type'=> "SGV", ':vigente'=> "0", ':date_updated'=> date('Y-m-d'), ':flag'=> "NULL", ':id'=> $cliente_id]);
+		$conn->desconectar();
+		return $resp;
 	}
 	public static function actualizarRegimen($cliente_id, $regimen_id, $tipo = 1) {
 		self::activeCliente($cliente_id, $tipo);
@@ -936,10 +930,8 @@ class Formulario
 			return false;
 		}
 	}
-	public static function obtenerUltimoIdFormulario($cliente_id, $tipo = 1){
-		$tabla = "form";
-		if($tipo == 2)
-			$tabla = "form_";
+	public static function obtenerUltimoIdFormulario(int $cliente_id, int $tipo = 1){
+		$tabla = $tipo == 2 ? "form_" : "form";
 		$conn = new Conexion();
 		$SQL = "SELECT f.id
 				  FROM $tabla AS f
@@ -948,19 +940,17 @@ class Formulario
 				   AND f.id_user NOT IN (:id_user)
 				 ORDER BY f.date_created DESC
 				 LIMIT 0, 1";
-		if($conn->consultar($SQL, array(':cliente_id'=> $cliente_id, ':status'=> '1', ':id_user'=> 3691))){
-			if($conn->getNumeroRegistros() > 0){
-				$dat = $conn->sacarRegistro('str');
-				$conn->desconectar();
-				return $dat['id'];
-			}else{
-				$conn->desconectar();
-				return false;
-			}
-		}else{
+		if (!$conn->consultar($SQL, [':cliente_id'=> $cliente_id, ':status'=> '1', ':id_user'=> 3691])) {
 			$conn->desconectar();
 			return false;
 		}
+		if ($conn->getNumeroRegistros() <= 0) {
+			$conn->desconectar();
+			return false;
+		}
+		$dat = $conn->sacarRegistro('str');
+		$conn->desconectar();
+		return $dat['id'];
 	}
 	public static function verificarFormulario($id_client, $lote, $planilla, $id_user){
 		$conn = new Conexion();
@@ -1148,22 +1138,22 @@ class Formulario
 	}
 	public static function guardarImagenDigitada($file, $id_form, $id_imagetype, $id_user, $id_imagen_tmp, $tipo = 1){
 		$conn = new Conexion();
-		$tabla = "image";
-		if($tipo == 2)
-			$tabla = "image_";
+		$tabla = $tipo === 2 ? "image_" : "image";
 		$conn = new Conexion();
 		$error_file = '';
-		$file_origen = "/var/www/html/Aplicativos.Serverfin04/Colpatria/tmp_images/".$id_user."/".$file;
+		$file_origen = "/var/www/html/Aplicativos.Serverfin04/Colpatria/tmp_images/" . $id_user . "/" . $file;
 		$onlyname = explode(".", $file);
 		$unique_name = md5(uniqid(rand(), true));
-		$finalname = $unique_name."_".$id_imagetype.".".$onlyname[count($onlyname) - 1];
+		$finalname = $unique_name . "_" . $id_imagetype . "." . $onlyname[count($onlyname) - 1];
 
-		$file_destino = "/var/www/html/Aplicativos.Serverfin04/images_colpatria/".$finalname;
-		if(file_exists($file_origen)){
-			if(!copy($file_origen, $file_destino))
-				$error_file = 'No se pudo copiar la imagen original a su destino; Origen: '.$file_origen.', Destino: '.$file_destino;
-		}else
-			$error_file = 'La imagen no existe, contacte con el administrador: '.$file_origen;
+		$file_destino = "/var/www/html/Aplicativos.Serverfin04/images_colpatria/" . $finalname;
+		if (file_exists($file_origen)) {
+			if (!copy($file_origen, $file_destino)) {
+				$error_file = 'No se pudo copiar la imagen original a su destino; Origen: ' . $file_origen . ', Destino: ' . $file_destino;
+			}
+		} else {
+			$error_file = 'La imagen no existe, contacte con el administrador: ' . $file_origen;
+		}
 		
 		$SQI = "INSERT INTO $tabla
 				(
@@ -1173,7 +1163,7 @@ class Formulario
 				(
 					:id_forma, :id_imagetype, :directory, :filename, :original_file
 				)";
-		$conn->ejecutar($SQI, array(':id_forma'=> $id_form, ':id_imagetype'=> $id_imagetype, ':directory'=> 'images_colpatria', ':filename'=> $finalname, ':original_file'=> $file));
+		$conn->ejecutar($SQI, [':id_forma'=> $id_form, ':id_imagetype'=> $id_imagetype, ':directory'=> 'images_colpatria', ':filename'=> $finalname, ':original_file'=> $file]);
 		$SQU = "UPDATE image_tmp 
 				   SET status = :status 
 				 WHERE id = :id
@@ -1919,19 +1909,18 @@ class Formulario
 			return false;
 		}
 	}
-	public static function desactivarPlanillas($usuario_id){
+	public static function desactivarPlanillas(int $usuario_id): array
+	{
 		$conn = new Conexion();
 		$SQL = "UPDATE image_tmp 
 				   SET status = :status 
 				 WHERE directory = :directory
 				   AND filename LIKE :filename";
-		if($conn->ejecutar($SQL, array(':status'=> '2', ':directory'=> $usuario_id, ':filename'=> 'PLANILLA%'))){
-			$conn->desconectar();
-			return array('exito'=> 'La planilla se desactivo correctamente, se archivo la planilla.');
-		}else{
-			$conn->desconectar();
-			return array('error'=> 'Ocurrio un error al momento de desactivar la planilla, contacte con el administrador.');
-		}
+		$resp = $conn->ejecutar($SQL, [':status'=> '2', ':directory'=> $usuario_id, ':filename'=> 'PLANILLA%']);
+		$conn->desconectar();
+		return $resp 
+			? ['exito'=> 'La planilla se desactivo correctamente, se archivo la planilla.']
+			: ['error'=> 'Ocurrio un error al momento de desactivar la planilla, contacte con el administrador.'];
 	}
 	public static function numeroPlanillasActivas(){
 		$conn = new Conexion();

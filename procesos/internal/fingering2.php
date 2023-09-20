@@ -167,6 +167,7 @@ if($mimeTipeForm == 'application/pdf'){
                         <option value="3">Documento Anexo</option> -->
                         <option value="4">Formato Renovacion Autos</option>
                         <option value="5">Documentacion Complementaria</option>
+                        <option value="10">Documentacion Complementaria cliente no creado</option>
                     </select>
                 </td>
             </tr>
@@ -223,33 +224,32 @@ if($mimeTipeForm == 'image/tiff'){
 </div>
 <script languaje="javascript" type="text/javascript">
 $(document).ready(function(){
-	var tam = tamVentana();
-	var tamRight = tam[0] - 580;
+	const tam = tamVentana();
+	const tamRight = tam[0] - 580;
 	$('#digitalizar_left').css('width', tamRight);
 	window.moveTo(0, 0);
 	window.resizeTo(window.screen.width, window.screen.height - 25);
-	$("#tipodocumento_1").change(function(){
-		if($(this).val() != ""){
-			var tipo = $(this).val();
-			$.ajax({
-				data: {
-					domain: 'form',
-					action: 'formularioDigitar',
-					type: tipo,
-					meth: 'js',
-					respOut: 'html'
-				},
-				type: 'GET',
-				url: '../includes/Controller.php',
-				dataType: 'html',
-				success: function(dato){
-					$('#fields_form').html(dato);
-				},
-				error: function(xhr, ajaxOptions, thrownError) {
-					alert("Error(guardarGestionDeposito): "+xhr.status+" Error: "+xhr.responseText);
-				}
-			});
-		}
+	$("#tipodocumento_1").change(function(event){
+		if ($(this).val() === "") return false;
+		const tipo = $(this).val();
+		$.ajax({
+			data: {
+				domain: 'form',
+				action: 'formularioDigitar',
+				type: tipo,
+				meth: 'js',
+				respOut: 'html'
+			},
+			type: 'GET',
+			url: '../includes/Controller.php',
+			dataType: 'html',
+			success: function(dato){
+				$('#fields_form').html(dato);
+			},
+			error: function(xhr, ajaxOptions, thrownError) {
+				alert("Error(guardarGestionDeposito): "+xhr.status+" Error: "+xhr.responseText);
+			}
+		});
 	});
 	$("#tipopersona").change(function() {
 		/* if( $('#tipopersona').val() != "") {
