@@ -104,6 +104,11 @@ if(isset($ingresos) && !empty($ingresos) && is_array($ingresos)){
 				<option value="<?=$ingreso['id']?>"<?=$slect?>><?=$ingreso['description']?></option>
 <?php
 	}
+	if ($dataform['ingresosmensuales'] == '13') {
+?>
+				<option value="13" selected >SD</option>
+<?php
+	}
 }
 ?>
 			</select>
@@ -120,9 +125,22 @@ if(isset($egresos) && !empty($egresos) && is_array($egresos)){
 				<option value="<?=$egreso['id']?>"<?=$slect?>><?=$egreso['description']?></option>
 <?php
 	}
+	if ($dataform['egresosmensuales'] == '13') {
+?>
+				<option value="13" selected >SD</option>
+<?php
+	}
 }
 ?>
 			</select>
+		</td>
+	</tr>
+	<tr>
+		<td style="width: 100px;display: table-cell;">Ingresos mensuales Pesos:</td>
+		<td>
+			<input type="text" id="ingresos_mensuales_pesos" name="ingresos_mensuales_pesos" style="width: 300px" onkeypress="return validar_letra(event)" title="Ingresos mensuales Pesos" value="<?=$dataform['ingresos_mensuales_pesos']?>" data-oldvalue="<?=$dataform['ingresos_mensuales_pesos']?>">
+			Egresos mensuales:
+			<input type="text" id="egresos_mensuales_pesos" name="egresos_mensuales_pesos" style="width: 300px" onkeypress="return validar_letra(event)" title="egresos_mensuales_pesos" value="<?=$dataform['egresos_mensuales_pesos']?>" data-oldvalue="<?=$dataform['egresos_mensuales_pesos']?>">
 		</td>
 	</tr>
 	<tr>
@@ -156,9 +174,33 @@ if(isset($ingresos) && !empty($ingresos) && is_array($ingresos)){
 		</td>
 	</tr>
 	<tr>
+		<td style="width: 100px;display: table-cell;">Otros ingresos pesos:</td>
+		<td>
+			<input type="text" id="otros_ingresos_pesos" name="otros_ingresos_pesos" style="width: 300px" onkeypress="return validar_letra(event)" title="Otros ingresos pesos:" value="<?=$dataform['otros_ingresos_pesos']?>" data-oldvalue="<?=$dataform['otros_ingresos_pesos']?>">
+		</td>
+	</tr>
+	<tr>
 		<td style="width: 100px;display: table-cell;">Concepto otros ingresos:</td>
 		<td>
 			<input type="text" id="conceptosotrosingresos" name="conceptosotrosingresos" style="width: 300px" onkeypress="return validar_letra(event)" title="Concepto otros ingresos" value="<?=$dataform['conceptosotrosingresos']?>" data-oldvalue="<?=$dataform['conceptosotrosingresos']?>">
+		</td>
+	</tr>
+	<tr>
+		<td style="width: 100px;display: table-cell;">El pago de la prima sera en moneda extranjera?</td>
+		<td>
+			<select id="monedaextranjera" name="monedaextranjera" style="font-size: 12px; margin-right: 5px" title="El pago de la prima sera en moneda extranjera?" data-oldvalue="<?=$dataform['monedaextranjera']?>">
+				<option value="">Seleccion...</option>
+				<option value="-1"<?=(($dataform['monedaextranjera'] == "-1") ? "selected" : "")?>>SI</option>
+				<option value="0"<?=(($dataform['monedaextranjera'] == "0") ? "selected" : "")?>>NO</option>
+				<option value="2"<?=(($dataform['monedaextranjera'] == "2") ? "selected" : "")?>>SD</option>
+			</select>
+			El pago de la prima se hara desde una cuenta del exterior?
+			<select id="cuentas_monedaextranjera" name="cuentas_monedaextranjera" style="font-size: 12px; margin-right: 5px" title="El pago de la prima se hara desde una cuenta del exterior?" data-oldvalue="<?=$dataform['cuentas_monedaextranjera']?>">
+				<option value="">Seleccion...</option>
+				<option value="-1"<?=(($dataform['cuentas_monedaextranjera'] == "-1") ? "selected" : "")?>>SI</option>
+				<option value="0"<?=(($dataform['cuentas_monedaextranjera'] == "0") ? "selected" : "")?>>NO</option>
+				<option value="2"<?=(($dataform['cuentas_monedaextranjera'] == "2") ? "selected" : "")?>>SD</option>
+			</select>
 		</td>
 	</tr>
 </table>

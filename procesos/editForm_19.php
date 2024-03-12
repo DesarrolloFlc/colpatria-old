@@ -23,8 +23,8 @@ $paises = General::getPaisesID();
     <tr>
         <td>
         <table>
-            <tr>
-                <td style="width: 80px">Fecha de radicado:</td><!--fecharadicado-->
+            <!-- <tr>
+                <td style="width: 80px">Fecha de radicado:</td>
                 <td>
                     <input type="hidden" id="fecharadicado" name="fecharadicado" value="<?=$dataform['fecharadicado']?>">
                     <select id="f_rad_a" name="f_rad_a" onchange="$(this).verificarFecha(event, 'rad', '1');" style="font-size: 12px">
@@ -78,7 +78,7 @@ $paises = General::getPaisesID();
 ?>
                     </select>
                 </td>
-            </tr>
+            </tr> -->
             <tr>
                 <td style="width: 80px">Fecha de diligenciamiento:</td><!--fechasolicitud-->
                 <td>
@@ -135,17 +135,17 @@ $paises = General::getPaisesID();
                     </select>
                 </td>
             </tr>
-            <tr>
+            <!-- <tr>
                 <td>Tipo de solicitud:</td>
                 <td>
-                    <select id="tipo_solicitud" name="tipo_solicitud" data-oldvalue="<?=$dataform['tipo_solicitud']?>"><!--agregar campo llamado tipo_solicitud-->
+                    <select id="tipo_solicitud" name="tipo_solicitud" data-oldvalue="<?=$dataform['tipo_solicitud']?>">
                         <option value="">Seleccion...</option>
                         <option value="VINCULACION"<?=(($dataform['tipo_solicitud'] == "VINCULACION") ? "selected" : "")?>>Vinculacion</option>
                         <option value="ACTUALIZACION"<?=(($dataform['tipo_solicitud'] == "ACTUALIZACION") ? "selected" : "")?>>Actualizacion</option>
                         <option value="SD"<?=(($dataform['tipo_solicitud'] == "SD") ? "selected" : "")?>>SD</option>
                     </select>
                 </td>
-            </tr>
+            </tr> -->
             <tr>
                 <td>Clase vinculacion:</td>
                 <td>
@@ -292,6 +292,12 @@ require_once 'editForm_19_Economica_' . $type_person . '.php';
                 </td>
             </tr>
             <tr>
+                <td style="width: 100px;display: table-cell;">Canales en los que no autoriza contacto</td>
+                <td>
+                    <input type="text" id="sin_contacto_canal" name="sin_contacto_canal" style="width: 190px; margin-right: 10px" onkeypress="return validar_letra(event)" title="canales de no contacto" value="<?=$dataform['sin_contacto_canal']?>" data-oldvalue="<?=$dataform['sin_contacto_canal']?>">
+                </td>
+            </tr>
+            <tr>
                 <td style="width: 100px;display: table-cell;">Nombre Intermediario / Asesor / Entrevistador:</td>
                 <td>
                     <input type="text" id="nombreintermediario" name="nombreintermediario" style="width: 190px; margin-right: 10px" onkeypress="return validar_letra(event)" title="Nombre Intermediario / Asesor / Entrevistador" value="<?=$dataform['nombreintermediario']?>" data-oldvalue="<?=$dataform['nombreintermediario']?>">
@@ -377,14 +383,14 @@ $(document).ready(function(){
                 datos[$(el).attr('name')] = $(el).val();
             }
         });
-        if ($('select[name="f_rad_a"]', this).val() === '' || $('select[name="f_rad_m"]', this).val() === '' || $('select[name="f_rad_d"]', this).val() === '') {
-            alert('La fecha de radicado no puede estar vacia o incompleta.');
-            return false;
-        }
-        const fecharadicado = `${$('select[name="f_rad_a"]', this).val()}-${$('select[name="f_rad_m"]', this).val()}-${$('select[name="f_rad_d"]', this).val()}`;
-        if ($('input[name="fecharadicado"]', this).val() !== fecharadicado) {
-            datos['fecharadicado'] = fecharadicado;
-        }
+        // if ($('select[name="f_rad_a"]', this).val() === '' || $('select[name="f_rad_m"]', this).val() === '' || $('select[name="f_rad_d"]', this).val() === '') {
+        //     alert('La fecha de radicado no puede estar vacia o incompleta.');
+        //     return false;
+        // }
+        // const fecharadicado = `${$('select[name="f_rad_a"]', this).val()}-${$('select[name="f_rad_m"]', this).val()}-${$('select[name="f_rad_d"]', this).val()}`;
+        // if ($('input[name="fecharadicado"]', this).val() !== fecharadicado) {
+        //     datos['fecharadicado'] = fecharadicado;
+        // }
 
         if ($('select[name="f_dil_a"]', this).val() === '' || $('select[name="f_dil_m"]', this).val() === '' || $('select[name="f_dil_d"]', this).val() === '') {
             alert('La fecha de diligenciamiento no puede estar vacia o incompleta.');

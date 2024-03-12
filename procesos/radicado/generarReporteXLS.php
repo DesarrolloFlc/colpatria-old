@@ -4,9 +4,8 @@ ini_set('memory_limit', '-1');
 set_time_limit(0);
 require_once dirname(dirname(dirname(__FILE__))) . "/includes.php";
 require_once PATH_CCLASS . DS . 'radicados.class.php';
-
 if (isset($_SESSION['group']) && in_array($_SESSION['group'], ["6", "1", "8", "2", "10"])) {
-    if (!isset($_GET['consR']) || $_GET['consR'] != 'download') {
+    if (!isset($_GET['consR']) || $_GET['consR'] !== 'download') {
         exit;
     }
     $header = ['# RADICADO', 'TIPO', 'SUCURSAL', 'OFICIAL', 'NIT/CEDULA', 'NOMBRE/RAZON SOCIAL', 'FECHA RADICACION', 'FECHA ENVIO', 'FECHA RECIBIDO', 'ESTADO'];

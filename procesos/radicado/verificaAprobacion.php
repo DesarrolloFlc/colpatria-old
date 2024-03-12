@@ -75,11 +75,11 @@ require_once dirname(dirname(dirname(__FILE__))) . "/template/general/header.php
         </div>
         <div class="tab-content" id="tab3">
             <div class="notification attention png_bg" id="result_notifwr" style="display:none;"> 
-                <a href="#" class="close"><img src="../../resources/images/icons/cross_grey_small.png" title="Close this notification" alt="close" /></a>
+                <a href="#" class="close"><img src="<?=SITE_ROOT?>/resources/images/icons/cross_grey_small.png" title="Close this notification" alt="close" /></a>
                 <div id="msg_warningradicado">No olvide diligenciar todos los campos.</div>
             </div>
             <div class="notification success  png_bg" id="result_notifok" style="display:none;"> 
-                <a href="#" class="close"><img src="../../resources/images/icons/cross_grey_small.png" title="Close this notification" alt="close" /></a>
+                <a href="#" class="close"><img src="<?=SITE_ROOT?>/resources/images/icons/cross_grey_small.png" title="Close this notification" alt="close" /></a>
                 <div id="msg_addradicado"></div>
             </div>
             <form method="POST" id="reporteLotesPlanillas" name="reporteLotesPlanillas">
@@ -104,11 +104,11 @@ require_once dirname(dirname(dirname(__FILE__))) . "/template/general/header.php
         </div>
         <div class="tab-content" id="tab4">
             <div class="notification attention png_bg" id="result_notifwr2" style="display:none;"> 
-                <a href="#" class="close"><img src="../../resources/images/icons/cross_grey_small.png" title="Close this notification" alt="close" /></a>
+                <a href="#" class="close"><img src="<?=SITE_ROOT?>/resources/images/icons/cross_grey_small.png" title="Close this notification" alt="close" /></a>
                 <div id="msg_warningradicado2">No olvide diligenciar todos los campos.</div>
             </div>
             <div class="notification success  png_bg" id="result_notifok2" style="display:none;"> 
-                <a href="#" class="close"><img src="../../resources/images/icons/cross_grey_small.png" title="Close this notification" alt="close" /></a>
+                <a href="#" class="close"><img src="<?=SITE_ROOT?>/resources/images/icons/cross_grey_small.png" title="Close this notification" alt="close" /></a>
                 <div id="msg_addradicado2"></div>
             </div>
             <form method="POST" id="verificarCambioEstadoRadicado" name="verificarCambioEstadoRadicado">
@@ -184,7 +184,7 @@ require_once dirname(dirname(dirname(__FILE__))) . "/template/general/header.php
                             <option value="">Seleccione opci&oacute;n</option>
                         </select>
                         <div style="width: 16px; height: 16px; padding-left: 5px;">
-                            <img id="imgloading-observacion" src="../../images/icons/loading.gif" style="display: none;" />
+                            <img id="imgloading-observacion" src="<?=SITE_ROOT?>/images/icons/loading.gif" style="display: none;" />
                         </div>
                     </div>
                 </div>
@@ -207,7 +207,7 @@ require_once dirname(dirname(dirname(__FILE__))) . "/template/general/header.php
                 <div style="display: flex; align-items: center;">
                     <input type="submit" id="devolverItem" class="button" value="Realizar devolucion >>"/>
                     <div style="width: 16px; height: 16px; padding-left: 5px;">
-                        <img id="imgloading-agregar" src="../../images/icons/loading.gif" style="display: none;" />
+                        <img id="imgloading-agregar" src="<?=SITE_ROOT?>/images/icons/loading.gif" style="display: none;" />
                     </div>
                 </div>            
             </form>
@@ -268,7 +268,7 @@ require_once dirname(dirname(dirname(__FILE__))) . "/template/general/header.php
                 </div>
                 <div style="padding-top: 10px; display: flex; align-items: center;">
                     <input type="submit" class="button" value="Cargar evidencias >>" id="botoncargueEvidencias">
-                    <div style="width: 16px; height: 16px; padding-left: 5px;"><img id="imgloading" src="../../images/icons/loading.gif" style="display: none;;" /></div>
+                    <div style="width: 16px; height: 16px; padding-left: 5px;"><img id="imgloading" src="<?=SITE_ROOT?>/images/icons/loading.gif" style="display: none;;" /></div>
                 </div>
                 <input type="hidden" name="radicado_item_id">
                 <input type="hidden" name="documento">

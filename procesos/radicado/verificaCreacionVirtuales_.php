@@ -32,13 +32,13 @@ $sucursales = $general->getSucursales();
     <div class="content-box-content">        
         <div class="tab-content default-tab" id="tab2">
             <div class="notification attention png_bg"> 
-                <a href="#" class="close"><img src="../../resources/images/icons/cross_grey_small.png" title="Close this notification" alt="close" /></a>
+                <a href="#" class="close"><img src="<?=SITE_ROOT?>/resources/images/icons/cross_grey_small.png" title="Close this notification" alt="close" /></a>
                 <div id="msg_erradduser">
                     No olvide diligenciar todos los campos.
                 </div>
             </div>
             <div class="notification success  png_bg" id="result_notif" style="display:none;"> 
-                <a href="#" class="close"><img src="../../resources/images/icons/cross_grey_small.png" title="Close this notification" alt="close" /></a>
+                <a href="#" class="close"><img src="<?=SITE_ROOT?>/resources/images/icons/cross_grey_small.png" title="Close this notification" alt="close" /></a>
                 <div id="msg_adduser">
 
                 </div>
@@ -111,7 +111,7 @@ $sucursales = $general->getSucursales();
                             <td colspan="2" style="text-align: right;"><!--style="padding-left: 82%;" -->
                                 <div style="display: inline;">&nbsp;</div>
                                 <input type="submit" class="button" value="Creaci&oacute;n de radicado >>" id="botoncrearRadicado"/>
-                                <div style="display: inline; width: 16px; height: 16px;"><img id="imgloading" src="../../images/icons/loading.gif" style="display: none;" /></div>
+                                <div style="display: inline; width: 16px; height: 16px;"><img id="imgloading" src="<?=SITE_ROOT?>/images/icons/loading.gif" style="display: none;" /></div>
                             </td>
                         </tr>
                     </tfoot>
@@ -148,7 +148,7 @@ $sucursales = $general->getSucursales();
                     </tr><!--FIN SKRV Ingreso documento especial-->
                 </table>
                 <div class="notification attention png_bg" style="margin-top: 8px;"> 
-                    <a href="#" class="close"><img src="../../resources/images/icons/cross_grey_small.png" title="Close this notification" alt="close" /></a>
+                    <a href="#" class="close"><img src="<?=SITE_ROOT?>/resources/images/icons/cross_grey_small.png" title="Close this notification" alt="close" /></a>
                     <div id="msg_erradduser">
                         Se&ntilde;or radicador, tenga en cuenta que los archivos deben estar nombrados de acuerdo con los parametros establecidos en el #6.2 del instructivo U-AR-LAFT-002 ACT0.
                     </div>
@@ -158,7 +158,7 @@ $sucursales = $general->getSucursales();
                         <td width="8%">Archivo:</td>
                         <td><input type="file" id="load_file" name="load_file[0]">
                             <div style="width:50px; display: inline; margin-left:20px;">
-                                <a href="#" onclick="$.fn.agregarCargaarchivos(event);"><img src="../../resources/images/icons/show.jpg" title="Agregar archivos" alt="Agregar" /></a>
+                                <a href="#" onclick="$.fn.agregarCargaarchivos(event);"><img src="<?=SITE_ROOT?>/resources/images/icons/show.jpg" title="Agregar archivos" alt="Agregar" /></a>
                             </div>
                             <span class="input-notification attention png_bg">Si el cliente tiene mas de un archivo, utilize el boton mas</span>
                         </td>
@@ -169,7 +169,7 @@ $sucursales = $general->getSucursales();
                         <td colspan="2">
                             <input id="buttonAgregarCliente" type="submit" class="button" value="Agregar cliente">
                             <div style="display: inline; width: 16px; height: 16px;">
-                                <img id="imgloading" src="../../images/icons/loading.gif" style="display: none;" />
+                                <img id="imgloading" src="<?=SITE_ROOT?>/images/icons/loading.gif" style="display: none;" />
                             </div>
                         </td>
                     </tr>
@@ -235,7 +235,7 @@ $sucursales = $general->getSucursales();
         <div class="tab-content" id="tab4">
             <div class="notification success  png_bg" id="result_notif_busradicofi" style="display:none;"> 
                 <a href="#" class="close">
-                    <img src="../../resources/images/icons/cross_grey_small.png" title="Close this notification" alt="close" />
+                    <img src="<?=SITE_ROOT?>/resources/images/icons/cross_grey_small.png" title="Close this notification" alt="close" />
                 </a>
                 <div id="msg_notieneradicados"></div>
             </div>
@@ -285,7 +285,7 @@ $sucursales = $general->getSucursales();
         </span>
     </p>
 </div>
-<script src="../../resources/scripts/datatables.min.js"></script>
+<script src="<?=SITE_ROOT?>/resources/scripts/datatables.min.js"></script>
 <script type="text/javascript">
     var resetInputFiles = `<tr class="alt-row">
         <td width="8%">Archivo:</td>
@@ -293,7 +293,7 @@ $sucursales = $general->getSucursales();
             <input type="file" id="load_file" name="load_file[0]" />
             <div style="width:50px; display: inline; margin-left:20px;">
                 <a href="#" onclick="$.fn.agregarCargaarchivos(event);">
-                    <img src="../../resources/images/icons/show.jpg" title="Agregar archivos" alt="Agregar" />
+                    <img src="<?=SITE_ROOT?>/resources/images/icons/show.jpg" title="Agregar archivos" alt="Agregar" />
                 </a>
             </div>
             <span class="input-notification attention png_bg">Si el cliente tiene mas de un archivo, utilize el boton mas</span>
@@ -509,7 +509,7 @@ $(document).ready(function() {
                 <td>${dato.estado}</td>
                 <td>
                     <a href="generarReportePDF.php?idradicado=${dato.radicado['id']}&downpdf=download">
-                        <img src="../../resources/images/icons/pdf_icon.gif" title="Descargar PDF" alt="Descargar PDF" />
+                        <img src="<?=SITE_ROOT?>/resources/images/icons/pdf_icon.gif" title="Descargar PDF" alt="Descargar PDF" />
                     </a>
                 </td>`;
                 let strItems = `<tr>
@@ -561,12 +561,13 @@ $(document).ready(function() {
             return false;
         }
         const form = this;
+        const datos = $(form).serialize();
         $.ajax({
             beforeSend: function() {
                 $('input#buttonradicadosyClientesxoficial').attr('disabled', true);
                 $.facebox.loading();
             },
-            data: $(form).serialize(),
+            data: datos,
             type: 'GET',
             url: '../includes/Controller.php',
             dataType: 'json',
@@ -625,7 +626,7 @@ $(document).ready(function() {
                     },
                     "order": [[ 3, "desc" ]],
                 });
-                $('#imgdownpdf').html(`<a href="generarReportePDF.php?${datos}&consR=download"><img id="imgloading" src="../../images/icons/pdf_download_8.gif" />`);
+                $('#imgdownpdf').html(`<a href="generarReportePDF.php?${datos}&consR=download"><img id="imgloading" src="<?=SITE_ROOT?>/images/icons/pdf_download_8.gif" />`);
                 /*$('#imgdownpdf').qtip({
                     content: {
                         text: 'Por medio de este icono, descargue una copia del reporte con la informacion consultada'
@@ -725,7 +726,7 @@ $.fn.agregarCliente = function(form, docEspe){
                     <td>${optesp}</td>
                     <td align="center" valign="middle" class="td_formatopiso">
                         <a href="#" onclick="$(this).hidetr(event, '${dato.item.nombre}', '${dato.item.documento}', ${docEspe}, '${dato.item.file}');">
-                            <img src="../../resources/images/icons/cross_circle.png" title="Eliminar" alt="Eliminar" />
+                            <img src="<?=SITE_ROOT?>/resources/images/icons/cross_circle.png" title="Eliminar" alt="Eliminar" />
                         </a>
                     </td>
                 </tr>`;

@@ -330,7 +330,7 @@ if(isset($_SESSION['group']) && $_SESSION['group'] == 6){
                             Mis opciones
                         </a>
                         <ul>
-                            <li><a href="#" onclick="$(this).mostrarCambiarPassword(event);" title="3 Messages">Cambiar contraseña</a></li>
+                            <li><a href="#" onclick="$(this).mostrarCambiarPassword(event);">Cambiar contraseña</a></li>
                             <li><a href="<?=SITE_ROOT?>/lib/general/logout.php">Salir</a></li> <!-- Add class "current" to sub menu items also -->
                         </ul>
                     </li>
@@ -365,7 +365,7 @@ if(isset($_SESSION['group']) && $_SESSION['group'] == 6){
                         <fieldset style="display: flex; align-items: center;">
                             <input class="button" type="submit" id="cambiar_pass" value="Cambiar contraseña >>" />
                             <div style="width: 16px; height: 16px; padding-left: 5px;">
-                                <img id="imgloading-cambiar-password" src="../images/icons/loading.gif" style="display: none;" />
+                                <img id="imgloading-cambiar-password" src="<?=SITE_ROOT?>/images/icons/loading.gif" style="display: none;" />
                             </div>
                         </fieldset>
                         <input type="hidden" name="domain" value="user">
@@ -378,4 +378,5 @@ if(isset($_SESSION['group']) && $_SESSION['group'] == 6){
                 </div> <!-- End #messages -->
             </div>
         </div> <!-- End #sidebar -->
+        <div id="box-manual-radicacion" style="display:none;"></div>
         <div id="main-content"> <!-- Main Content Section with everything -->

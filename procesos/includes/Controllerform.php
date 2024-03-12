@@ -8,6 +8,7 @@ function formularioDigitarAction($request){
 		case '6':
 		case '7':
 		case '9':
+		case '12':
 			$tipoPersona = Formulario::getTipoPersona();
 			break;
 		case '4':
@@ -16,7 +17,8 @@ function formularioDigitarAction($request){
 			$ocupaciones = Formulario::getOcupaciones();
 			$acteconomicas = Formulario::getActividades();
 			break;
-		
+		case '11':
+			$tipoDocumento = Formulario::getTipoDocumento();
 		default:
 			# code...
 			break;
@@ -103,6 +105,29 @@ function formularioNuevoTipoCe02720Action($request){
 	$tipo_persona = Formulario::getTipoPersona();
 	require_once PATH_INTERNAL . DS . $request['action'] . '_View.php';
 }
+function formularioSaludAction($request){
+	$lote = (isset($request['lote']) && $request['lote'] != '' && strlen($request['lote']) > 5) 
+		? substr($request['lote'], 5, strlen($request['lote'])) 
+		: 'NULL';
+	$radInfo = [];
+	if ($lote != 'NULL') $radInfo = Formulario::obtenerInformacionRadicado($lote);
+	$daneCiudades = Formulario::getCiudadesDanes();
+	$sucursales = Formulario::getSucursalesLista();
+	$clasesVinculacion = Formulario::getclaseVinculacion();
+	$tipoDocumentos = Formulario::getTipoDocumentoID();
+	$tipoempresas = Formulario::getTipoEmpresaID();
+	$actEconomicas = Formulario::getActividadesEconomicas();
+	$ciius = Formulario::getCiiuId();
+	$profesiones = Formulario::getProfesionesID();
+	$ingresos = Formulario::getIngresosMensualesID();
+	$egresos = Formulario::getEgresosMensualesID();
+	$transacciones = Formulario::getTipoTransaccionesID();
+	$paises = Formulario::getPaisesID();
+	$areas = Formulario::getAreasID();
+	$funcionarios = Formulario::getOfficials();
+	$tipo_persona = Formulario::getTipoPersona();
+	require_once PATH_INTERNAL . DS . $request['action'] . '_View.php';
+}
 function formularioSectorAseguradoAction($request){
 	$lote = (isset($request['lote']) && $request['lote'] != '' && strlen($request['lote']) > 5) ? substr($request['lote'], 5, strlen($request['lote'])) : 'NULL';
 	$radInfo = [];
@@ -114,6 +139,7 @@ function formularioSectorAseguradoAction($request){
 	$tipoDocumentos = Formulario::getTipoDocumentoID();
 	$tipoempresas = Formulario::getTipoEmpresaID();
 	$actEconomicas = Formulario::getActividadesEconomicas();
+	$tipo_actividades = Formulario::getTiposActividad();
 	$ciius = Formulario::getCiiuId();
 	$profesiones = Formulario::getProfesionesID();
 	$ingresos = Formulario::getIngresosMensualesID();
@@ -1138,6 +1164,10 @@ function guardarDocComplementariaAction($request){
 		echo json_encode(array('error'=> 'El cliente con este numero de documento no existe, no se puede guardar la informacion como documentacion complementaria.'));
 	}
 }
+function guardarFormularioSolicitudCreditoAction($request){
+	Formulario::insertarFormSolicitudCredito($request);
+	//continuacion
+}
 function guardarDocComplementarioPorRegimenAction($request){
 	$cliente_id = Formulario::obtenerIdCliente($request['document'], $request['persontype']/*, 2*/);
 
@@ -1175,6 +1205,7 @@ function desactivarPlanillasAction($request){
 	echo json_encode($resp);
 }
 function saveEditNewAction($request){
+	print_r($request);
 	$dat = [];
 	$telDir = false;
 	foreach ($request as $key => $value) {
@@ -1195,22 +1226,30 @@ function saveEditNewAction($request){
 }
 function guardarFormularioNuevoCe02720Action($request){
 	$request['defaul_date'] = date('Y-m-d', strtotime("daniel"));
-    $request['fecharadicado'] = '0000-00-00';
+    // $request['fecharadicado'] = '0000-00-00';
 	$request['fechasolicitud'] = '0000-00-00';
 	$request['fechaexpedicion'] = '0000-00-00';
 	$request['fechanacimiento'] = '0000-00-00';
+	echo '0';
 
-
-	if((isset($request['f_rad_a']) && !empty($request['f_rad_a'])) && (isset($request['f_rad_m']) && !empty($request['f_rad_m'])) && (isset($request['f_rad_d']) && !empty($request['f_rad_d']))){
-		if(date('Y-m-d', strtotime($request['f_rad_a'].'-'.$request['f_rad_m'].'-'.$request['f_rad_d'])) == '1969-12-31'){
-			echo json_encode(array("error"=> "La fecha de radicado no puede ser errada."));
-			exit;
-		}else
-			$request['fecharadicado'] = date('Y-m-d', strtotime($request['f_rad_a'].'-'.$request['f_rad_m'].'-'.$request['f_rad_d']));
-	}else{
-		echo json_encode(array("error"=> "La fecha de radicado no puede ser vacia."));
+	if(!isset($request['fecharadicado']) && empty($request['fecharadicado'])){
+		echo json_encode(array("error"=> "El formulario debe tener una fecha de radicado"));
 		exit;
+	}else{
+		$partFechaRad = explode(' ', $request['fecharadicado']);
+		$request['fecharadicado'] = $partFechaRad[0];
 	}
+
+	// if((isset($request['f_rad_a']) && !empty($request['f_rad_a'])) && (isset($request['f_rad_m']) && !empty($request['f_rad_m'])) && (isset($request['f_rad_d']) && !empty($request['f_rad_d']))){
+	// 	if(date('Y-m-d', strtotime($request['f_rad_a'].'-'.$request['f_rad_m'].'-'.$request['f_rad_d'])) == '1969-12-31'){
+	// 		echo json_encode(array("error"=> "La fecha de radicado no puede ser errada."));
+	// 		exit;
+	// 	}else
+	// 		$request['fecharadicado'] = date('Y-m-d', strtotime($request['f_rad_a'].'-'.$request['f_rad_m'].'-'.$request['f_rad_d']));
+	// }else{
+	// 	echo json_encode(array("error"=> "La fecha de radicado no puede ser vacia."));
+	// 	exit;
+	// }
 	if((isset($request['f_dil_a']) && !empty($request['f_dil_a'])) && (isset($request['f_dil_m']) && !empty($request['f_dil_m'])) && (isset($request['f_dil_d']) && !empty($request['f_dil_d']))){
 		if(date('Y-m-d', strtotime($request['f_dil_a'].'-'.$request['f_dil_m'].'-'.$request['f_dil_d'])) == '1969-12-31'){
 			echo json_encode(array("error"=> "La fecha de diligenciamiento no puede ser errada."));
@@ -1290,11 +1329,11 @@ function guardarFormularioNuevoCe02720Action($request){
 		$request['correoelectronico_otro'] = 'SD';
 		$request['celularoficina'] = '*';
 		$request['direccionsucursal'] = 'SD';
-		$request['ingresosmensualesemp'] = '7';
+		$request['ingresosmensualesemp'] = '13';
 		$request['activosemp'] = '*';
 		$request['pasivosemp'] = '*';
-		$request['egresosmensualesemp'] = '7';
-		$request['otrosingresosemp'] = '7';
+		$request['egresosmensualesemp'] = '13';
+		$request['otrosingresosemp'] = '13';
 		$request['concepto_otrosingresosemp'] = 'SD';
 		$patrimonio = intval($request['totalactivos']) - intval($request['totalpasivos']);
 	}
@@ -1321,23 +1360,27 @@ function guardarFormularioNuevoCe02720Action($request){
 	if(!isset($request['celularoficina']) || empty($request['celularoficina']))
 		$request['celularoficina'] = '*';
 
-
+	echo "1";
 	if ((empty($request['documento']) || empty($request['nit']) ) && empty($request['tipopersona'])) {
 		echo json_encode(['error'=> 'El numero de documento del cliente no puede estar vacion, por favor verifiquelo.']);
 		exit;
 	}
-	if ($_SESSION['id'] == '1') {
-		error_log(json_encode($request), 0);
-		exit;
-	}
+	echo "1a";
+	// if ($_SESSION['id'] == '1') {
+	// 	echo "1b";
+	// 	error_log(json_encode($request), 0);
+	// 	exit;
+	// }
+	echo "1c";
 	if (!empty($request['nit']) && $request['tipopersona'] == "2") {
 		$cliente_id = Formulario::obtenerIdCliente($request['nit'], $request['tipopersona']/*, 2*/);
 	} else if (!empty($request['documento']) && $request['tipopersona'] == "1") {
 		$cliente_id = Formulario::obtenerIdCliente($request['documento'], $request['tipopersona']/*, 2*/);
 	}
-
+	echo "2";
 	if (isset($cliente_id) && !empty($cliente_id) && $cliente_id !== false) {
 		//Formulario::activeCliente($cliente_id);
+		echo "3a";
 		Formulario::actualizarRegimen($cliente_id, 2/*, 2*/);
 		$exForm = Formulario::verificarFormulario($cliente_id, $request['lote'], $request['planilla1'], $_SESSION['id']);
 		if (isset($exForm) && is_array($exForm) && !empty($exForm) && isset($exForm['id']) && !empty($exForm['id'])) {
@@ -1357,6 +1400,7 @@ function guardarFormularioNuevoCe02720Action($request){
 				exit;
 			}
 			if($request['tipopersona'] == "2"){
+				// echo "entrooooo";
 				//JUNTA DIRECTIVA
 				if(isset($request['si_junta_directiva']) && $request['si_junta_directiva'] == '-1'){
 					for ($i = 0; $i < 3; $i++) { 
@@ -1373,9 +1417,13 @@ function guardarFormularioNuevoCe02720Action($request){
 					}
 				}else
 					$k = 0;
+				// echo "antessss";
 				if(isset($request['si_accionistas_jur']) && $request['si_accionistas_jur'] == '-1'){
+					// echo "lllllll";
 					for($l = $k; $l < ($k + 3); $l++){
+						// echo "hola";
 						if (verificarDatoNoDefault($request['be_nit'][$l]) || verificarDatoNoDefault($request['be_razon_social'][$l])) {
+							// echo "aquiii";
 							Formulario::insertNuevoAccionista($idData, $request['be_tipo'][$l], $request['be_razon_social'][$l], $request['be_nit'][$l], $request['be_nombre_completo'][$l], $request['be_tipodocumento_id'][$l], $request['be_identificacion'][$l], "NULL", $request['be_expuesto_politico'][$l], "NULL", $conn);
 						}
 					}
@@ -1448,6 +1496,7 @@ function guardarFormularioNuevoCe02720Action($request){
 			echo json_encode(['error'=> $e->getMessage()]);
 		}
 	}else{
+		echo "3b";
 		if (!empty($request['nit']) && $request['tipopersona'] == "2") {
 			$cliente_id = Formulario::crearNuevoCliente($request['nit'], $request['tipopersona'], $request['razonsocial'], 2, 2/*, 2*/);
 		} else if (!empty($request['documento']) && $request['tipopersona'] == "1") {
@@ -1493,8 +1542,11 @@ function guardarFormularioNuevoCe02720Action($request){
 				}else
 					$k = 0;
 				if(isset($request['si_accionistas_jur']) && $request['si_accionistas_jur'] == '-1'){
-					for($l = $k; $l < ($k + 3); $l++){
+					// echo "aquiiii___". $k;
+					// print_r($request);
+					for($l = $k; $l < ($k + 6); $l++){
 						if (verificarDatoNoDefault($request['be_nit'][$l]) || verificarDatoNoDefault($request['be_razon_social'][$l])) {
+							// echo "aquiiii";
 							Formulario::insertNuevoAccionista($idData, $request['be_tipo'][$l], $request['be_razon_social'][$l], $request['be_nit'][$l], $request['be_nombre_completo'][$l], $request['be_tipodocumento_id'][$l], $request['be_identificacion'][$l], "NULL", $request['be_expuesto_politico'][$l], "NULL", $conn);
 						}
 					}
@@ -1564,24 +1616,31 @@ function guardarFormularioNuevoCe02720Action($request){
 	}
 }
 function guardarFormularioSectorAseguradoAction($request){
-    $request['fecharadicado'] = '0000-00-00';
+	// $request['fecharadicado'] = '0000-00-00';
 	$request['fechasolicitud'] = '0000-00-00';
 	$request['fechaexpedicion'] = '0000-00-00';
 	$request['fechanacimiento'] = '0000-00-00';
 	$request['verificacion_fecha'] = '0000-00-00';
 	$request['verificacion_hora'] = '00:00:00';
+	// $request['area'] = '2653';
 
-
-	if((isset($request['f_rad_a']) && !empty($request['f_rad_a'])) && (isset($request['f_rad_m']) && !empty($request['f_rad_m'])) && (isset($request['f_rad_d']) && !empty($request['f_rad_d']))){
-		if(date('Y-m-d', strtotime($request['f_rad_a'].'-'.$request['f_rad_m'].'-'.$request['f_rad_d'])) == '1969-12-31'){
-			echo json_encode(array("error"=> "La fecha de radicado no puede ser errada."));
-			exit;
-		}else
-			$request['fecharadicado'] = date('Y-m-d', strtotime($request['f_rad_a'].'-'.$request['f_rad_m'].'-'.$request['f_rad_d']));
-	}else{
-		echo json_encode(array("error"=> "La fecha de radicado no puede ser vacia."));
+	if(!isset($request['fecharadicado']) && empty($request['fecharadicado'])){
+		echo json_encode(array("error"=> "El formulario debe tener una fecha de radicado"));
 		exit;
+	}else{
+		$partFechaRad = explode(' ', $request['fecharadicado']);
+		$request['fecharadicado'] = $partFechaRad[0];
 	}
+	// if((isset($request['f_rad_a']) && !empty($request['f_rad_a'])) && (isset($request['f_rad_m']) && !empty($request['f_rad_m'])) && (isset($request['f_rad_d']) && !empty($request['f_rad_d']))){
+	// 	if(date('Y-m-d', strtotime($request['f_rad_a'].'-'.$request['f_rad_m'].'-'.$request['f_rad_d'])) == '1969-12-31'){
+	// 		echo json_encode(array("error"=> "La fecha de radicado no puede ser errada."));
+	// 		exit;
+	// 	}else
+	// 		$request['fecharadicado'] = date('Y-m-d', strtotime($request['f_rad_a'].'-'.$request['f_rad_m'].'-'.$request['f_rad_d']));
+	// }else{
+	// 	echo json_encode(array("error"=> "La fecha de radicado no puede ser vacia."));
+	// 	exit;
+	// }
 	if((isset($request['f_dil_a']) && !empty($request['f_dil_a'])) && (isset($request['f_dil_m']) && !empty($request['f_dil_m'])) && (isset($request['f_dil_d']) && !empty($request['f_dil_d']))){
 		if(date('Y-m-d', strtotime($request['f_dil_a'].'-'.$request['f_dil_m'].'-'.$request['f_dil_d'])) == '1969-12-31'){
 			echo json_encode(array("error"=> "La fecha de diligenciamiento no puede ser errada."));
@@ -1657,6 +1716,9 @@ function guardarFormularioSectorAseguradoAction($request){
 		$request['egresosmensuales'] = '13';
 		$request['otrosingresos'] = '13';
 		$request['conceptosotrosingresos'] = 'SD';
+		// $request['ingresosmensualesemp'] = '7';
+		// $request['egresosmensualesemp'] = '7';
+		// $request['otrosingresosemp'] = '7';
 		$patrimonio = intval($request['activosemp']) - intval($request['pasivosemp']);
 	} else if ($request['tipopersona'] == '1') {
 		$request['razonsocial'] = 'SD';
@@ -1670,13 +1732,16 @@ function guardarFormularioSectorAseguradoAction($request){
 		$request['correoelectronico_otro'] = 'SD';
 		$request['celularoficina'] = '*';
 		$request['direccionsucursal'] = 'SD';
-		$request['ingresosmensualesemp'] = '7';
+		$request['ingresosmensualesemp'] = '13';
 		$request['activosemp'] = '*';
 		$request['pasivosemp'] = '*';
-		$request['egresosmensualesemp'] = '7';
-		$request['otrosingresosemp'] = '7';
+		$request['egresosmensualesemp'] = '13';
+		$request['otrosingresosemp'] = '13';
 		$request['concepto_otrosingresosemp'] = 'SD';
 		$patrimonio = intval($request['totalactivos']) - intval($request['totalpasivos']);
+		// $request['ingresosmensuales'] = '13';
+		// $request['egresosmensuales'] = '13';
+		// $request['otrosingresos'] = '13';
 	}
 	$request['patrimonio'] = $patrimonio <= 0 ? '0' : $patrimonio;
 	if(!isset($request['actividadeconomicaempresa']))
@@ -1740,7 +1805,7 @@ function guardarFormularioSectorAseguradoAction($request){
 				if (isset($request['si_accionistas_nat']) && $request['si_accionistas_nat'] == '-1') {
 					for ($i = 0; $i < 5; $i++) { 
 						if (verificarDatoNoDefault($request['identificacion'][$i]) || verificarDatoNoDefault($request['nombre_accionista'][$i])) {
-							Formulario::insertAccionistas($idData, $request['tipo_id'][$i], $request['identificacion'][$i], $request['nombre_accionista'][$i], $request['porcentaje'][$i], "NULL", $request['publico_reconocimiento'][$i], $request['publico_expuesta'][$i], "NULL");
+							Formulario::insertAccionistas($idData, $request['tipo_id'][$i], $request['identificacion'][$i], $request['nombre_accionista'][$i], $request['porcentaje'][$i], "NULL", $request['publico_reconocimiento'][$i], $request['publico_expuesta'][$i], "NULL", $request['beneficiario_final'][$i]);
 						}
 					}
 				}
@@ -1836,7 +1901,7 @@ function guardarFormularioSectorAseguradoAction($request){
 				if (isset($request['si_accionistas_nat']) && $request['si_accionistas_nat'] == '-1') {
 					for ($i = 0; $i < 5; $i++) { 
 						if (verificarDatoNoDefault($request['identificacion'][$i]) || verificarDatoNoDefault($request['nombre_accionista'][$i])) {
-							Formulario::insertAccionistas($idData, $request['tipo_id'][$i], $request['identificacion'][$i], $request['nombre_accionista'][$i], $request['porcentaje'][$i], "NULL", $request['publico_reconocimiento'][$i], $request['publico_expuesta'][$i], "NULL");
+							Formulario::insertAccionistas($idData, $request['tipo_id'][$i], $request['identificacion'][$i], $request['nombre_accionista'][$i], $request['porcentaje'][$i], "NULL", $request['publico_reconocimiento'][$i], $request['publico_expuesta'][$i], "NULL", $request['beneficiario_final'][$i]);
 						}
 					}
 				}
@@ -1903,6 +1968,373 @@ function guardarFormularioSectorAseguradoAction($request){
 		}
 	}
 }
+// function guardarFormularioSaludAction($request){
+// 	$request['defaul_date'] = date('Y-m-d', strtotime("daniel"));
+//     $request['fecharadicado'] = '0000-00-00';
+// 	$request['fechasolicitud'] = '0000-00-00';
+// 	$request['fechaexpedicion'] = '0000-00-00';
+// 	$request['fechanacimiento'] = '0000-00-00';
+// 	// echo '0';
+
+// 	if((isset($request['f_dil_a']) && !empty($request['f_dil_a'])) && (isset($request['f_dil_m']) && !empty($request['f_dil_m'])) && (isset($request['f_dil_d']) && !empty($request['f_dil_d']))){
+// 		if(date('Y-m-d', strtotime($request['f_dil_a'].'-'.$request['f_dil_m'].'-'.$request['f_dil_d'])) == '1969-12-31'){
+// 			echo json_encode(array("error"=> "La fecha de diligenciamiento no puede ser errada."));
+// 			exit;
+// 		}else
+// 			$request['fechasolicitud'] = date('Y-m-d', strtotime($request['f_dil_a'].'-'.$request['f_dil_m'].'-'.$request['f_dil_d']));
+// 	}else{
+// 		echo json_encode(array("error"=> "La fecha de diligenciamiento no puede ser vacia."));
+// 		exit;
+// 	}
+// 	if($request['tipopersona'] == '1'){
+// 		if((isset($request['f_exp_a']) && !empty($request['f_exp_a'])) && (isset($request['f_exp_m']) && !empty($request['f_exp_m'])) && (isset($request['f_exp_d']) && !empty($request['f_exp_d']))){
+// 			if(date('Y-m-d', strtotime($request['f_exp_a'].'-'.$request['f_exp_m'].'-'.$request['f_exp_d'])) == '1969-12-31'){
+// 				echo json_encode(array("error"=> "La fecha de expedicion no puede ser errada."));
+// 				exit;
+// 			}else
+// 				$request['fechaexpedicion'] = date('Y-m-d', strtotime($request['f_exp_a'].'-'.$request['f_exp_m'].'-'.$request['f_exp_d']));
+// 		}
+// 		if((isset($request['f_nac_a']) && !empty($request['f_nac_a'])) && (isset($request['f_nac_m']) && !empty($request['f_nac_m'])) && (isset($request['f_nac_d']) && !empty($request['f_nac_d']))){
+// 			if(date('Y-m-d', strtotime($request['f_nac_a'].'-'.$request['f_nac_m'].'-'.$request['f_nac_d'])) == '1969-12-31' && ($request['f_nac_a'] != '1969' || $request['f_nac_m'] != '12' || $request['f_nac_d'] != '31')){
+// 				echo json_encode(array("error"=> "La fecha de nacimento no puede ser errada."));
+// 				exit;
+// 			}else
+// 				$request['fechanacimiento'] = date('Y-m-d', strtotime($request['f_nac_a'].'-'.$request['f_nac_m'].'-'.$request['f_nac_d']));
+// 		}
+// 	}
+// 	if($request['clasecliente'] != '10')
+// 		$request['cual_clasecliente'] = 'SD';
+// 	if($request['tipoempresaemp'] != '5')
+// 		$request['tipoempresaemp_cual'] = 'SD';
+// 	if(isset($request['reconocimiento_publico']) && ($request['reconocimiento_publico'] == '0' || $request['reconocimiento_publico'] == '2'))
+// 		$request['reconocimiento_cual'] = 'SD';
+
+// 	if(isset($request['expuesta_politica']) && ($request['expuesta_politica'] == '0' || $request['expuesta_politica'] == '2'))
+// 		$request['cargo_politica'] = 'SD';
+
+// 	if(isset($request['expuesta_publica']) && ($request['expuesta_publica'] == '0' || $request['expuesta_publica'] == '2')){
+// 		$request['publica_nombre'] = 'SD';
+// 		$request['publica_cargo'] = 'SD';
+// 	}
+// 	if($request['repre_internacional'] == '0' || $request['repre_internacional'] == '2')
+// 		$request['internacional_indique'] = 'SD';
+// 	if($request['tributarias_otro_pais'] == '0' || $request['tributarias_otro_pais'] == '2')
+// 		$request['tributarias_paises'] = 'SD';
+// 	if(isset($request['tipoempresajur']) && $request['tipoempresajur'] != '5')
+// 		$request['tipoempresajur_otra'] = 'SD';
+// 	if(($request['monedaextranjera'] == '0' || $request['monedaextranjera'] == '2') && !isset($request['tipotransacciones'])){
+// 		$request['tipotransacciones'] = '8';
+// 		$request['tipotransacciones_cual'] = 'SD';
+// 	}elseif($request['monedaextranjera'] == '0' && $request['tipotransacciones'] != '7'){
+// 		$request['tipotransacciones_cual'] = 'SD';
+// 	}
+// 	$patrimonio = 0;
+
+// 	if ($request['tipopersona'] == '2') {
+// 		$request['tipoactividad'] = '900';
+// 		$request['profesion'] = '900';
+// 		$request['cargo'] = 'SD';
+// 		$request['actividadeconomicaempresa'] = '4';
+// 		$request['ciiu_otro'] = '0';
+// 		$request['telefonoficinappal'] = '*';
+// 		$request['ingresosmensuales'] = '13';
+// 		$request['totalactivos'] = '*';
+// 		$request['totalpasivos'] = '*';
+// 		$request['egresosmensuales'] = '13';
+// 		$request['otrosingresos'] = '13';
+// 		$request['conceptosotrosingresos'] = 'SD';
+// 		$patrimonio = intval($request['activosemp']) - intval($request['pasivosemp']);
+// 	} else if ($request['tipopersona'] == '1') {
+// 		$request['razonsocial'] = 'SD';
+// 		$request['nit'] = '*';
+// 		$request['digitochequeo'] = '0';
+// 		$request['tipoempresajur'] = '4';
+// 		$request['tipoempresajur_otra'] = 'SD';
+// 		$request['detalleactividadeconomicappal'] = 'SD';
+// 		$request['ciudadoficina'] = '99999';
+// 		$request['telefonoficina'] = '*';
+// 		$request['correoelectronico_otro'] = 'SD';
+// 		$request['celularoficina'] = '*';
+// 		$request['direccionsucursal'] = 'SD';
+// 		$request['ingresosmensualesemp'] = '13';
+// 		$request['activosemp'] = '*';
+// 		$request['pasivosemp'] = '*';
+// 		$request['egresosmensualesemp'] = '13';
+// 		$request['otrosingresosemp'] = '13';
+// 		$request['concepto_otrosingresosemp'] = 'SD';
+// 		$patrimonio = intval($request['totalactivos']) - intval($request['totalpasivos']);
+// 	}
+
+// 	$request['patrimonio'] = $patrimonio <= 0 ? '0' : $patrimonio;
+// 	if(!isset($request['actividadeconomicaempresa']))
+// 		$request['actividadeconomicaempresa'] = '4';
+// 	if(!isset($request['tipotransacciones']))
+// 		$request['tipotransacciones'] = '8';
+// 	if(!isset($request['tipotransacciones_cual']))
+// 		$request['tipotransacciones_cual'] = 'SD';
+
+// 	if(!isset($request['telefonoresidencia']) || empty($request['telefonoresidencia']))
+// 		$request['telefonoresidencia'] = '*';
+// 	if(!isset($request['celular']) || empty($request['celular']))
+// 		$request['celular'] = '*';
+// 	if(!isset($request['telefonolaboral']) || empty($request['telefonolaboral']))
+// 		$request['telefonolaboral'] = '*';
+// 	if(!isset($request['celularoficinappal']) || empty($request['celularoficinappal']))
+// 		$request['celularoficinappal'] = '*';
+// 	if(!isset($request['telefonoficinappal']) || empty($request['telefonoficinappal']))
+// 		$request['telefonoficinappal'] = '*';
+// 	if(!isset($request['telefonoficina']) || empty($request['telefonoficina']))
+// 		$request['telefonoficina'] = '*';
+// 	if(!isset($request['celularoficina']) || empty($request['celularoficina']))
+// 		$request['celularoficina'] = '*';
+
+// 	echo "1";
+// 	if ((empty($request['documento']) || empty($request['nit']) ) && empty($request['tipopersona'])) {
+// 		echo json_encode(['error'=> 'El numero de documento del cliente no puede estar vacion, por favor verifiquelo.']);
+// 		exit;
+// 	}
+// 	echo "1a";
+// 	echo "1c";
+// 	if (!empty($request['nit']) && $request['tipopersona'] == "2") {
+// 		$cliente_id = Formulario::obtenerIdCliente($request['nit'], $request['tipopersona']/*, 2*/);
+// 	} else if (!empty($request['documento']) && $request['tipopersona'] == "1") {
+// 		$cliente_id = Formulario::obtenerIdCliente($request['documento'], $request['tipopersona']/*, 2*/);
+// 	}
+// 	echo $request['nit'].'_doc';
+// 	echo "2";
+// 	// print_r($request);
+// 	if (isset($cliente_id) && !empty($cliente_id) && $cliente_id !== false) {
+// 		//Formulario::activeCliente($cliente_id);
+// 		echo "3a";
+// 		Formulario::actualizarRegimen($cliente_id, 2/*, 2*/);
+// 		$exForm = Formulario::verificarFormulario($cliente_id, $request['lote'], $request['planilla1'], $_SESSION['id']);
+// 		if (isset($exForm) && is_array($exForm) && !empty($exForm) && isset($exForm['id']) && !empty($exForm['id'])) {
+// 			echo json_encode(["error"=> "1. El formulario que esta intentando registrar, ya se encuentra registrado bajo el id => " . $exForm['id'] . ", por favor contacte con el administrador."]);
+// 			exit;
+// 		}
+// 		$form_id = Formulario::agregarNuevoFormulario($cliente_id, 'FORMULARIO', $request['lote'], $request['planilla1'], $_SESSION['id'], '1', $request['marca']/*, 2*/);
+// 		if ($form_id === false || $form_id === 0) {
+// 			echo json_encode(['error'=> 'Ocurrio un error al momento de crear el formulario, por favor contacte con el administrador.']);
+// 			exit;
+// 		}
+// 		try{
+// 			$conn = new Conexion();
+// 			$idData = Formulario::insertPrimaryDataNew($form_id, $request, $cliente_id, $conn/*, 2*/);
+// 			if ($idData === false || $idData === 0) {
+// 				echo json_encode(['error'=> 'Ocurrio un error al momento de crear la data del formulario, por favor contacte con el administrador.']);
+// 				exit;
+// 			}
+// 			if($request['tipopersona'] == "2"){
+// 				//JUNTA DIRECTIVA
+// 				if(isset($request['si_junta_directiva']) && $request['si_junta_directiva'] == '-1'){
+// 					for ($i = 0; $i < 3; $i++) { 
+// 						if(verificarDatoNoDefault($request['ju_identificacion'][$i]) || verificarDatoNoDefault($request['ju_nombre_completo'][$i])){
+// 							Formulario::insertMiembroJunta($idData, $request['ju_nombre_completo'][$i], $request['ju_tipodocumento_id'][$i], $request['ju_identificacion'][$i], $request['ju_expuesto_politico'][$i], $conn);
+// 						}
+// 					}
+// 				}
+// 				if(isset($request['si_accionistas_nat']) && $request['si_accionistas_nat'] == '-1'){
+// 					for($k = 0; $k < 3; $k++){
+// 						if (verificarDatoNoDefault($request['be_identificacion'][$k]) || verificarDatoNoDefault($request['be_nombre_completo'][$k])) {
+// 							Formulario::insertNuevoAccionista($idData, $request['be_tipo'][$k], "NULL", "NULL", $request['be_nombre_completo'][$k], $request['be_tipodocumento_id'][$k], $request['be_identificacion'][$k], $request['be_fecha_expedicion'][$k], $request['be_expuesto_politico'][$k], $request['be_poliza_seguro'][$k], $conn);
+// 						}
+// 					}
+// 				}else
+// 					$k = 0;
+// 				if(isset($request['si_accionistas_jur']) && $request['si_accionistas_jur'] == '-1'){
+// 					for($l = $k; $l < ($k + 3); $l++){
+// 						if (verificarDatoNoDefault($request['be_nit'][$l]) || verificarDatoNoDefault($request['be_razon_social'][$l])) {
+// 							Formulario::insertNuevoAccionista($idData, $request['be_tipo'][$l], $request['be_razon_social'][$l], $request['be_nit'][$l], $request['be_nombre_completo'][$l], $request['be_tipodocumento_id'][$l], $request['be_identificacion'][$l], "NULL", $request['be_expuesto_politico'][$l], "NULL", $conn);
+// 						}
+// 					}
+// 				}else
+// 					$l = $k;
+// 				if(isset($request['si_beneficiarios_nat']) && $request['si_beneficiarios_nat'] == '-1'){
+// 					for($m = $l; $m < ($l + 4); $m++){
+// 						if (verificarDatoNoDefault($request['be_identificacion'][$m]) || verificarDatoNoDefault($request['be_nombre_completo'][$m])) {
+// 							Formulario::insertNuevoAccionista($idData, $request['be_tipo'][$m], "NULL", "NULL", $request['be_nombre_completo'][$m], $request['be_tipodocumento_id'][$m], $request['be_identificacion'][$m], $request['be_fecha_expedicion'][$m], $request['be_expuesto_politico'][$m], $request['be_poliza_seguro'][$m], $conn);
+// 						}
+// 					}
+// 				}else
+// 					$m = $l;
+// 				if(isset($request['si_beneficiarios_jur']) && $request['si_beneficiarios_jur'] == '-1'){
+// 					$ni = 0;
+// 					for($n = $m; $n < ($m + 4); $n++){
+// 						if (verificarDatoNoDefault($request['be_nit'][$ni]) || verificarDatoNoDefault($request['be_razon_social'][$ni])) {
+// 							Formulario::insertNuevoAccionista($idData, $request['be_tipo'][$n], $request['be_razon_social'][$ni], $request['be_nit'][$ni], $request['be_nombre_completo'][$n], $request['be_tipodocumento_id'][$n], $request['be_identificacion'][$n], "NULL", "NULL", $request['be_poliza_seguro'][$n], $conn);
+// 						}
+// 						$ni++;
+// 					}
+// 				}else
+// 					$n = $m;
+// 			}else if($request['tipopersona'] == "1"){
+// 				if(isset($request['si_beneficiarios_nat']) && $request['si_beneficiarios_nat'] == '-1'){
+// 					for($m = 0; $m < 4; $m++){
+// 						if (verificarDatoNoDefault($request['be_identificacion'][$m]) || verificarDatoNoDefault($request['be_nombre_completo'][$m])) {
+// 							$fecha = crearFechaDePartes($request['f_expbe_a'][$m] ?? '', $request['f_expbe_m'][$m] ?? '', $request['f_expbe_d'][$m] ?? '', '');
+// 							$fecha = is_array($fecha) ? 'NULL' : $fecha;
+// 							Formulario::insertNuevoAccionista($idData, $request['be_tipo'][$m], "NULL", "NULL", $request['be_nombre_completo'][$m], $request['be_tipodocumento_id'][$m], $request['be_identificacion'][$m], $fecha, $request['be_expuesto_politico'][$m], $request['be_poliza_seguro'][$m], $conn);
+// 						}
+// 					}
+// 				}else
+// 					$m = 0;
+// 				if(isset($request['si_beneficiarios_jur']) && $request['si_beneficiarios_jur'] == '-1'){
+// 					$ni = 0;
+// 					for($n = $m; $n < ($m + 4); $n++){
+// 						if (verificarDatoNoDefault($request['be_nit'][$ni]) || verificarDatoNoDefault($request['be_razon_social'][$ni])) {
+// 							Formulario::insertNuevoAccionista($idData, $request['be_tipo'][$n], $request['be_razon_social'][$ni], $request['be_nit'][$ni], $request['be_nombre_completo'][$n], $request['be_tipodocumento_id'][$n], $request['be_identificacion'][$n], "NULL", "NULL", $request['be_poliza_seguro'][$n], $conn);
+// 						}
+// 						$ni++;
+// 					}
+// 				}else
+// 					$n = $m;
+// 			}
+// 			$conn->desconectar();
+// 			$err_img = '';
+// 			$imagen = Formulario::obtenerImagenTemporal($request['id_imagen_tmp']);
+// 			if ($imagen === false) {
+// 				$err_img = 'No se encontro la imagen con el identificador: ' . $request['id_imagen_tmp'];
+// 			} else {
+// 				$err_img = Formulario::guardarImagenDigitada($imagen['filename'], $form_id, $request['type'], $_SESSION['id'], $request['id_imagen_tmp']/*, 2*/);
+// 			}
+
+// 			$documentVerf = $request['tipopersona'] == '1' ? $request['documento'] : $request['nit']
+// 			;
+// 			Formulario::cambiarEstadoDevolucion($documentVerf, $request['tipopersona']);
+
+// 			Formulario::guardarPlanillaLote($request['planilla_lote'], $request['lote'], $_SESSION['id']);
+			
+// 			Formulario::addIndexacion($form_id, $_SESSION['id']);
+
+// 			$mensaje = 'Se agrego la nueva digitacion';
+// 			if (!empty($err_img)) $mensaje .= ', con el siguiente problema: ' . $err_img;
+
+// 			echo json_encode(['exito'=> $mensaje, 'url'=> 'fingering2.php?id_form='.$form_id.'&id_cliente='.$cliente_id]);
+
+// 		} catch (Exception $e) {
+// 			var_dump($e);
+// 			echo json_encode(['error'=> $e->getMessage()]);
+// 		}
+// 	}else{
+// 		echo "3b";
+// 		if (!empty($request['nit']) && $request['tipopersona'] == "2") {
+// 			$cliente_id = Formulario::crearNuevoCliente($request['nit'], $request['tipopersona'], $request['razonsocial'], 2, 2/*, 2*/);
+// 		} else if (!empty($request['documento']) && $request['tipopersona'] == "1") {
+// 			$cliente_id = Formulario::crearNuevoCliente($request['documento'], $request['tipopersona'], $request['primerapellido'] . " " . $request['segundoapellido'] . " " . $request['nombres'], 2, 2/*, 2*/);
+// 		}
+
+// 		if (!isset($cliente_id) || empty($cliente_id) || $cliente_id === false) {
+// 			echo json_encode(['error'=> 'Ocurrio un error al momento de crear el cliente, por favor contacte con el administrador.']);
+// 			exit;
+// 		}
+// 		$exForm = Formulario::verificarFormulario($cliente_id, $request['lote'], $request['planilla1'], $_SESSION['id']);
+// 		if (isset($exForm) && is_array($exForm) && !empty($exForm) && isset($exForm['id']) && !empty($exForm['id'])) {
+// 			echo json_encode(["error"=> "2. El formulario que esta intentando registrar, ya se encuentra registrado bajo el id => ".$exForm['id'].", por favor contacte con el administrador."]);
+// 			exit;
+// 		}
+// 		$form_id = Formulario::agregarNuevoFormulario($cliente_id, 'FORMULARIO', $request['lote'], $request['planilla1'], $_SESSION['id'], '1', $request['marca']/*, 2*/);
+// 		if ($form_id === false || $form_id === 0) {
+// 			echo json_encode(['error'=> 'Ocurrio un error al momento de crear el formulario, por favor contacte con el administrador.']);
+// 			exit;
+// 		}
+// 		try{
+// 			$conn = new Conexion();
+// 			$idData = Formulario::insertPrimaryDataNew($form_id, $request, $cliente_id, $conn/*, 2*/);
+// 			if ($idData === false || $idData === 0) {
+// 				echo json_encode(['error'=> 'Ocurrio un error al momento de crear la data del formulario, por favor contacte con el administrador.']);
+// 				exit;
+// 			}
+// 			if ($request['tipopersona'] == "2") {
+// 				//JUNTA DIRECTIVA
+// 				if(isset($request['si_junta_directiva']) && $request['si_junta_directiva'] == '-1'){
+// 					for ($i = 0; $i < 3; $i++) { 
+// 						if(verificarDatoNoDefault($request['ju_identificacion'][$i]) || verificarDatoNoDefault($request['ju_nombre_completo'][$i])){
+// 							Formulario::insertMiembroJunta($idData, $request['ju_nombre_completo'][$i], $request['ju_tipodocumento_id'][$i], $request['ju_identificacion'][$i], $request['ju_expuesto_politico'][$i], $conn);
+// 						}
+// 					}
+// 				}
+// 				if(isset($request['si_accionistas_nat']) && $request['si_accionistas_nat'] == '-1'){
+// 					for($k = 0; $k < 3; $k++){
+// 						if (verificarDatoNoDefault($request['be_identificacion'][$k]) || verificarDatoNoDefault($request['be_nombre_completo'][$k])) {
+// 							Formulario::insertNuevoAccionista($idData, $request['be_tipo'][$k], "NULL", "NULL", $request['be_nombre_completo'][$k], $request['be_tipodocumento_id'][$k], $request['be_identificacion'][$k], $request['be_fecha_expedicion'][$k], $request['be_expuesto_politico'][$k], $request['be_poliza_seguro'][$k], $conn);
+// 						}
+// 					}
+// 				}else
+// 					$k = 0;
+
+// 					echo "aquiii";
+// 					print_r($request);
+// 				if(isset($request['si_accionistas_jur']) && $request['si_accionistas_jur'] == '-1'){
+// 					for($l = $k; $l < ($k + 3); $l++){
+// 						if (verificarDatoNoDefault($request['be_nit'][$l]) || verificarDatoNoDefault($request['be_razon_social'][$l])) {
+// 							Formulario::insertNuevoAccionista($idData, $request['be_tipo'][$l], $request['be_razon_social'][$l], $request['be_nit'][$l], $request['be_nombre_completo'][$l], $request['be_tipodocumento_id'][$l], $request['be_identificacion'][$l], "NULL", $request['be_expuesto_politico'][$l], "NULL", $conn);
+// 						}
+// 					}
+// 				}else
+// 					$l = $k;
+// 				if(isset($request['si_beneficiarios_nat']) && $request['si_beneficiarios_nat'] == '-1'){
+// 					for($m = $l; $m < ($l + 4); $m++){
+// 						if (verificarDatoNoDefault($request['be_identificacion'][$m]) || verificarDatoNoDefault($request['be_nombre_completo'][$m])) {
+// 							Formulario::insertNuevoAccionista($idData, $request['be_tipo'][$m], "NULL", "NULL", $request['be_nombre_completo'][$m], $request['be_tipodocumento_id'][$m], $request['be_identificacion'][$m], $request['be_fecha_expedicion'][$m], $request['be_expuesto_politico'][$m], $request['be_poliza_seguro'][$m], $conn);
+// 						}
+// 					}
+// 				}else
+// 					$m = $l;
+// 				if(isset($request['si_beneficiarios_jur']) && $request['si_beneficiarios_jur'] == '-1'){
+// 					$ni = 0;
+// 					for($n = $m; $n < ($m + 4); $n++){
+// 						if (verificarDatoNoDefault($request['be_nit'][$ni]) || verificarDatoNoDefault($request['be_razon_social'][$ni])) {
+// 							Formulario::insertNuevoAccionista($idData, $request['be_tipo'][$n], $request['be_razon_social'][$ni], $request['be_nit'][$ni], $request['be_nombre_completo'][$n], $request['be_tipodocumento_id'][$n], $request['be_identificacion'][$n], "NULL", "NULL", $request['be_poliza_seguro'][$n], $conn);
+// 						}
+// 						$ni++;
+// 					}
+// 				}else
+// 					$n = $m;
+// 			}else if($request['tipopersona'] == "1"){
+// 				if(isset($request['si_beneficiarios_nat']) && $request['si_beneficiarios_nat'] == '-1'){
+// 					for($m = 0; $m < 4; $m++){
+// 						if (verificarDatoNoDefault($request['be_identificacion'][$m]) || verificarDatoNoDefault($request['be_nombre_completo'][$m])) {
+// 							$fecha = crearFechaDePartes($request['f_expbe_a'][$m] ?? '', $request['f_expbe_m'][$m] ?? '', $request['f_expbe_d'][$m] ?? '', '');
+// 							$fecha = is_array($fecha) ? 'NULL' : $fecha;
+// 							Formulario::insertNuevoAccionista($idData, $request['be_tipo'][$m], "NULL", "NULL", $request['be_nombre_completo'][$m], $request['be_tipodocumento_id'][$m], $request['be_identificacion'][$m], $fecha, $request['be_expuesto_politico'][$m], $request['be_poliza_seguro'][$m], $conn);
+// 						}
+// 					}
+// 				}else
+// 					$m = 0;
+// 				if(isset($request['si_beneficiarios_jur']) && $request['si_beneficiarios_jur'] == '-1'){
+// 					$ni = 0;
+// 					for($n = $m; $n < ($m + 4); $n++){
+// 						if (verificarDatoNoDefault($request['be_nit'][$ni]) || verificarDatoNoDefault($request['be_razon_social'][$ni])) {
+// 							Formulario::insertNuevoAccionista($idData, $request['be_tipo'][$n], $request['be_razon_social'][$ni], $request['be_nit'][$ni], $request['be_nombre_completo'][$n], $request['be_tipodocumento_id'][$n], $request['be_identificacion'][$n], "NULL", "NULL", $request['be_poliza_seguro'][$n], $conn);
+// 						}
+// 						$ni++;
+// 					}
+// 				}else
+// 					$n = $m;
+// 			}
+// 			$conn->desconectar();
+// 			$err_img = 'No se encontro la imagen con el identificador: ' . $request['id_imagen_tmp'];
+// 			$imagen = Formulario::obtenerImagenTemporal($request['id_imagen_tmp']);
+// 			if ($imagen !== false) {
+// 				$err_img = Formulario::guardarImagenDigitada($imagen['filename'], $form_id, $request['type'], $_SESSION['id'], $request['id_imagen_tmp']/*, 2*/);
+// 			}
+// 			$documentVerf = $request['tipopersona'] == '1' ? $request['documento'] : $request['nit'];
+// 			Formulario::cambiarEstadoDevolucion($documentVerf, $request['tipopersona']);
+
+// 			Formulario::guardarPlanillaLote($request['planilla_lote'], $request['lote'], $_SESSION['id']);
+		
+// 			Formulario::addIndexacion($form_id, $_SESSION['id']);
+
+// 			$mensaje = 'Se agrego la nueva digitacion';
+// 			if (!empty($err_img)) $mensaje .= ', con el siguiente problema: ' . $err_img;
+
+// 			echo json_encode(array('exito'=> $mensaje, 'url'=> 'fingering2.php?id_form='.$form_id.'&id_cliente='.$cliente_id));
+
+// 		}catch(Exception $e){
+// 			echo json_encode(array('error'=> $e->getMessage()));
+// 		}
+// 	}
+// }
 function verificarDatoNoDefault($dato){
 	return (!empty($dato) && $dato != 'SD' && $dato != 'NA' && $dato != 'N/A' && $dato != '*');
 }

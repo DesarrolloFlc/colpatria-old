@@ -28,24 +28,29 @@ extract($_GET);
     </div> <!-- End .content-box-header -->
     <div class="content-box-content">
         <div class="tab-content default-tab" id="tab3"> <!-- This is the target div. id must match the href of this div's tab -->
-            <form action="" method="POST" id="user_edit" name="user_edit">
+            <form method="POST" id="user_edit2" name="user_edit2" onsubmit="$(this).cambiarPassword(event);">
                 <fieldset> <!-- Set class to "column-left" or "column-right" on fieldsets to divide the form into columns -->
                     <p>
-                        <label>Nueva clave personal:</label>              
-                        <input class="text-input medium-input" type="password" id="pass1" name="pass1" /> <span class="input-notification attention png_bg">Campo obligatorio</span>                        
+                        <label>Clave personal actual:</label>
+                        <input class="text-input medium-input" type="password" name="anterior_password" /> <span class="input-notification attention png_bg">Campo obligatorio</span>
                     </p>
-         		<p>
-                        <label>Re-escribir clave personal:</label>              
-                        <input class="text-input medium-input" type="password" id="pass2" name="pass2" /> <span class="input-notification attention png_bg">Campo obligatorio</span>                        
+                    <p>
+                        <label>Nueva clave personal:</label>
+                        <input class="text-input medium-input" type="password" name="nuevo_password" /> <span class="input-notification attention png_bg">Campo obligatorio</span>
+                    </p>
+                    <p>
+                        <label>Re-escribir clave personal:</label>
+                        <input class="text-input medium-input" type="password" name="nuevo_password2" /> <span class="input-notification attention png_bg">Campo obligatorio</span>
                     </p>
                     <p>
                         <input class="button" type="submit" value="Asignar esta clave >>" />
                     </p>
                 </fieldset>
-			<input type="hidden" name="action" id="action" value="update_password" />
-			<input type="hidden" name="id_user" id="id_user" value="<?php echo $id_user ?>" />
+                <input type="hidden" name="domain" value="user">
+                <input type="hidden" name="action" value="cambiarPassword">
+                <input type="hidden" name="meth" value="js">
                 <div class="clear"></div><!-- End .clear -->
             </form>
-        </div> <!-- End #tab2 -->    
+        </div> <!-- End #tab2 -->
     </div> <!-- End .content-box-content -->
 </div> <!-- End .content-box -->

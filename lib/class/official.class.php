@@ -30,6 +30,13 @@ class Official {
             return false;
     }
 
-}
+    public static function addOficial2(Conexion $conn, int $id, string $identificacion, string $name, string $email, string $email_father): bool
+    {
+        $SQL = "INSERT INTO official
+    			(id, identificacion, name, email, email_father)
+				VALUES
+				(:id, :identificacion, :name, :email, :email_father)";
+        return $conn->ejecutar($SQL, [':id'=> $id, ':identificacion'=> $identificacion, ':name'=> $name, ':email'=> $email, ':email_father'=> $email_father]);
+    }
 
-?>
+}

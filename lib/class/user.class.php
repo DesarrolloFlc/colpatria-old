@@ -3,7 +3,7 @@ require_once PATH_SITE . DS . "config/globalParameters.php";
 require_once PATH_CCLASS . DS . "official.class.php";
 class User
 {
-	function validateUser($username, $password) {
+	function validateUser2($username, $password) {
 		//Escapar caracteres
 		$username = mysqli_real_escape_string($GLOBALS['link'], htmlspecialchars($username));
 		$password = mysqli_real_escape_string($GLOBALS['link'], htmlspecialchars($password));
@@ -22,6 +22,33 @@ class User
 			}
 		} else 
 			return -1; //Usuario no existe
+	}
+	static function validateUser(Conexion $conn, string $username, string $password): array 
+	{
+		$SQL = "SELECT u.id,
+					   u.name,
+					   u.id_group,
+					   u.cargo,
+					   u.change_password,
+					   u.password,
+					   ui.fecha,
+					   ui.primer_ingreso,
+					   ui.primer_gestion,
+					   u.username 
+				  FROM user AS u 
+				  LEFT JOIN usuario_ingresos AS ui ON(ui.usuario_id = u.id AND ui.fecha = :fecha)
+				 WHERE username = :username 
+				   AND status = :status";
+		$conn->consultar($SQL, [':username'=> $username, ':status'=> '1', ':fecha'=> date('Y-m-d')]);
+		if ($conn->getNumeroRegistros() !== 1) return ['error'=> 'El usuario no existe o esta creado mas de una vez.'];
+
+		$row = $conn->sacarRegistro('str');
+
+		if (!password_verify($password, $row['password'])) {
+			return ['error'=> 'La contraseña del usuario no puede ser vacia, o no coincide.'];
+		}
+		unset($row['password']);
+		return ['exito'=> 'Sesion iniciada con exito.', 'user'=> $row];
 	}
 	function getData($id) {
 		$fecha = date('Y-m-d');
@@ -70,6 +97,38 @@ class User
 			Official::addOficial($ultimId, $identificacion, $name, $correoelectronico, $correojefe);
 		}
 		return 0;
+	}
+	static function add2(Conexion $conn, array $data): array
+	{
+		$SQL = "INSERT INTO user
+				(id_group, username, password, identificacion, name, sucursal, correoelectronico, cargo) 
+				VALUES 
+				(:id_group, :username, :password, :identificacion, :name, :sucursal, :correoelectronico, :cargo)";
+		try {
+			$resp = $conn->ejecutar($SQL, [
+				':id_group'=> $data['id_group'], 
+				':username'=> $data['username'], 
+				':password'=> password_hash($data['password'], PASSWORD_DEFAULT), 
+				':identificacion'=> $data['identificacion'], 
+				':name'=> $data['name'], 
+				':sucursal'=> $data['sucursal'], 
+				':correoelectronico'=> $data['correoelectronico'], 
+				':cargo'=> $data['cargo']
+			]);
+		} catch (Exception $e) {
+			return ['error'=> 'Ocurrio una excpcion al momento de crear el usuario, contacte con el administrador.<br>Codigo: ' . $e->getCode() . '<br>Error: ' .$e->getMessage()];
+		}
+		if (!$resp) {
+			return ['error'=> 'Ocurrio un error al momento de crear el usuario, contacte con el administrador.'];
+		}
+		$mensajeOficial = '';
+		if (!empty($data['correojefe']) && filter_var($data['correojefe'], FILTER_VALIDATE_EMAIL)) {
+			$user_id = $conn->ultimaId();
+			if (!Official::addOficial2($conn, $user_id, $data['identificacion'], $data['name'], $data['correoelectronico'], $data['correojefe'])) {
+				$mensajeOficial = '<br>Pero no se pudo crear el jefe del usuario.';
+			}
+		}
+		return ['exito'=> 'El usuario fue creado exitosamente.' . $mensajeOficial];
 	}
 	function search($type,$text) {
 		$sql = "SELECT * FROM user WHERE 1 ";
@@ -152,13 +211,23 @@ class User
 	}
 	static function actualizarPasswordPorId(Conexion $conn, int $id, string $password, string $nuevoPassword): array
 	{
-		$SQL = "SELECT id FROM user WHERE id = :id AND password = :password";
-		$conn->consultar($SQL, [':id'=> $id, ':password'=> $password]);
-		if ($conn->getNumeroRegistros() !== 1) return ['error'=> 'Los datos del usuario con concuerda, probablemente esa no sea su contraseña actual.'];
+		$SQL = "SELECT id, password FROM user WHERE id = :id";
+		$conn->consultar($SQL, [':id'=> $id]);
+		if ($conn->getNumeroRegistros() !== 1) { 
+			return ['error'=> 'El usuario consultado no existe.'];
+		}
 
 		$row = $conn->sacarRegistro('str');
 
-		return $conn->ejecutar("UPDATE user SET password = :password WHERE id = :id", [':id'=> $row['id'], ':password'=> $nuevoPassword])
+		if (!password_verify($password, $row['password'])) { 
+			return ['error'=> 'Los datos del usuario con concuerda, probablemente esa no sea su contraseña actual.'];
+		}
+
+		$resp = $conn->ejecutar("UPDATE user SET password = :password, change_password = 1 WHERE id = :id", [':id'=> $row['id'], ':password'=> password_hash($nuevoPassword, PASSWORD_DEFAULT)]);
+
+		if ($resp) $_SESSION['change_password'] = 1;
+
+		return $resp
 			? ['exito'=> 'Se realizo la actualizacion de la contraseña satisfactoriamente.']
 			: ['error'=> 'Ocurrio un error al momento de actualizar la contraseña, contacte con el administrador.'];
 	}

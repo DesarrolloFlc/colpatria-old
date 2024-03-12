@@ -112,7 +112,12 @@ $sql = "SELECT formu.num_images,
 			   param_contact.description,
 			   confirma.observacion,
 			   usercont.name,
-			   confirma.date_created 
+			   confirma.date_created,
+			   ingresos_mensuales_pesos,
+			   IF( cli.persontype = '1',otros_ingresos_pesos,'NA'),
+			   egresos_mensuales_pesos,
+			   ingresos_mensuales_emp_pesos,
+			   egresos_mensuales_emp_pesos
 		  FROM client cli 
 		 INNER JOIN form formu ON formu.id_client = cli.id 
 		 INNER JOIN data ON formu.id = data.id_form 
@@ -199,6 +204,9 @@ $result = mysqli_query($GLOBALS['link'], $sql);
 		<td>Ingresos mensuales</td>
 		<td>Otros ingresos</td>
 		<td>Egresos mensuales</td>
+		<!-- <td>Ingresos mensuales pesos</td>
+		<td>Otros ingresos pesos</td>
+		<td>Egresos mensuales pesos</td> -->
 		<td>Concepto otros ingresos</td>
 		<td>Actividad</td>
 		<td>Nivel estudios</td>
@@ -223,6 +231,8 @@ $result = mysqli_query($GLOBALS['link'], $sql);
 		<td>Pasivos empresa</td>
 		<td>Ingresos mensuales empresa</td>
 		<td>Egresos mensuales empresa</td>
+		<!-- <td>Ingresos mensuales empresa pesos</td>
+		<td>Egresos mensuales empresa pesos</td> -->
 		<td>Moneda extranjera</td>
 		<td>Tipo transacciones</td>
 		<td>Firma</td>
@@ -291,6 +301,9 @@ if ($_SESSION['id'] != 893 && $_SESSION['id'] != 1184) {
 		<td><?=$registro[43]?></td>
 		<td><?=$registro[44]?></td>
 		<td><?=$registro[45]?></td>
+		<!-- <td><?=$registro[90]?></td>
+		<td><?=$registro[91]?></td>
+		<td><?=$registro[92]?></td> -->
 		<td><?=$registro[46]?></td>
 		<td><?=$registro[47]?></td>
 		<td><?=$registro[48]?></td>
@@ -315,6 +328,8 @@ if ($_SESSION['id'] != 893 && $_SESSION['id'] != 1184) {
 		<td><?=$registro[67]?></td>
 		<td><?=$registro[68]?></td>
 		<td><?=$registro[69]?></td>
+		<!-- <td><?=$registro[93]?></td>
+		<td><?=$registro[94]?></td> -->
 		<td><?=$registro[70]?></td>
 		<td><?=$registro[71]?></td>
 		<td><?=$registro[72]?></td>

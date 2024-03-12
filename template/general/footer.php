@@ -1,4 +1,3 @@
-			<div id="box-manual-radicacion" style="display:none;"></div>
 				<div id="footer">
 					<small>
 						&#169; Copyright 2011 Finleco BPO Group | Desarrollador por <a href="http://www.finlecoad.com">Finlecoad</a> | <a href="#">Ir arriba</a>

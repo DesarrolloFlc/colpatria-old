@@ -165,7 +165,8 @@
 		<td>
 			<input type="text" id="activosemp" name="activosemp" style="width: 100px; margin-right: 20px" onkeypress="return validar_num(event)" title="Activos">
 			Ingresos mensuales:
-			<select id="ingresosmensualesemp" name="ingresosmensualesemp" style="font-size: 12px; margin-right: 5px" title="Ingresos mensuales">
+			<input type="text" id="ingresos_mensuales_emp_pesos" name="ingresos_mensuales_emp_pesos" style="width: 100px; margin-right: 20px" title="Ingresos mensuales" onkeypress="return validar_num(event)">
+			<!-- <select id="ingresosmensualesemp" name="ingresosmensualesemp" style="font-size: 12px; margin-right: 5px" title="Ingresos mensuales">
 				<option value="">Seleccione...</option>
 <?php
 	if(isset($ingresos) && !empty($ingresos) && is_array($ingresos)){
@@ -176,7 +177,7 @@
 		}
 	}
 ?>
-			</select>
+			</select> -->
 		</td>
 	</tr>
 	<tr>
@@ -184,7 +185,8 @@
 		<td>
 			<input type="text" id="pasivosemp" name="pasivosemp" style="width: 100px" onkeypress="return validar_num(event)" title="Pasivos">
 			Otros ingresos:
-			<select id="otrosingresosemp" name="otrosingresosemp" style="font-size: 12px; margin-right: 5px" title="Otros ingresos">
+			<input type="text" id="otros_ingresos_emp_pesos" name="otros_ingresos_emp_pesos" style="width: 100px; margin-right: 20px" title="Otros ingresos" onkeypress="return validar_num(event)">
+			<!-- <select id="otrosingresosemp" name="otrosingresosemp" style="font-size: 12px; margin-right: 5px" title="Otros ingresos">
 				<option value="">Seleccione...</option>
 <?php
 	if(isset($ingresos) && !empty($ingresos) && is_array($ingresos)){
@@ -196,7 +198,7 @@
 	}
 ?>
 				<option value="13">SD</option>
-			</select>
+			</select> -->
 		</td>
 	</tr>
 	<!-- <tr>
@@ -208,7 +210,8 @@
 	<tr>
 		<td style="width: 100px;display: table-cell;">Egresos mensuales:</td>
 		<td>
-			<select id="egresosmensualesemp" name="egresosmensualesemp" style="font-size: 12px; margin-right: 5px" title="Egresos mensuales">
+			<input type="text" id="egresos_mensuales_emp_pesos" name="egresos_mensuales_emp_pesos" style="width: 100px; margin-right: 20px" title="egresos mensuales" onkeypress="return validar_num(event)">
+			<!-- <select id="egresosmensualesemp" name="egresosmensualesemp" style="font-size: 12px; margin-right: 5px" title="Egresos mensuales">
 				<option value="">Seleccione...</option>
 <?php
 	if(isset($egresos) && !empty($egresos) && is_array($egresos)){
@@ -219,7 +222,7 @@
 		}
 	}
 ?>
-			</select>
+			</select> -->
 		</td>
 	</tr>
 	<tr>
@@ -535,7 +538,15 @@ if(isset($paises) && !empty($paises) && is_array($paises)){
 					</td>
 				</tr>
 				<tr>
-					<td style="width: 100px;display: table-cell;">Incluido en el RNVE?</td>
+					<td style="width: 100px;display: table-cell;">Es benericiario final?</td>
+					<td>
+						<select id="beneficiario_final[<?=$acc?>]" name="beneficiario_final[]" style="font-size: 12px; margin-right: 5px" title="Reconocimiento publico" disabled="disabled">
+							<option value="">Seleccion...</option>
+							<option value="-1">SI</option>
+							<option value="0">NO</option>
+						</select>
+					</td>
+					Incluido en el RNVE?
 					<td>
 						<select id="publico_reconocimiento[<?=$acc?>]" name="publico_reconocimiento[]" style="font-size: 12px; margin-left: 10px" title="Reconocimiento publico" disabled="disabled">
 							<option value="">Seleccion...</option>

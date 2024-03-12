@@ -19,7 +19,7 @@ $fecharadicado = explode("-",$dataform['fecharadicado']);
 </head>
 <body>
 <?php
-require_once in_array($dataform['formulario'], [15, 19, 20])
+require_once in_array($dataform['formulario'], [15, 19, 20, 21])
     ? "editForm_" . $dataform['formulario'] . ".php"
     : 'editFormNo_15.php';
 ?>

@@ -158,16 +158,18 @@ if($mimeTipeForm == 'application/pdf'){
                 <td>
                     <select name="tipodocumento_1" id="tipodocumento_1">
                         <option value="">-- Seleccione un tipo de documento --</option>
-                        <option value="1">Formulario</option>
-						<option value="6">Formulario nuevo</option>
-						<option value="7">Formulario nuevo(Jul/2022)</option>
-						<option value="8">Formato regimen simplificado(tirilla)</option>
-						<option value="9">Formato sector asegurado(CE027/20)</option>
+                        <!-- <option value="1">Formulario</option> -->
+						<!-- <option value="6">Formulario nuevo</option> -->
+						<option value="7">Formulario nuevo(Oct/2023)</option>
+						<!-- <option value="8">Formato regimen simplificado(tirilla)</option> -->
+						<option value="9">Formato sector asegurado 2023</option>
                         <!-- <option value="2">Formulario Cara B</option>
                         <option value="3">Documento Anexo</option> -->
-                        <option value="4">Formato Renovacion Autos</option>
+                        <!-- <option value="4">Formato Renovacion Autos</option> -->
                         <option value="5">Documentacion Complementaria</option>
                         <option value="10">Documentacion Complementaria cliente no creado</option>
+						<!-- <option value="11">Formulario Solicitud de credito</option> -->
+						<option value="12">Formulario salud 2023</option>
                     </select>
                 </td>
             </tr>

@@ -4,7 +4,7 @@
 		<td>
 		<table>
 			<tr>
-				<td style="width: 80px">Fecha de radicado:</td><!--fecharadicado-->
+				<td style="width: 80px">Fecha de radicado :o</td><!--fecharadicado-->
 				<td>
 					<select id="f_rad_a" name="f_rad_a" onchange="$(this).verificarFecha(event, 'rad', '1');" style="font-size: 12px" title="Año de fecha de radicado">
 						<option value="">Año</option>

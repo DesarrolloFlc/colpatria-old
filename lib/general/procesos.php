@@ -25,9 +25,15 @@ else if(isset($_GET['action']) && !empty($_GET['action']))
 /*
  * AGREGAR UN USUARIO
  */
-if ($action == "add_user") {
+/*if ($action == "add_user") {
     $user = new User();
     $user->add($id_group, $username, $password, $identificacion, $name, $sucursal, $correoelectronico, $cargo, $oficial ?? '', $correojefe ?? '') === 0
+        ? "0"
+        : "-1";
+}*/
+if ($action == "add_user") {
+    $user = new User();
+    $user->add2($id_group, $username, $password, $identificacion, $name, $sucursal, $correoelectronico, $cargo, $oficial ?? '', $correojefe ?? '') === 0
         ? "0"
         : "-1";
 }
@@ -74,23 +80,6 @@ if ($action == "editardocumento") {
     }
     echo "Actualizacion exitosa.";
 }
-
-
-/*
- * BUSCAR UN USUARIO
- */
-
-if ($action == "update_password") {
-    if ($pass1 == $pass2) {
-        $user = new User();
-        if ($user->changePassword($id_user, $pass1)) {
-            echo "0";
-        } else {
-            echo "-1";
-        }
-    }
-}
-
 
 if (isset($_GET['action']) && $_GET['action'] == "disable_form") {
     $id_form = $_GET['id_form'];

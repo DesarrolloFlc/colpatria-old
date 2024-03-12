@@ -1,7 +1,7 @@
 <?php
 ini_set('memory_limit', '-1');
 set_time_limit(0);
-require_once dirname(dirname(dirname(__FILE__))) . "/includes.php";
+require_once dirname(dirname(dirname(__FILE__))) . DIRECTORY_SEPARATOR . "includes.php";
 require_once PATH_COMPOSER . DS . 'vendor' . DS . 'autoload.php';
 require_once PATH_CLASS . DS . '_conexion.php';
 require_once PATH_CCLASS . DS . 'official.class.php';
@@ -115,6 +115,8 @@ require_once PATH_CCLASS . DS . 'official.class.php';
 //arreglarFechasConGuion();
 //busquedaCorreoElectronico();
 //informeDocumentosCarpetaVirtual();
+// encriptarPasswordUsuarios();
+// establecerFechaRadicados();
 function clientsIlocalizadosNaturales()
 {
     $conn = new Conexion();
@@ -7449,6 +7451,57 @@ function informeDocumentosCarpetaVirtual()
     }
     fclose($fp);
     echo "TERMINO...";
+}
+function encriptarPasswordUsuarios()
+{
+	echo "INICIO DEL PROCESO: " . date('Y-m-d H:i:s') . PHP_EOL;
+	$conn = new Conexion();
+	$SQL = "SELECT id, password
+			  FROM user 
+			 WHERE 1";
+	$conn->consultar($SQL);
+    while ($row = $conn->sacarRegistro('str')) {
+        $SQU = "UPDATE user 
+                   SET password = :password
+                 WHERE id = :id";
+        $conn->ejecutar($SQU, [':password'=> password_hash($row['password'], PASSWORD_DEFAULT), ':id'=> $row['id']]);
+    }
+    $conn->desconectar();
+	echo "termino!..." . PHP_EOL;
+	echo "FIN DEL PROCESO: ".date('Y-m-d H:i:s') . PHP_EOL;
+}
+function establecerFechaRadicados(){
+    echo "aquiiii";
+    $conn = new Conexion();
+	$SQL = "SELECT data.id AS data_id,
+                   data.fecharadicado,
+                   form.date_created,
+                   radicados.id AS radicado_id,
+                   DATE(radicados.fecha_creacion) AS fecha_creacion_radicado
+              FROM form 
+              JOIN data ON form.id = data.id_form 
+              JOIN radicados ON radicados.id = form.log_lote
+             WHERE form.date_created BETWEEN '2024-02-25 00:00:00' AND CURRENT_TIMESTAMP 
+               AND data.fecharadicado='0000-00-00'";
+    $conn = new Conexion();
+    if(!$conn->consultar($SQL)){
+        $conn->desconectar();
+        return false;
+    }
+    if($conn->getNumeroRegistros() <= 0){
+        $conn->desconectar();
+        return false;
+    }
+    $SQL2 = "UPDATE data
+                SET fecharadicado = :fecharadicado
+              WHERE id = :id";
+    while($row = $conn->sacarRegistro('str')){
+        if(!$conn->ejecutar($SQL2, [':fecharadicado'=> $row['fecha_creacion_radicado'], ':id'=> $row['data_id']])){
+            echo "no se pudo actualizar la data con id: ".$row['data_id']."<br>";
+        }
+        echo "exito, se actualizo la fecha de radicado de la data con id: ".$row['data_id']."<br>";
+    }
+   
 }
 /*
 SELECT c.document, 

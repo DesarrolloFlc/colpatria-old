@@ -99,7 +99,7 @@ function cargarArchivoAction($request){
     }
     try{
         Radicados::inserFileRadicado("", $documentoCliente, $pdfFileOut, $pathUpload);
-        echo json_encode(['exito'=> 'Se agrego el cliente y se cargaron todos los archivos satisfactoriamente.', 'item'=> ['documento'=> $documentoCliente, 'nombre'=> trim($request['nombre_cli']), 'file'=> $pdfFileOut, 'sucursal'=> $sucursal]]);
+        echo json_encode(['exito'=> 'Se agrego el cliente y se cargaron todos los archivos satisfactoriamenteeeeeeee.', 'item'=> ['documento'=> $documentoCliente, 'nombre'=> trim($request['nombre_cli']), 'file'=> $pdfFileOut, 'sucursal'=> $sucursal]]);
     }catch(Exception $e){
         $fh2 = fopen(PATH_LOGS.DS.'errores_conversionPDF_salida.log', "a");
         fputcsv($fh2, array('Error_registroArchivo', date('Y-m-d H:i:s'), $pdfFileOut, json_encode(scandir($pathUpload)), $e->getMessage(), $e->getCode()), '|');

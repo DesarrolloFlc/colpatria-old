@@ -34,13 +34,13 @@ $sucursales = $general->getSucursales();
         <div class="tab-content default-tab" id="tab1"> <!-- This is the target div. id must match the href of this div's tab -->            
 
             <div class="notification attention png_bg"> 
-                <a href="#" class="close"><img src="../../resources/images/icons/cross_grey_small.png" title="Close this notification" alt="close" /></a>
+                <a href="#" class="close"><img src="<?=SITE_ROOT?>/resources/images/icons/cross_grey_small.png" title="Close this notification" alt="close" /></a>
                 <div>
                     No olvide que el caso se notificará al responsable y al director de la sucursal vía e-mail.
                 </div>
             </div>
             <div class="notification success  png_bg" id="result_notif" style="display:none;"> 
-                <a href="#" class="close"><img src="../../resources/images/icons/cross_grey_small.png" title="Close this notification" alt="close" /></a>
+                <a href="#" class="close"><img src="<?=SITE_ROOT?>/resources/images/icons/cross_grey_small.png" title="Close this notification" alt="close" /></a>
                 <div id="msg_adduser">
 
                 </div>
@@ -51,7 +51,7 @@ $sucursales = $general->getSucursales();
                     <p>
                         <label>Documento:</label>
                         <input type="text" name="documento" id="documento" onkeypress="return validar_num(event);" onpaste="alert('Digite el numero por favor');return false;" oncopy="alert('No se le permite esta opcion');return false;"/><!--onblur="$.fn.buscarCliente(event,$(this).val());"  -->
-                        <img id="imgloading" src="../../images/icons/loading.gif" width="16" height="16" style="display:none;">
+                        <img id="imgloading" src="<?=SITE_ROOT?>/images/icons/loading.gif" width="16" height="16" style="display:none;">
                     </p>
                     <p>
                         <label>Tipo de Cliente:</label>

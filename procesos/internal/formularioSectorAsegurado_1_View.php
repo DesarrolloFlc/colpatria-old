@@ -228,22 +228,22 @@ if(isset($ciius) && !empty($ciius) && is_array($ciius)){
 		</td>
 	</tr>
 	<tr>
-		<td style="width: 100px;display: table-cell;">Tipo empresa</td>
+		<td style="width: 100px;display: table-cell;">sector y tipo de actividad</td>
 		<td>
-			<select id="tipoempresaemp" name="tipoempresaemp" style="font-size: 12px; margin-right: 5px" title="Tipo empresa">
+			<select id="sector_actividad" name="sector_actividad" style="font-size: 12px; margin-right: 5px" title="sector y tipo de actividad">
 				<option value="">Seleccione...</option>
 <?php
-if(isset($tipoempresas) && !empty($tipoempresas) && is_array($tipoempresas)){
-	foreach($tipoempresas as $tipoempresa){
+if(isset($tipo_actividades) && !empty($tipo_actividades) && is_array($tipo_actividades)){
+	foreach($tipo_actividades as $tipo_actividad){
 ?>
-				<option value="<?=$tipoempresa['id']?>"><?=$tipoempresa['description']?></option>
+				<option value="<?=$tipo_actividad['id']?>"><?=$tipo_actividad['description']?></option>
 <?php
 	}
 }
 ?>
 			</select>
 			Cual?
-			<input type="text" id="tipoempresaemp_cual" name="tipoempresaemp_cual" style="width: 100px" disabled onkeypress="return validar_letra(event)" title="Cual tipo empresa">
+			<input type="text" id="sector_actividad_cual" name="sector_actividad_cual" style="width: 100px" disabled onkeypress="return validar_letra(event)" title="Cual tipo de actividad">
 		</td>
 	</tr>
 	<tr>
@@ -309,7 +309,8 @@ if(isset($daneCiudades) && !empty($daneCiudades) && is_array($daneCiudades)){
 		<td>
 			<input type="text" id="totalactivos" name="totalactivos" style="width: 100px; margin-right: 20px" title="Activos" onkeypress="return validar_num(event)">
 			Ingresos mensuales:
-			<select id="ingresosmensuales" name="ingresosmensuales" style="font-size: 12px; margin-right: 5px" title="Ingresos mensuales">
+			<input type="text" id="ingresos_mensuales_pesos" name="ingresos_mensuales_pesos" style="width: 100px; margin-right: 20px" title="Ingresos mensuales" onkeypress="return validar_num(event)">
+			<!-- <select id="ingresosmensuales" name="ingresosmensuales" style="font-size: 12px; margin-right: 5px" title="Ingresos mensuales">
 				<option value="">Seleccione...</option>
 <?php
 if(isset($ingresos) && !empty($ingresos) && is_array($ingresos)){
@@ -320,7 +321,7 @@ if(isset($ingresos) && !empty($ingresos) && is_array($ingresos)){
 	}
 }
 ?>
-			</select>
+			</select> -->
 			
 		</td>
 	</tr>
@@ -328,7 +329,8 @@ if(isset($ingresos) && !empty($ingresos) && is_array($ingresos)){
 		<td style="width: 100px;display: table-cell;">Pasivos:</td>
 		<td><input type="text" id="totalpasivos" name="totalpasivos" style="width: 100px" title="Pasivos" onkeypress="return validar_num(event)">
 			Otros ingresos:
-			<select id="otrosingresos" name="otrosingresos" style="font-size: 12px; margin-right: 5px" title="Otros ingresos">
+			<input type="text" id="otros_ingresos_pesos" name="otros_ingresos_pesos" style="width: 100px; margin-right: 20px" title="Otros ingresos" onkeypress="return validar_num(event)">
+			<!-- <select id="otrosingresos" name="otrosingresos" style="font-size: 12px; margin-right: 5px" title="Otros ingresos">
 				<option value="">Seleccione...</option>
 <?php
 if(isset($ingresos) && !empty($ingresos) && is_array($ingresos)){
@@ -340,7 +342,7 @@ if(isset($ingresos) && !empty($ingresos) && is_array($ingresos)){
 }
 ?>
 				<option value="13">SD</option>
-			</select>
+			</select> -->
 		</td>
 	</tr>
 	<!-- <tr>
@@ -352,7 +354,8 @@ if(isset($ingresos) && !empty($ingresos) && is_array($ingresos)){
 	<tr>
 		<td style="width: 100px;display: table-cell;">Egresos mensuales:</td>
 		<td>
-			<select id="egresosmensuales" name="egresosmensuales" style="font-size: 12px; margin-right: 5px" title="Egresos mensuales">
+		<input type="text" id="egresos_mensuales_pesos" name="egresos_mensuales_pesos" style="width: 100px; margin-right: 20px" title="egresos mensuales" onkeypress="return validar_num(event)">
+			<!-- <select id="egresosmensuales" name="egresosmensuales" style="font-size: 12px; margin-right: 5px" title="Egresos mensuales">
 				<option value="">Seleccione...</option>
 <?php
 if(isset($egresos) && !empty($egresos) && is_array($egresos)){
@@ -363,7 +366,7 @@ if(isset($egresos) && !empty($egresos) && is_array($egresos)){
 	}
 }
 ?>
-			</select>
+			</select> -->
 		</td>
 	</tr>
 	<tr>
@@ -409,13 +412,26 @@ if(isset($egresos) && !empty($egresos) && is_array($egresos)){
 				<option value="0">NO</option>
 				<option value="2">SD</option>
 			</select>
-			Obligaciones tributarias en otro pais?
+			<!-- Obligaciones tributarias en otro pais?
+			<select id="tributarias_otro_pais" name="tributarias_otro_pais" style="font-size: 12px; margin-right: 15px" title="Obligaciones fiscales en otro pais">
+				<option value="">Seleccion...</option>
+				<option value="-1">SI</option>
+				<option value="0">NO</option>
+				<option value="2">SD</option>
+			</select> -->
+		</td>
+	</tr>
+	<tr>
+		<td style="width: 100px;display: table-cell;">Obligaciones tributarias en otro pais?</td>
+		<td>			
 			<select id="tributarias_otro_pais" name="tributarias_otro_pais" style="font-size: 12px; margin-right: 15px" title="Obligaciones fiscales en otro pais">
 				<option value="">Seleccion...</option>
 				<option value="-1">SI</option>
 				<option value="0">NO</option>
 				<option value="2">SD</option>
 			</select>
+			Indique:
+			<input type="text" id="tributarias_paises" name="tributarias_paises" style="width: 135px" disabled onkeypress="return validar_letra(event)" title="Cuales paises">
 		</td>
 	</tr>
 	<tr>

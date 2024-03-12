@@ -185,6 +185,11 @@ if(isset($ingresos) && !empty($ingresos) && is_array($ingresos)){
 				<option value="<?=$ingreso['id']?>"<?=$slect?>><?=$ingreso['description']?></option>
 <?php
 	}
+	if ($dataform['ingresosmensualesemp'] == '13') {
+?>
+				<option value="13" selected >SD</option>
+<?php
+	}
 }
 ?>
 			</select>
@@ -233,9 +238,28 @@ if(isset($egresos) && !empty($egresos) && is_array($egresos)){
 				<option value="<?=$egreso['id']?>"<?=$slect?>><?=$egreso['description']?></option>
 <?php
 	}
+	if ($dataform['egresosmensualesemp'] == '13') {
+?>
+			<option value="13" selected >SD</option>
+<?php
+	}
 }
 ?>
 			</select>
+		</td>
+	</tr>
+	<tr>
+		<td style="width: 100px;display: table-cell;">Ingresos mensuales Pesos:</td>
+		<td>
+			<input type="text" id="ingresos_mensuales_emp_pesos" name="ingresos_mensuales_emp_pesos" style="width: 300px" onkeypress="return validar_letra(event)" title="Ingresos mensuales Pesos" value="<?=$dataform['ingresos_mensuales_emp_pesos']?>" data-oldvalue="<?=$dataform['ingresos_mensuales_emp_pesos']?>">
+			Egresos mensuales:
+			<input type="text" id="egresos_mensuales_emp_pesos" name="egresos_mensuales_emp_pesos" style="width: 300px" onkeypress="return validar_letra(event)" title="egresos_mensuales_emp_pesos" value="<?=$dataform['egresos_mensuales_emp_pesos']?>" data-oldvalue="<?=$dataform['egresos_mensuales_emp_pesos']?>">
+		</td>
+	</tr>
+	<tr>
+		<td style="width: 100px;display: table-cell;">Otros ingresos pesos:</td>
+		<td>
+			<input type="text" id="otros_ingresos_emp_pesos" name="otros_ingresos_emp_pesos" style="width: 300px" onkeypress="return validar_letra(event)" title="Otros ingresos pesos:" value="<?=$dataform['otros_ingresos_emp_pesos']?>" data-oldvalue="<?=$dataform['otros_ingresos_emp_pesos']?>">
 		</td>
 	</tr>
 	<tr>

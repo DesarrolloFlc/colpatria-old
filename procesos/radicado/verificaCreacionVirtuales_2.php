@@ -31,13 +31,13 @@ $sucursales = $general->getSucursales();
     <div class="content-box-content">        
         <div class="tab-content default-tab" id="tab2">
             <div class="notification attention png_bg"> 
-                <a href="#" class="close"><img src="../../resources/images/icons/cross_grey_small.png" title="Close this notification" alt="close" /></a>
+                <a href="#" class="close"><img src="<?=SITE_ROOT?>/resources/images/icons/cross_grey_small.png" title="Close this notification" alt="close" /></a>
                 <div id="msg_erradduser">
                     No olvide diligenciar todos los campos.
                 </div>
             </div>
             <div class="notification success  png_bg" id="result_notif" style="display:none;"> 
-                <a href="#" class="close"><img src="../../resources/images/icons/cross_grey_small.png" title="Close this notification" alt="close" /></a>
+                <a href="#" class="close"><img src="<?=SITE_ROOT?>/resources/images/icons/cross_grey_small.png" title="Close this notification" alt="close" /></a>
                 <div id="msg_adduser">
 
                 </div>
@@ -107,7 +107,7 @@ $sucursales = $general->getSucursales();
                             <td colspan="2" style="text-align: right;"><!--style="padding-left: 82%;" -->
                                 <div style="display: inline;">&nbsp;</div>
                                 <input type="submit" class="button" value="Creaci&oacute;n de radicado >>" id="botoncrearRadicado"/>
-                                <div style="display: inline; width: 16px; height: 16px;"><img id="imgloading" src="../../images/icons/loading.gif" style="display: none;" /></div>
+                                <div style="display: inline; width: 16px; height: 16px;"><img id="imgloading" src="<?=SITE_ROOT?>/images/icons/loading.gif" style="display: none;" /></div>
                             </td>
                         </tr>
                     </tfoot>
@@ -143,7 +143,7 @@ $sucursales = $general->getSucursales();
                     </tr><!--FIN SKRV Ingreso documento especial-->
                 </table>
                 <div class="notification attention png_bg" style="margin-top: 8px;"> 
-                    <a href="#" class="close"><img src="../../resources/images/icons/cross_grey_small.png" title="Close this notification" alt="close" /></a>
+                    <a href="#" class="close"><img src="<?=SITE_ROOT?>/resources/images/icons/cross_grey_small.png" title="Close this notification" alt="close" /></a>
                     <div id="msg_erradduser">
                         Se&ntilde;or radicador, tenga en cuenta que los archivos deben estar nombrados de acuerdo con los parametros establecidos en el #6.2 del instructivo U-AR-LAFT-002 ACT0.
                     </div>
@@ -153,7 +153,7 @@ $sucursales = $general->getSucursales();
                         <td width="8%">Archivo:</td>
                         <td><input type="file" id="load_file" name="load_file[0]">
                             <div style="width:50px; display: inline; margin-left:20px;">
-                                <a href="#" onclick="$.fn.agregarCargaarchivos(event);"><img src="../../resources/images/icons/show.jpg" title="Agregar archivos" alt="Agregar" /></a>
+                                <a href="#" onclick="$.fn.agregarCargaarchivos(event);"><img src="<?=SITE_ROOT?>/resources/images/icons/show.jpg" title="Agregar archivos" alt="Agregar" /></a>
                             </div>
                             <span class="input-notification attention png_bg">Si el cliente tiene mas de un archivo, utilize el boton mas</span>
                         </td>
@@ -164,7 +164,7 @@ $sucursales = $general->getSucursales();
                         <td colspan="2">
                             <input id="buttonAgregarCliente" type="button" class="button" value="Agregar cliente" onclick="$.fn.agregarCliente(event);"/>
                             <div style="display: inline; width: 16px; height: 16px;">
-                                <img id="imgloading" src="../../images/icons/loading.gif" style="display: none;" />
+                                <img id="imgloading" src="<?=SITE_ROOT?>/images/icons/loading.gif" style="display: none;" />
                             </div>
                         </td>
                     </tr>
@@ -221,7 +221,7 @@ $sucursales = $general->getSucursales();
         <div class="tab-content" id="tab4">
             <div class="notification success  png_bg" id="result_notif_busradicofi" style="display:none;"> 
                 <a href="#" class="close">
-                    <img src="../../resources/images/icons/cross_grey_small.png" title="Close this notification" alt="close" />
+                    <img src="<?=SITE_ROOT?>/resources/images/icons/cross_grey_small.png" title="Close this notification" alt="close" />
                 </a>
                 <div id="msg_notieneradicados"></div>
             </div>

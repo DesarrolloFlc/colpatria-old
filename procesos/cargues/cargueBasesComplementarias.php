@@ -90,7 +90,7 @@ if($_SESSION['group'] == "11"){
 							<td colspan="2" style="text-align: right;"><!--style="padding-left: 82%;" -->
 								<div style="display: inline;">&nbsp;</div>
 								<input type="submit" class="button" value="Cargar base >>" id="botoncargueBaseGestorVentas">
-								<div style="display: inline; width: 16px; height: 16px;"><img id="imgloading" src="../../images/icons/loading.gif" style="display: none;" /></div>
+								<div style="display: inline; width: 16px; height: 16px;"><img id="imgloading" src="<?=SITE_ROOT?>/images/icons/loading.gif" style="display: none;" /></div>
 							</td>
 						</tr>
 					</tfoot>
@@ -120,7 +120,7 @@ if($_SESSION['group'] == "11"){
 				</ul>
 			</div>
 			<div class="notification success  png_bg" id="result_notif" style="display:none;">
-				<a href="#" class="close"><img src="../../resources/images/icons/cross_grey_small.png" title="Close this notification" alt="close" /></a>
+				<a href="#" class="close"><img src="<?=SITE_ROOT?>/resources/images/icons/cross_grey_small.png" title="Close this notification" alt="close" /></a>
 				<div id="msg_adduser"></div>
 			</div>
 			<form method="POST" name="cargueBaseDatosDatacredito" id="cargueBaseDatosDatacredito">
@@ -138,7 +138,7 @@ if($_SESSION['group'] == "11"){
 							<td colspan="2" style="text-align: right;"><!--style="padding-left: 82%;" -->
 								<div style="display: inline;">&nbsp;</div>
 								<input type="submit" class="button" value="Cargar base >>" id="botoncargueBaseDatosDatacredito">
-								<div style="display: inline; width: 16px; height: 16px;"><img id="imgloading" src="../../images/icons/loading.gif" style="display: none;" /></div>
+								<div style="display: inline; width: 16px; height: 16px;"><img id="imgloading" src="<?=SITE_ROOT?>/images/icons/loading.gif" style="display: none;" /></div>
 							</td>
 						</tr>
 					</tfoot>
@@ -151,7 +151,7 @@ if($_SESSION['group'] == "11"){
 		<div class="tab-content<?=$active21?>" id="tab4">
 		    <div class="notification information png_bg">
 		        <a href="#" class="close">
-		        	<img src="../../resources/images/icons/cross_grey_small.png" title="Close this notification" alt="close" />
+		        	<img src="<?=SITE_ROOT?>/resources/images/icons/cross_grey_small.png" title="Close this notification" alt="close" />
 		        </a>
 		        <div>
 		        	<h3 style="padding-bottom: 0px; color: #FFFF">Cargue de datos para la actualizacion del regimen del cliente.</h3>
@@ -168,7 +168,7 @@ if($_SESSION['group'] == "11"){
 				</ul>
 			</div>
 			<div class="notification success  png_bg" id="result_notif" style="display:none;">
-				<a href="#" class="close"><img src="../../resources/images/icons/cross_grey_small.png" title="Close this notification" alt="close" /></a>
+				<a href="#" class="close"><img src="<?=SITE_ROOT?>/resources/images/icons/cross_grey_small.png" title="Close this notification" alt="close" /></a>
 				<div id="msg_adduser"></div>
 			</div>
 			<form method="POST" name="cargueBaseActualizacionRegimen" id="cargueBaseActualizacionRegimen">
@@ -186,7 +186,7 @@ if($_SESSION['group'] == "11"){
 							<td colspan="2" style="text-align: right;"><!--style="padding-left: 82%;" -->
 								<div style="display: inline;">&nbsp;</div>
 								<input type="submit" class="button" value="Cargar base >>" id="botoncargueBaseActualizacionRegimen">
-								<div style="display: inline; width: 16px; height: 16px;"><img id="imgloading" src="../../images/icons/loading.gif" style="display: none;" /></div>
+								<div style="display: inline; width: 16px; height: 16px;"><img id="imgloading" src="<?=SITE_ROOT?>/images/icons/loading.gif" style="display: none;" /></div>
 							</td>
 						</tr>
 					</tfoot>

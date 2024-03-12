@@ -3,7 +3,7 @@
 	<tr>
 		<td>
 		<table>
-			<tr>
+			<!-- <tr>
 				<td style="width: 80px">Fecha de radicado: </td>
 				<td>
 					<select id="f_rad_a" name="f_rad_a" onchange="$(this).verificarFecha(event, 'rad', '1');" style="font-size: 12px" title="Año de fecha de radicado">
@@ -31,7 +31,7 @@ for($i=$an;$i<=12;$i++){
 						<option value="">Dia</option>
 					</select>
 				</td>
-			</tr>
+			</tr> -->
 			<tr>
 				<td style="width: 80px">Fecha de diligenciamiento:</td>
 				<td>
@@ -95,7 +95,7 @@ if(isset($sucursales) && !empty($sucursales) && is_array($sucursales)){
 					</select>
 				</td>
 			</tr>
-			<tr>
+			<!-- <tr>
 				<td>Area:</td>
 				<td>
 					<select id="area" name="area" style="font-size: 12px" title="Area">
@@ -111,8 +111,10 @@ if(isset($areas) && !empty($areas) && is_array($areas)){
 ?>
 					</select>
 				</td>
-			</tr>
+			</tr> -->
+			<input type="hidden" name="area" value="<?=(isset($radInfo['id_sucursal'])) ? $radInfo['id_sucursal'] : '2653'?>">
 			<input type="hidden" name="id_official" value="<?=(isset($radInfo['oficial_nombre'])) ? $radInfo['oficial_nombre'] : '0'?>">
+			<input type="hidden" name="fecharadicado" value=<?=(isset($radInfo['fecha_creacion'])) ? $radInfo['fecha_creacion'] : ''?>>
 			<tr>
 				<td>Tipo de solicitud:</td>
 				<td>
@@ -209,6 +211,12 @@ require_once PATH_INTERNAL.DS.$request['action'].'_Beneficiarios_View.php';
 						<option value="0">NO</option>
 						<option value="2">SD</option>
 					</select>
+				</td>
+			</tr>
+			<tr>
+				<td style="width: 100px;display: table-cell;">Canales por los que no se quiere contacto:</td>
+				<td>
+					<input type="text" id="sin_contacto_canal" name="sin_contacto_canal" style="width: 180px; margin-right: 10px" onkeypress="return validar_letra(event)" title="Canales por los que no se quiere contacto">
 				</td>
 			</tr>
 		</table>
@@ -418,6 +426,14 @@ if(isset($dat[2]) && !empty($dat[2]))
 			$('input[name="tipoempresaemp_cual"]').val('').attr('disabled', true);
 		}
 	});
+	$('select[name="sector_actividad"]').change(function(event){
+		(event.preventDefault) ? event.preventDefault() : event.returnValue = false;
+		if($(this).val() == '8'){
+			$('input[name="sector_actividad_cual"]').removeAttr('disabled');
+		}else if($(this).val() != ''){
+			$('input[name="sector_actividad_cual"]').val('').attr('disabled', true);
+		}
+	});
 	$('select[name="monedaextranjera"]').change(function(event){
 		(event.preventDefault) ? event.preventDefault() : event.returnValue = false;
 		if($(this).val() == '-1'){
@@ -462,12 +478,14 @@ if(isset($dat[2]) && !empty($dat[2]))
 			$('table#beneficiarios_nat_table input[name^="be_identificacion"]').removeAttr('disabled');
 			$('table#beneficiarios_nat_table select[name^="be_expuesto_politico"]').removeAttr('disabled');
 			$('table#beneficiarios_nat_table select[name^="be_poliza_seguro"]').removeAttr('disabled');
+			$('table#beneficiarios_nat_table input[name="ben_nat_obligacion_paises"]').removeAttr('disabled');
 		}else if($(this).val() != ''){
 			$('table#beneficiarios_nat_table input[name^="be_nombre_completo"]').val('').attr('disabled', true);
 			$('table#beneficiarios_nat_table select[name^="be_tipodocumento_id"]').val('').change().attr('disabled', true);
 			$('table#beneficiarios_nat_table input[name^="be_identificacion"]').val('').attr('disabled', true);
 			$('table#beneficiarios_nat_table select[name^="be_expuesto_politico"]').val('').change().attr('disabled', true);
 			$('table#beneficiarios_nat_table select[name^="be_poliza_seguro"]').val('').change().attr('disabled', true);
+			$('table#beneficiarios_nat_table input[name="ben_nat_obligacion_paises"]').val('').attr('disabled', true);
 		}
 	});
 	$('select[name="si_junta_directiva"]').change(function(event){
@@ -493,6 +511,7 @@ if(isset($dat[2]) && !empty($dat[2]))
 			$('table#accionistas_nat_table input[name^="porcentaje"]').removeAttr('disabled');
 			$('table#accionistas_nat_table select[name^="publico_reconocimiento"]').removeAttr('disabled');
 			$('table#accionistas_nat_table select[name^="publico_expuesta"]').removeAttr('disabled');
+			$('table#accionistas_nat_table select[name^="beneficiario_final"]').removeAttr('disabled');
 		}else if($(this).val() != ''){
 			$('table#accionistas_nat_table select[name^="tipo_id"]').val('').change().attr('disabled', true);
 			$('table#accionistas_nat_table input[name^="identificacion"]').val('').attr('disabled', true);
@@ -500,6 +519,7 @@ if(isset($dat[2]) && !empty($dat[2]))
 			$('table#accionistas_nat_table input[name^="porcentaje"]').val('').attr('disabled', true);
 			$('table#accionistas_nat_table select[name^="publico_reconocimiento"]').val('').change().attr('disabled', true);
 			$('table#accionistas_nat_table select[name^="publico_expuesta"]').val('').change().attr('disabled', true);
+			$('table#accionistas_nat_table select[name^="beneficiario_final"]').val('').change().attr('disabled', true);
 		}
 	});
 	$('select[name="si_peps_nat"]').change(function(event){

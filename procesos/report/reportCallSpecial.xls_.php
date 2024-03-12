@@ -199,7 +199,13 @@ SELECT IF(cl.persontype = '1', 'NATURAL','JURIDICO'),
 	   da.verificacion_cargo,
 	   da.verificacion_documento,
 	   CASE da.responsable_rut WHEN -1 THEN 'SI' WHEN 0 THEN 'NO' ELSE 'SD' END AS responsable_rut,
-	   da.codigo_rut
+	   da.codigo_rut,
+	   ingresos_mensuales_pesos,/*167 estos son los campos*/
+	   egresos_mensuales_pesos,/* estos son los campos*/
+	   otros_ingresos_pesos,/* estos son los campos*/
+	   ingresos_mensuales_emp_pesos,/* estos son los campos*/
+	   egresos_mensuales_emp_pesos,/* estos son los campos*/
+	   otros_ingresos_emp_pesos/* estos son los campos*/
   FROM `data` AS da
  INNER JOIN form AS fo ON(fo.id = da.id_form)
  INNER JOIN client AS cl ON(cl.id = fo.id_client)
@@ -351,11 +357,14 @@ $cabeza = [
 	'TELEFONO', 
 	'PRODUCTO O SERVICIO COMERCIALIZA',
 	'INGRESOS MENSUALES', 
+	'INGRESOS MENSUALES PESOS', // este ya esta
 	'ACTIVOS', 
 	'PASIVOS', 
 	'EGRESOS MENSUALES', 
+	'EGRESOS MENSUALES PESOS', // este ya esta
 	'PATRIMONIO',
 	'OTROS INGRESOS', 
+	'OTROS INGRESOS PESOS', // este ya esta
 	'CONCEPTO OTROS INGRESOS', 
 	'NIVEL DE ESTUDIOS', 
 	'TIPO DE VIVIENDA', 
@@ -380,11 +389,14 @@ $cabeza = [
 	'TELEFONO SUCURSAL', 
 	'FAX SUCURSAL', 
 	'INGRESOS MENSUALES', 
+	'INGRESOS MENSUALES PESOS', //EMPRESA aquiiiiiiii
 	'ACTIVOS', 
 	'PASIVOS', 
 	'EGRESOS MENSUALES', 
+	'EGRESOS MENSUALES PESOS',//EMPRESA aquiiiii
 	'PATRIMONIO', 
 	'OTROS INGRESOS', 
+	'OTROS INGRESOS PESOS',//EMPRESA aquiiiii
 	'CONCEPTO OTROS INGRESOS', 
 	'TIPO ID #1', 
 	'NUMERO ID #1', 
@@ -486,7 +498,7 @@ $cabeza = [
 	'FIRMA', 
 	'DIGITADOR', 
 	'ESTADO', 
-	'ID DATA'
+	'ID DATA' //217
 ];
 $conn = new Conexion();
 if (!$conn->consultar($SQL)) exit;
@@ -635,22 +647,25 @@ while ($dat = $conn->sacarRegistro('num')) {
 		$dat[68], 
 		$dat[69], 
 		$dat[70], 
-		$dat[71], 
-		$dat[72], 
+		$dat[71],
+		$dat[167], // este, que ya esta puesto
+		$dat[72],
 		$dat[73], 
 		$dat[74], 
+		$dat[168],// este, que ya esta puesto
 		$dat[75], 
-		$dat[76], 
+		$dat[76],
+		$dat[169], // este, que ya esta puesto
 		$dat[77], 
 		$dat[78], 
 		$dat[79], 
 		$dat[80], 
 		$dat[81], 
-		$dat[82], 
+		$dat[82],
 		$dat[83], 
-		$dat[84], 
+		$dat[84],
 		$dat[85], 
-		$dat[86], 
+		$dat[86],
 		$dat[87], 
 		$dat[88], 
 		$dat[89], 
@@ -664,12 +679,15 @@ while ($dat = $conn->sacarRegistro('num')) {
 		$dat[97], 
 		$dat[98], 
 		$dat[99], 
-		$dat[100], 
+		$dat[100],
+		$dat[170], 
 		$dat[101], 
 		$dat[102], 
 		$dat[103], 
+		$dat[171], 
 		$dat[104], 
 		$dat[105], 
+		$dat[172], 
 		$dat[106], 
 		((isset($acci[0][1]) && $acci[0][1] != '') ? $acci[0][1] : 'SD'), 
 		((isset($acci[0][2]) && $acci[0][2] != '') ? $acci[0][2] : $socio1), 

@@ -4,6 +4,7 @@ $sucursales = General::getSucursalesLista();
 $clasesVinculacion = General::getclaseVinculacion();
 $tipoDocumentos = General::getTipoDocumentoID();
 $tipoempresas = General::getTipoEmpresaID();
+$tipoActividad = Formulario::getTiposActividad();
 $actEconomicas = General::getActividadesEconomicas();
 $ciius = Formulario::getCiiuId();
 $profesiones = General::getProfesionesID();
@@ -30,7 +31,7 @@ $funcionarios = General::getOfficials();
     <tr>
         <td>
         <table>
-            <tr>
+            <!-- <tr>
                 <td style="width: 80px">Fecha de radicado:</td>
                 <td>
                     <input type="hidden" id="fecharadicado" name="fecharadicado" value="<?=$dataform['fecharadicado']?>">
@@ -85,7 +86,7 @@ for ($d = 1; $d <= 31; $d++) {
 ?>
                     </select>
                 </td>
-            </tr>
+            </tr> -->
             <tr>
                 <td style="width: 80px">Fecha de diligenciamiento:</td>
                 <td>
@@ -179,7 +180,7 @@ foreach ($sucursales as $sucursal) {
                     </select>
                 </td>
             </tr>
-            <tr>
+            <!-- <tr>
                 <td>Area:</td>
                 <td>
                     <select id="area" name="area" style="font-size: 12px" data-oldvalue="<?=$dataform['area']?>">
@@ -196,7 +197,7 @@ foreach ($areas as $area) {
 ?>
                     </select>
                 </td>
-            </tr>
+            </tr> -->
             <tr>
                 <td>Tipo de solicitud:</td>
                 <td>
@@ -294,6 +295,12 @@ require_once 'editForm_20_Beneficiarios.php';
                         <option value="0"<?=(($dataform['auto_sms'] == "0") ? "selected" : "")?>>NO</option>
                         <option value="2"<?=(($dataform['auto_sms'] == "2") ? "selected" : "")?>>SD</option>
                     </select>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 100px;display: table-cell;">Canales en los que no autoriza contacto</td>
+                <td>
+                    <input type="text" id="sin_contacto_canal" name="sin_contacto_canal" style="width: 190px; margin-right: 10px"  style="width: 360px; margin-right: 10px" onkeypress="return validar_letra(event)" title="Canales en los que no autoriza contacto" value="<?=$dataform['sin_contacto_canal']?>"data-oldvalue="<?=$dataform['sin_contacto_canal']?>">
                 </td>
             </tr>
         </table>
@@ -517,22 +524,31 @@ $(document).ready(function(){
             $('input[name="cual_clasecliente"]').attr('readonly', true);
         }
     });
-    $('select[name="tipoempresaemp"]').change(function(event){
+    // $('select[name="tipoempresaemp"]').change(function(event){
+    //     (event.preventDefault) ? event.preventDefault() : event.returnValue = false;
+    //     if($(this).val() == '5'){
+    //         $('input[name="tipoempresaemp_cual"]').removeAttr('readonly');
+    //     }else if($(this).val() != ''){
+    //         $('input[name="tipoempresaemp_cual"]').val('');
+    //         $('input[name="tipoempresaemp_cual"]').attr('readonly', true);
+    //     }
+    // });
+    $('select[name="sector_actividad"]').change(function(event){
         (event.preventDefault) ? event.preventDefault() : event.returnValue = false;
-        if($(this).val() == '5'){
-            $('input[name="tipoempresaemp_cual"]').removeAttr('readonly');
+        if($(this).val() == '8'){
+            $('input[name="sector_actividad_cual"]').removeAttr('disabled');
         }else if($(this).val() != ''){
-            $('input[name="tipoempresaemp_cual"]').val('');
-            $('input[name="tipoempresaemp_cual"]').attr('readonly', true);
+            $('input[name="sector_actividad_cual"]').val('');
+            $('input[name="sector_actividad_cual"]').attr('disabled', true);
         }
     });
     $('select[name="tributarias_otro_pais"]').change(function(event){
         (event.preventDefault) ? event.preventDefault() : event.returnValue = false;
         if($(this).val() == '-1'){
-            $('input[name="tributarias_paises"]').removeAttr('readonly');
+            $('input[name="tributarias_paises"]').removeAttr('disabled');
         }else if($(this).val() != ''){
             $('input[name="tributarias_paises"]').val('');
-            $('input[name="tributarias_paises"]').attr('readonly', true);
+            $('input[name="tributarias_paises"]').attr('disabled', true);
         }
     });
     $('select[name="monedaextranjera"]').change(function(event){
@@ -577,14 +593,14 @@ $(document).ready(function(){
                 console.log($(el).attr('name') + '->' + $(el).val() + ':::' + $(el).attr('data-oldvalue'));
             }
         });
-        if($(this).find('select[name="f_rad_a"]').val() != '' && $(this).find('select[name="f_rad_m"]').val() != '' && $(this).find('select[name="f_rad_d"]').val() != ''){
-            var fecharadicado = $(this).find('select[name="f_rad_a"]').val() + '-' + $(this).find('select[name="f_rad_m"]').val() + '-' + $(this).find('select[name="f_rad_d"]').val();
-            if($(this).find('input[name="fecharadicado"]').val() != fecharadicado)
-                datos['fecharadicado'] = fecharadicado;
-        }else{
-            alert('La fecha de radicado no puede estar vacia o incompleta.');
-            return false;
-        }
+        // if($(this).find('select[name="f_rad_a"]').val() != '' && $(this).find('select[name="f_rad_m"]').val() != '' && $(this).find('select[name="f_rad_d"]').val() != ''){
+        //     var fecharadicado = $(this).find('select[name="f_rad_a"]').val() + '-' + $(this).find('select[name="f_rad_m"]').val() + '-' + $(this).find('select[name="f_rad_d"]').val();
+        //     if($(this).find('input[name="fecharadicado"]').val() != fecharadicado)
+        //         datos['fecharadicado'] = fecharadicado;
+        // }else{
+        //     alert('La fecha de radicado no puede estar vacia o incompleta.');
+        //     return false;
+        // }
 
         if($(this).find('select[name="f_dil_a"]').val() != '' && $(this).find('select[name="f_dil_m"]').val() != ''&& $(this).find('select[name="f_dil_d"]').val() != ''){
             var fechasolicitud = $(this).find('select[name="f_dil_a"]').val() + '-' + $(this).find('select[name="f_dil_m"]').val() + '-' + $(this).find('select[name="f_dil_d"]').val();

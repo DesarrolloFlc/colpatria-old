@@ -4,7 +4,7 @@
 		<td>
 		<table>
 			<tr>
-				<td style="width: 80px">Fecha de radicado: </td>
+				<!-- <td style="width: 80px">Fecha de radicado: </td>
 				<td>
 					<select id="f_rad_a" name="f_rad_a" onchange="$(this).verificarFecha(event, 'rad', '1');" style="font-size: 12px" title="Año de fecha de radicado">
 						<option value="">Año</option>
@@ -31,7 +31,7 @@ for($i=$an;$i<=12;$i++){
 						<option value="">Dia</option>
 					</select>
 				</td>
-			</tr>
+			</tr> -->
 			<tr>
 				<td style="width: 80px">Fecha de diligenciamiento:</td>
 				<td>
@@ -61,11 +61,12 @@ for($i=$an;$i<=12;$i++){
 					</select>
 				</td>
 			</tr>
+			<input type="hidden" name="fecharadicado" value=<?=(isset($radInfo['fecha_creacion'])) ? $radInfo['fecha_creacion'] : ''?>>
 			<input type="hidden" name="ciudad" value="99999">
 			<input type="hidden" name="sucursal" value="<?=(isset($radInfo['id_sucursal'])) ? $radInfo['id_sucursal'] : '0'?>">
 			<input type="hidden" name="area" value="<?=(isset($radInfo['id_sucursal'])) ? $radInfo['id_sucursal'] : '2653'?>">
 			<input type="hidden" name="id_official" value="<?=(isset($radInfo['oficial_nombre'])) ? $radInfo['oficial_nombre'] : '0'?>">
-			<tr>
+			<!-- <tr>
 				<td>Tipo de solicitud:</td>
 				<td>
 					<select id="tipo_solicitud" name="tipo_solicitud" title="Tipo de solicitud">
@@ -75,7 +76,7 @@ for($i=$an;$i<=12;$i++){
 						<option value="SD">SD</option>
 					</select>
 				</td>
-			</tr>
+			</tr> -->
 			<tr>
 				<td>Clase vinculacion:</td>
 				<td>
@@ -271,12 +272,12 @@ require_once PATH_INTERNAL.DS.$request['action'].'_Beneficiarios_View.php';
 		</table>
 		</td>
 	</tr>
-	<input type="hidden" id="monedaextranjera" name="monedaextranjera" value="2">
+	<!-- <input type="hidden" id="monedaextranjera" name="monedaextranjera" value="2"> -->
 	<input type="hidden" id="tipotransacciones" name="tipotransacciones" value="8">
 	<input type="hidden" id="tipotransacciones_cual" name="tipotransacciones_cual" value="SD">
 	<input type="hidden" id="otras_operaciones" name="otras_operaciones" value="SD">
 	<input type="hidden" id="productos_exterior" name="productos_exterior" value="2">
-	<input type="hidden" id="cuentas_monedaextranjera" name="cuentas_monedaextranjera" value="2">
+	<!-- <input type="hidden" id="cuentas_monedaextranjera" name="cuentas_monedaextranjera" value="2"> -->
 	<input type="hidden" id="reclamaciones" name="reclamaciones" value="2">
 	<input type="hidden" id="auto_correo" name="auto_correo" value="2">
 	<input type="hidden" id="auto_sms" name="auto_sms" value="2">
@@ -292,6 +293,12 @@ require_once PATH_INTERNAL.DS.$request['action'].'_Beneficiarios_View.php';
 				<td style="width: 100px;display: table-cell;">Observaciones:</td>
 				<td>
 					<textarea cols="40" rows="4" id="observacionesentrevista" name="observacionesentrevista" onkeypress="return validar_letra(event)" title="Observaciones"></textarea>
+				</td>
+			</tr>
+			<tr>
+				<td style="width: 100px;display: table-cell;">Canales en los que no autoriza contacto</td>
+				<td>
+					<input type="text" id="sin_contacto_canal" name="sin_contacto_canal" style="width: 190px; margin-right: 10px"  title="canales sin contacto">
 				</td>
 			</tr>
 			<tr>
@@ -787,17 +794,42 @@ if(isset($dat[2]) && !empty($dat[2]))
 		}*/
 		var nop = false;
 		var ultimo = '';
+		let titulo = '';
+		let tipo = '';
 		$(this).find('input, select, textarea').each(function(index, el) {
-			if($(el).val() == '' && !$(el).attr('disabled') && $(el).attr('type') != 'hidden' && $(el).attr('type') != 'submit'){
-				alert('El campo '+ $(el).attr('title') +' no puede estar vacio. name: ' + $(el).attr('name'));
-				nop = true;
-				ultimo = $(el).attr('name');
+			console.log(el);
+			if ($(el).attr('name').includes('be_tipo')) {
+				tipo = $(el).val() == 1 || $(el).val() == 0 ? 'accionista' : 'beneficiario';
 			}
+			console.log(tipo);
+			if($(el).val() == '' && !$(el).attr('disabled') && $(el).attr('type') != 'hidden' && $(el).attr('type') != 'submit'){
+				titulo = $(el).attr('title')
+				alert('El campo '+ titulo  +' no puede estar vacio. name: ' + $(el).attr('id'));
+				nop = true;
+				ultimo ="#"+ $(el).attr('id');
+				
+				if (titulo && titulo.toLowerCase().indexOf('(accionista') !== -1) {
+					ultimo = " table#accionistas_nat_table "+ultimo;
+					// console.log(ultimo);
+				}
+				if (titulo && titulo.toLowerCase().indexOf('(beneficiario juridico') !== -1) {
+					ultimo = " table#accionistas_jur_table "+ultimo;
+					// console.log(ultimo);
+				}
+			}
+			// if ($('#'+ultimo).closest('#accionistas_nat_table').length > 0 || $('#'+ultimo).closest('#accionistas_jur_table').length > 0) {
+			// 	console.log('aqui esta accionistas nat');
+			// } else if ($('#'+ultimo).closest('#beneficiarios_nat_table').length > 0 || $('#'+ultimo).closest('#beneficiarios_jur_table').length > 0) {
+			// 	console.log('aqui esta beneficiarios nat o jur');
+			// }
+			
 			if(nop)
 				return false;
 		});
 		if(nop){
-			$('form#form_fingering [name="'+ultimo+'"]').focus();
+			console.log('form#form_fingering'+ultimo);
+			// $('form#form_fingering #'+ultimo).focus();
+			$('form#form_fingering').find(ultimo.replace(/([:.\[\]])/g, "\\$1")).focus();
 			return false;
 		}
 		var data = $(this).serialize();

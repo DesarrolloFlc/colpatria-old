@@ -31,7 +31,7 @@ require_once PATH_SITE . DS . "config/globalParameters.php";
     <!-- <script type="text/javascript" src="<?=SITE_ROOT?>/resources/scripts/jquery-1.4.2.min.js"></script> -->
     <script type="text/javascript" src="<?=SITE_ROOT?>/resources/scripts/jquery-1.12.4.min.js"></script>
     <!-- jQuery Configuration -->
-    <script type="text/javascript" src="<?=SITE_ROOT?>/resources/scripts/simpla.jquery.configuration_2.js"></script>
+    <script type="text/javascript" src="<?=SITE_ROOT?>/resources/scripts/simpla.jquery.configuration.js"></script>
     <!-- jQuery WYSIWYG Plugin
     <script type="text/javascript" src="<?=SITE_ROOT?>/resources/scripts/jquery.wysiwyg.js"></script> -->
     <!--<script type="text/javascript" src="<?=SITE_ROOT?>/resources/scripts/jquery.qtip-1.0.0-rc3.min.js"></script>-->
@@ -47,6 +47,7 @@ require_once PATH_SITE . DS . "config/globalParameters.php";
     <!--Libreria adicional de herramientas con jQuery -->
     <!-- Facebox jQuery Plugin -->
     <script type="text/javascript" src="<?=SITE_ROOT?>/resources/scripts/facebox.js"></script>
+    <script type="text/javascript" src="<?=SITE_ROOT?>/resources/scripts/pdfobject/pdfobject/pdfobject.min.js"></script>
     <script type="text/javascript" src="<?=SITE_ROOT?>/lib/js/tools_2.js"></script>
     <script type="text/javascript" src="<?=SITE_ROOT?>/lib/js/cal.js"></script>
 <?php
@@ -309,7 +310,7 @@ if (isset($_SESSION['group']) && $_SESSION['group'] == "1" OR $_SESSION['group']
                             Mis opciones
                         </a>
                         <ul>
-                            <li><a href="#change_password" rel="modal" title="3 Messages">Cambiar contraseña</a></li>
+                            <li><a href="#" onclick="$(this).mostrarCambiarPassword(event);">Cambiar contraseña</a></li>
                             <li><a href="<?=SITE_ROOT?>/lib/general/logout.php">Salir</a></li> <!-- Add class "current" to sub menu items also -->
                         </ul>
                     </li>
@@ -344,7 +345,7 @@ if (isset($_SESSION['group']) && $_SESSION['group'] == "1" OR $_SESSION['group']
                         <fieldset style="display: flex; align-items: center;">
                             <input class="button" type="submit" id="cambiar_pass" value="Cambiar contraseña >>" />
                             <div style="width: 16px; height: 16px; padding-left: 5px;">
-                                <img id="imgloading-cambiar-password" src="../images/icons/loading.gif" style="display: none;" />
+                                <img id="imgloading-cambiar-password" src="<?=SITE_ROOT?>/images/icons/loading.gif" style="display: none;" />
                             </div>
                         </fieldset>
                         <input type="hidden" name="domain" value="user">
@@ -356,4 +357,5 @@ if (isset($_SESSION['group']) && $_SESSION['group'] == "1" OR $_SESSION['group']
                     </div>
                 </div> <!-- End #messages -->
             </div></div> <!-- End #sidebar -->
+            <div id="box-manual-radicacion" style="display:none;"></div>
         <div id="main-content"> <!-- Main Content Section with everything -->

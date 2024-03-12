@@ -1,7 +1,7 @@
 <?php
 session_start();
-if(!isset($_SESSION['group']) || !in_array($_SESSION['group'], ["6", "1", "8"]) || !isset($_SESSION['id']) || !in_array($_SESSION['id'], ["1184", "1305"])) {
-	echo "No tiene permiso para esta área";
+if(!isset($_SESSION['group']) || !in_array($_SESSION['group'], ["6", "1", "8"]) && !isset($_SESSION['id']) && !in_array($_SESSION['id'], ["1184", "1305"])) {
+	echo "No tiene permiso para esta área" . $_SESSION['group'];
 	exit;
 }
 
@@ -18,9 +18,9 @@ $sucursales = $general->getSucursales();
 $tareas = User::obtenerTareas();
 $gestores = User::obtenerUsuariosOperacion();
 ?>
-<link rel="stylesheet" href="/Colpatria/resources/css/tipsy.css" type="text/css" media="screen">
+<link rel="stylesheet" href="<?=SITE_ROOT?>/resources/css/tipsy.css" type="text/css" media="screen">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.min.js" type="text/javascript" charset="utf-8"></script>
-<script src="../../resources/scripts/jquery.tipsy.js" type="text/javascript" charset="utf-8"></script>
+<script src="<?=SITE_ROOT?>/resources/scripts/jquery.tipsy.js" type="text/javascript" charset="utf-8"></script>
 <!-- Page Head -->
 <h2>Reporte interno de productividad</h2>
 <p id="page-intro">Detalle de la productividad de los asesores en DocFinder.</p>
@@ -44,18 +44,18 @@ $gestores = User::obtenerUsuariosOperacion();
     		<form method="POST" name="reporteProductivivdadDiaria" id="reporteProductivivdadDiaria">
     			<p>
 					<label>Fecha:</label>
-					<input class="classpickerfecha text-input" style="width: 100px;" type="text" name="fecha" id="fecha">(YYYY-MM-DD)
+					<input class="classpickerfecha text-input" style="width: 100px;" type="text" name="fecha">(YYYY-MM-DD)
 				</p>
 				<p style="display: table;">
 					<input class="button" type="submit" value="Generar reporte >>" id="input_reporteProductivivdadDiaria" style="display: table-cell;">
-					<img src="../../images/icons/loading.gif" style="display: none; vertical-align: middle; margin-left: 5px;" id="loading_reporteProductivivdadDiaria">
+					<img src="<?=SITE_ROOT?>/images/icons/loading.gif" style="display: none; vertical-align: middle; margin-left: 5px;" id="loading_reporteProductivivdadDiaria">
 				</p>
 				<p>
-					<input type="hidden" name="action" id="action" value="reporteProductivivdadDiaria">
+					<input type="hidden" name="action" value="reporteProductivivdadDiaria">
 				</p>
 			</form>
 			<div style="display: none; width: 39px; height: 15px;" id="img_generarReporteProductivivdadDiaria" title="Descargue copia del reporte aqui!">
-				<a href="#" onclick="$(this).generarReporteProductivivdadDiaria(event);"><img src="../../images/icons/xlsx_icon.png" alt=""></a>
+				<a href="#" onclick="$(this).generarReporteProductivivdadDiaria(event);"><img src="<?=SITE_ROOT?>/images/icons/xlsx_icon.png" alt=""></a>
 				<div class="tipsy tipsy-w" style="top: 300px; left: 320px; visibility: visible; display: block; opacity: 0.8;"><div class="tipsy-arrow"></div><div class="tipsy-inner">Descargue copia del reporte aqui!</div></div>
 			</div>
 			<div class="col-md-12" style="height: 300px;">
@@ -66,9 +66,9 @@ $gestores = User::obtenerUsuariosOperacion();
         	<form method="POST" name="reporteProductividadRango" id="reporteProductividadRango">
 				<p>
 					<strong>Fecha incial:</strong>
-					<input class="classpickerfecha text-input" style="width: 100px; margin-right: 20px;" type="text" name="fechaini" id="fechaini">
+					<input class="classpickerfecha text-input" style="width: 100px; margin-right: 20px;" type="text" name="fechaini">
 					<strong>Fecha final:</strong>
-					<input class="classpickerfecha text-input" style="width: 100px; margin-right: 20px;" type="text" name="fechafin" id="fechafin">
+					<input class="classpickerfecha text-input" style="width: 100px; margin-right: 20px;" type="text" name="fechafin">
 					<strong>Actividad:</strong>
 					<select name="tarea_id" style="margin-right: 20px;">
 						<option value="">Seleccionar...</option>
@@ -95,7 +95,7 @@ foreach($gestores as $gestor){
 				<p>
 					<input class="button" type="submit" value="Generar reporte >>" id="input_reporteProductividadRango">
 				</p>
-				<input type="hidden" name="action" id="action" value="reporteProductividadRango">
+				<input type="hidden" name="action" value="reporteProductividadRango">
 			</form>
 			<!-- <div style="/*display: none; */width: 39px; height: 15px;" id="img_generarReporteProductividadRango" title="Descargue copia del reporte aqui!">
 				<a href="#" onclick="$(this).generarReporteProductividadRango(event);"><img src="../../images/icons/xlsx_icon.png" alt=""></a>
@@ -109,9 +109,9 @@ foreach($gestores as $gestor){
         	<form method="GET" name="reporteProductividadTarea" id="reporteProductividadTarea">
 				<p>
 					<strong>Fecha incial:</strong>
-					<input class="classpickerfecha text-input" style="width: 100px; margin-right: 20px;" type="text" name="fechaini" id="fechaini">
+					<input class="classpickerfecha text-input" style="width: 100px; margin-right: 20px;" type="text" name="fechaini">
 					<strong>Fecha final:</strong>
-					<input class="classpickerfecha text-input" style="width: 100px; margin-right: 20px;" type="text" name="fechafin" id="fechafin">
+					<input class="classpickerfecha text-input" style="width: 100px; margin-right: 20px;" type="text" name="fechafin">
 					<strong>Actividad:</strong>
 					<select name="tarea_id" style="margin-right: 20px;">
 						<option value="">Seleccionar...</option>
@@ -127,9 +127,9 @@ foreach($tareas as $tarea){
 				<p>
 					<input class="button" type="submit" value="Generar reporte >>" id="input_reporteProductividadTarea">
 				</p>
-				<input type="hidden" name="domain" id="domain" value="meta">
-				<input type="hidden" name="action" id="action" value="reporteProductividadTarea">
-				<input type="hidden" name="meth" id="meth" value="js">
+				<input type="hidden" name="domain" value="meta">
+				<input type="hidden" name="action" value="reporteProductividadTarea">
+				<input type="hidden" name="meth" value="js">
 			</form>
         </div>
         <div class="tab-content" id="tab5">
@@ -143,12 +143,12 @@ foreach($tareas as $tarea){
 				<p>
 					<div id="div-botton-gestion-documental">
 						<input class="button" type="submit" value="Generar reporte >>" id="input_reporteGestionDocumental">
-						<img src="../../images/icons/loading.gif" alt="Cargando..." style="display: none;">
+						<img src="<?=SITE_ROOT?>/images/icons/loading.gif" alt="Cargando..." style="display: none;">
 					</div>
 				</p>
-				<input type="hidden" name="domain" id="domain" value="reporte">
-				<input type="hidden" name="action" id="action" value="reporteGestionDocumental">
-				<input type="hidden" name="meth" id="meth" value="js">
+				<input type="hidden" name="domain" value="reporte">
+				<input type="hidden" name="action" value="reporteGestionDocumental">
+				<input type="hidden" name="meth" value="js">
 			</form>
         </div>
     </div>
@@ -422,7 +422,8 @@ $(document).ready(function(){
 				$('div#box-descarga-archivo > p > a').attr('onclick', `$(this).descargarReporteGenerado(event, '${dato.file_name}', 'reporte')`);
 				$('div#box-descarga-archivo > p > a').attr('href', '#' + dato.file_name);
 				$.facebox({
-					div: '#box-descarga-archivo'
+					div: '#box-descarga-archivo',
+					checkClose: true
 				});
 			},
 			complete: function(jqXHR, textStatus){
@@ -469,7 +470,8 @@ $(document).ready(function(){
 				$('div#box-descarga-archivo > p > a').attr('onclick', `$(this).descargarReporteGenerado(event, '${dato.file_name}', 'reporte')`);
 				$('div#box-descarga-archivo > p > a').attr('href', '#' + dato.file_name);
 				$.facebox({
-					div: '#box-descarga-archivo'
+					div: '#box-descarga-archivo',
+					checkClose: true
 				});
 			},
 			complete: function(jqXHR, textStatus){
@@ -518,7 +520,8 @@ $.fn.generarReporteProductivivdadDiaria = function(e){
 			$('div#box-descarga-archivo > p > a').attr('onclick', '$(this).descargarReporteGenerado(event, \''+dato.file_name+'\', \'reporte\')');
 			$('div#box-descarga-archivo > p > a').attr('href', '#'+dato.file_name);
 			$.facebox({
-				div: '#box-descarga-archivo'
+				div: '#box-descarga-archivo',
+				checkClose: true
 			});
 		},
 		complete: function(jqXHR, textStatus){

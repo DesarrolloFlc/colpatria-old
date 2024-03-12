@@ -74,6 +74,10 @@ for($ben = 0; $ben < 4; $ben++){
 <?php
 }
 ?>
+	<tr>
+		<td style="width: 100px;display: table-cell;">Si respondio que el beneficiario tiene obligaciones tributarias, indique en que pais</td>
+		<td><input type="text" id="ben_nat_obligacion_paises" name="ben_nat_obligacion_paises" style="width: 240px" onkeypress="return validar_letra(event)" title="Indique los paises en donde tiene obligacion" disabled="disabled"></td>
+	</tr>
 	</table>
 	</td>
 	</tr>

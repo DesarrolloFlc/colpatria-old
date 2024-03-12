@@ -146,11 +146,11 @@ $users = $user->getUsers();
 
                 </div>
             </div>
-            <form action="../../lib/general/procesos.php" method="POST" id="form_useradd" name="form_useradd">
+            <form method="POST" id="form_useradd" name="form_useradd" onsubmit="$(this).crearUsuario(event);">
                 <fieldset> <!-- Set class to "column-left" or "column-right" on fieldsets to divide the form into columns -->
                     <p>
                         <label>Perfil del usuario:</label>              
-                        <select name="id_group" id="id_group" class="small-input">
+                        <select name="id_group" class="small-input">
                             <option value="">-- Seleccione una opción --</option>
                             <?php
                             while ($grupo = mysqli_fetch_array($user_groups)) {
@@ -161,31 +161,31 @@ $users = $user->getUsers();
                     </p>
                     <p>
                         <label>Usuario:</label>
-                        <input class="text-input small-input" type="text" id="username" name="username"  />
+                        <input class="text-input small-input" type="text" name="username"  />
                     </p>
                     <p>
                         <label>Contrase&ntilde;a:</label>
-                        <input class="text-input small-input" type="password" id="password" name="password" />
+                        <input class="text-input small-input" type="password" name="password" />
                     </p>
                     <p>
                         <label>Nombre:</label>
-                        <input class="text-input medium-input" type="text" id="name" name="name" />
+                        <input class="text-input medium-input" type="text" name="name" />
                     </p>
                     <p>
                         <label>N&uacute;mero de identificaci&oacute;n:</label>
-                        <input class="text-input small-input" type="text" id="identificacion" name="identificacion" />
+                        <input class="text-input small-input" type="text" name="identificacion" />
                     </p>
                     <p>
                         <label>Sucursal:</label>
-                        <input class="text-input small-input" type="text" id="sucursal" name="sucursal" />
+                        <input class="text-input small-input" type="text" name="sucursal" />
                     </p>
                     <p>
                         <label>Correo electr&oacute;nico:</label>
-                        <input class="text-input small-input" type="text" id="correoelectronico" name="correoelectronico" />
+                        <input class="text-input small-input" type="text" name="correoelectronico" />
                     </p>
                     <p>
                         <label>Cargo:</label>
-                        <input class="text-input small-input" type="text" id="cargo" name="cargo" />
+                        <input class="text-input small-input" type="text" name="cargo" />
                     </p>
                     <p>
                         <label>Seleccione si es un oficial Colpatria</label>
@@ -194,19 +194,24 @@ $users = $user->getUsers();
                     <div id="divpadreoficial" style="display:none;"><!-- style="display:none;"-->
                         <p>
                             <label>Nombre de Jefe:</label>
-                            <input class="text-input small-input" type="text" id="nombrejefe" name="nombrejefe" />
+                            <input class="text-input small-input" type="text" name="nombrejefe" />
                         </p>
                         <p>
                             <label>Correo de Jefe:</label>
-                            <input class="text-input small-input" type="text" id="correojefe" name="correojefe" />
+                            <input class="text-input small-input" type="text" name="correojefe" />
                         </p>
                     </div>
-                    <p>
-                        <input type="hidden" name="action" id="action" value="add_user" />
-                        <input class="button" type="submit" value="Crear usuario >>" />
-                    </p>
+                    <div style="display: flex; align-items: center;">
+                        <input class="button" type="submit" id="crear-usuario" value="Crear usuario >>" />
+                        <div style="width: 16px; height: 16px; padding-left: 5px;">
+                            <img id="imgloading-crear-usuario" src="<?=SITE_ROOT?>/images/icons/loading.gif" style="display: none;" />
+                        </div>
+                    </div>
                 </fieldset>
                 <div class="clear"></div><!-- End .clear -->
+                <input type="hidden" name="domain" value="user">
+                <input type="hidden" name="action" value="agregarUsuario">
+                <input type="hidden" name="meth" value="js">
             </form>
         </div> <!-- End #tab2 -->    
     </div>

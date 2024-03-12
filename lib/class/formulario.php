@@ -1203,11 +1203,11 @@ class Formulario
 		$tabla = $tipo === 2 ? "data_" : "data";
 		$SQL = "INSERT INTO $tabla
 				(
-					id_form, fecharadicado, fechasolicitud, sucursal, area, lote, formulario, id_official, clasecliente, primerapellido, segundoapellido, nombres, tipodocumento, documento, fechaexpedicion, lugarexpedicion, fechanacimiento, paisnacimiento, lugarnacimiento, nacionalidad_otra, nacionalidad_cual, sexo, nacionalidad, numerohijos, estadocivil, direccionresidencia, ciudadresidencia, telefonoresidencia, nombreempresa, ciudadempresa, direccionempresa, nomenclatura, telefonolaboral, celular, correoelectronico, cargo, actividadeconomicaempresa, profesion, ocupacion, detalleocupacion, ciiu, ingresosmensuales, otrosingresos, egresosmensuales, conceptosotrosingresos, tipoactividad, detalletipoactividad, nivelestudios, tipovivienda, estrato, totalactivos, totalpasivos, razonsocial, nit, digitochequeo, ciudadoficina, direccionoficinappal, nomenclatura_emp, telefonoficina, faxoficina, celularoficina, ciudadsucursal, direccionsucursal, nomenclatura_emp2, telefonosucursal, faxsucursal, actividadeconomicappal, detalleactividadeconomicappal, tipoempresaemp, activosemp, pasivosemp, ingresosmensualesemp, egresosmensualesemp, otrosingresosemp, concepto_otrosingresosemp, monedaextranjera, tipotransacciones, productos_exterior, cuentas_monedaextranjera, firma, huella, lugarentrevista, fechaentrevista, horaentrevista, tipohoraentrevista, resultadoentrevista, observacionesentrevista, nombreintermediario, socio1, socio2, socio3, ciudad, tipo_solicitud, cual_clasecliente, celularoficinappal, tipoempresaemp_cual, recursos_publicos, poder_publico, reconocimiento_publico, reconocimiento_cual, servidor_publico, expuesta_politica, cargo_politica, cargo_politica_ini, cargo_politica_fin, expuesta_publica, publica_nombre, publica_cargo, repre_internacional, internacional_indique, tributarias_otro_pais, tributarias_paises, ciiu_otro, telefonoficinappal, patrimonio, tipoempresajur, tipoempresajur_otra, correoelectronico_otro, origen_fondos, procedencia_fondos, tipotransacciones_cual, otras_operaciones, reclamaciones, clave_inter, firma_entrevista, verificacion_ciudad, verificacion_fecha, verificacion_hora, verificacion_nombre, verificacion_observacion, verificacion_firma, auto_correo, auto_sms, producto_seguro, pep_expuesto, expuesta_extrangero, expuesta_internacional, conyuge_expuesto, asociado_expuesto, pep_familiar, pep_familia_nombre, pep_familia_cargo, accionista_beneficios, cotiza_rnve, beneficiarios_diferentes, beneficiarios_naturales, beneficiarios_jur, verificacion_cargo, verificacion_documento, responsable_rut, codigo_rut, tipo_norma_id, regimen_id
+					id_form, fecharadicado, fechasolicitud, sucursal, area, lote, formulario, id_official, clasecliente, numero_tramite, primerapellido, segundoapellido, nombres, tipodocumento, documento, fechaexpedicion, lugarexpedicion, fechanacimiento, paisnacimiento, lugarnacimiento, nacionalidad_otra, nacionalidad_cual, sexo, nacionalidad, numerohijos, estadocivil, direccionresidencia, ciudadresidencia, telefonoresidencia, nombreempresa, ciudadempresa, direccionempresa, nomenclatura, telefonolaboral, celular, correoelectronico, cargo, actividadeconomicaempresa, profesion, ocupacion, detalleocupacion, ciiu, ingresosmensuales, otrosingresos, egresosmensuales, ingresos_mensuales_pesos, otros_ingresos_pesos, egresos_mensuales_pesos, conceptosotrosingresos, tipoactividad, detalletipoactividad, sector_actividad, sector_actividad_cual, nivelestudios, tipovivienda, estrato, totalactivos, totalpasivos, razonsocial, nit, digitochequeo, ciudadoficina, direccionoficinappal, nomenclatura_emp, telefonoficina, faxoficina, celularoficina, ciudadsucursal, direccionsucursal, nomenclatura_emp2, telefonosucursal, faxsucursal, actividadeconomicappal, detalleactividadeconomicappal, tipoempresaemp, activosemp, pasivosemp, ingresosmensualesemp, egresosmensualesemp, otrosingresosemp, ingresos_mensuales_emp_pesos, egresos_mensuales_emp_pesos, otros_ingresos_emp_pesos, concepto_otrosingresosemp, monedaextranjera, tipotransacciones, productos_exterior, cuentas_monedaextranjera, firma, huella, lugarentrevista, fechaentrevista, horaentrevista, tipohoraentrevista, resultadoentrevista, observacionesentrevista, nombreintermediario, socio1, socio2, socio3, ciudad, tipo_solicitud, cual_clasecliente, celularoficinappal, tipoempresaemp_cual, recursos_publicos, poder_publico, reconocimiento_publico, reconocimiento_cual, servidor_publico, expuesta_politica, cargo_politica, cargo_politica_ini, cargo_politica_fin, expuesta_publica, publica_nombre, publica_cargo, repre_internacional, internacional_indique, tributarias_otro_pais, tributarias_paises, ciiu_otro, telefonoficinappal, patrimonio, tipoempresajur, tipoempresajur_otra, correoelectronico_otro, origen_fondos, procedencia_fondos, tipotransacciones_cual, otras_operaciones, reclamaciones, clave_inter, firma_entrevista, verificacion_ciudad, verificacion_fecha, verificacion_hora, verificacion_nombre, verificacion_observacion, verificacion_firma, auto_correo, auto_sms, sin_contacto_canal, producto_seguro, pep_expuesto, expuesta_extrangero, expuesta_internacional, conyuge_expuesto, asociado_expuesto, pep_familiar, pep_familia_nombre, pep_familia_cargo, accionista_beneficios, cotiza_rnve, beneficiarios_diferentes, beneficiarios_naturales, ben_nat_obligacion_paises, beneficiarios_jur, verificacion_cargo, verificacion_documento, responsable_rut, codigo_rut, tipo_norma_id, regimen_id
 				)
 				VALUES
 				(
-					:id_form, :fecharadicado, :fechasolicitud, :sucursal, :area, :lote, :formulario, :id_official, :clasecliente, :primerapellido, :segundoapellido, :nombres, :tipodocumento, :documento, :fechaexpedicion, :lugarexpedicion, :fechanacimiento, :paisnacimiento, :lugarnacimiento, :nacionalidad_otra, :nacionalidad_cual, :sexo, :nacionalidad, :numerohijos, :estadocivil, :direccionresidencia, :ciudadresidencia, :telefonoresidencia, :nombreempresa, :ciudadempresa, :direccionempresa, :nomenclatura, :telefonolaboral, :celular, :correoelectronico, :cargo, :actividadeconomicaempresa, :profesion, :ocupacion, :detalleocupacion, :ciiu, :ingresosmensuales, :otrosingresos, :egresosmensuales, :conceptosotrosingresos, :tipoactividad, :detalletipoactividad, :nivelestudios, :tipovivienda, :estrato, :totalactivos, :totalpasivos, :razonsocial, :nit, :digitochequeo, :ciudadoficina, :direccionoficinappal, :nomenclatura_emp, :telefonoficina, :faxoficina, :celularoficina, :ciudadsucursal, :direccionsucursal, :nomenclatura_emp2, :telefonosucursal, :faxsucursal, :actividadeconomicappal, :detalleactividadeconomicappal, :tipoempresaemp, :activosemp, :pasivosemp, :ingresosmensualesemp, :egresosmensualesemp, :otrosingresosemp, :concepto_otrosingresosemp,  :monedaextranjera, :tipotransacciones, :productos_exterior, :cuentas_monedaextranjera, :firma, :huella, :lugarentrevista, :fechaentrevista, :horaentrevista, :tipohoraentrevista, :resultadoentrevista, :observacionesentrevista, :nombreintermediario, :socio1, :socio2, :socio3, :ciudad, :tipo_solicitud, :cual_clasecliente, :celularoficinappal, :tipoempresaemp_cual, :recursos_publicos, :poder_publico, :reconocimiento_publico, :reconocimiento_cual, :servidor_publico, :expuesta_politica, :cargo_politica, :cargo_politica_ini, :cargo_politica_fin, :expuesta_publica, :publica_nombre, :publica_cargo, :repre_internacional, :internacional_indique, :tributarias_otro_pais, :tributarias_paises, :ciiu_otro, :telefonoficinappal, :patrimonio, :tipoempresajur, :tipoempresajur_otra, :correoelectronico_otro, :origen_fondos, :procedencia_fondos, :tipotransacciones_cual, :otras_operaciones, :reclamaciones, :clave_inter, :firma_entrevista, :verificacion_ciudad, :verificacion_fecha, :verificacion_hora, :verificacion_nombre, :verificacion_observacion, :verificacion_firma, :auto_correo, :auto_sms, :producto_seguro, :pep_expuesto, :expuesta_extrangero, :expuesta_internacional, :conyuge_expuesto, :asociado_expuesto, :pep_familiar, :pep_familia_nombre, :pep_familia_cargo, :accionista_beneficios, :cotiza_rnve, :beneficiarios_diferentes, :beneficiarios_naturales, :beneficiarios_jur, :verificacion_cargo, :verificacion_documento, :responsable_rut, :codigo_rut, :tipo_norma_id, :regimen_id
+					:id_form, :fecharadicado, :fechasolicitud, :sucursal, :area, :lote, :formulario, :id_official, :clasecliente, :numero_tramite, :primerapellido, :segundoapellido, :nombres, :tipodocumento, :documento, :fechaexpedicion, :lugarexpedicion, :fechanacimiento, :paisnacimiento, :lugarnacimiento, :nacionalidad_otra, :nacionalidad_cual, :sexo, :nacionalidad, :numerohijos, :estadocivil, :direccionresidencia, :ciudadresidencia, :telefonoresidencia, :nombreempresa, :ciudadempresa, :direccionempresa, :nomenclatura, :telefonolaboral, :celular, :correoelectronico, :cargo, :actividadeconomicaempresa, :profesion, :ocupacion, :detalleocupacion, :ciiu, :ingresosmensuales, :otrosingresos, :egresosmensuales, :ingresos_mensuales_pesos, :otros_ingresos_pesos, :egresos_mensuales_pesos, :conceptosotrosingresos, :tipoactividad, :detalletipoactividad, :sector_actividad, :sector_actividad_cual, :nivelestudios, :tipovivienda, :estrato, :totalactivos, :totalpasivos, :razonsocial, :nit, :digitochequeo, :ciudadoficina, :direccionoficinappal, :nomenclatura_emp, :telefonoficina, :faxoficina, :celularoficina, :ciudadsucursal, :direccionsucursal, :nomenclatura_emp2, :telefonosucursal, :faxsucursal, :actividadeconomicappal, :detalleactividadeconomicappal, :tipoempresaemp, :activosemp, :pasivosemp, :ingresosmensualesemp, :egresosmensualesemp, :otrosingresosemp, :ingresos_mensuales_emp_pesos, :egresos_mensuales_emp_pesos, :otros_ingresos_emp_pesos, :concepto_otrosingresosemp,  :monedaextranjera, :tipotransacciones, :productos_exterior, :cuentas_monedaextranjera, :firma, :huella, :lugarentrevista, :fechaentrevista, :horaentrevista, :tipohoraentrevista, :resultadoentrevista, :observacionesentrevista, :nombreintermediario, :socio1, :socio2, :socio3, :ciudad, :tipo_solicitud, :cual_clasecliente, :celularoficinappal, :tipoempresaemp_cual, :recursos_publicos, :poder_publico, :reconocimiento_publico, :reconocimiento_cual, :servidor_publico, :expuesta_politica, :cargo_politica, :cargo_politica_ini, :cargo_politica_fin, :expuesta_publica, :publica_nombre, :publica_cargo, :repre_internacional, :internacional_indique, :tributarias_otro_pais, :tributarias_paises, :ciiu_otro, :telefonoficinappal, :patrimonio, :tipoempresajur, :tipoempresajur_otra, :correoelectronico_otro, :origen_fondos, :procedencia_fondos, :tipotransacciones_cual, :otras_operaciones, :reclamaciones, :clave_inter, :firma_entrevista, :verificacion_ciudad, :verificacion_fecha, :verificacion_hora, :verificacion_nombre, :verificacion_observacion, :verificacion_firma, :auto_correo, :auto_sms, :sin_contacto_canal, :producto_seguro, :pep_expuesto, :expuesta_extrangero, :expuesta_internacional, :conyuge_expuesto, :asociado_expuesto, :pep_familiar, :pep_familia_nombre, :pep_familia_cargo, :accionista_beneficios, :cotiza_rnve, :beneficiarios_diferentes, :beneficiarios_naturales, :ben_nat_obligacion_paises, :beneficiarios_jur, :verificacion_cargo, :verificacion_documento, :responsable_rut, :codigo_rut, :tipo_norma_id, :regimen_id
 				)";
 		$sdCiudad = (in_array(intval($da['formulario']), [15, 19, 20])) ? '99999' : '2000';
 		$data = [
@@ -1220,6 +1220,7 @@ class Formulario
 			':formulario'=> $da['formulario'], 
 			':id_official'=> $da['id_official'], 
 			':clasecliente'=> $da['clasecliente'], 
+			':numero_tramite'=> (isset($da['numero_tramite']) && !empty($da['numero_tramite'])) ? $da['numero_tramite'] : 'NULL', /*formulario salud*/
 			':primerapellido'=> $da['primerapellido'], 
 			':segundoapellido'=> $da['segundoapellido'], 
 			':nombres'=> $da['nombres'], 
@@ -1255,9 +1256,14 @@ class Formulario
 			':ingresosmensuales'=> (isset($da['ingresosmensuales']) && !empty($da['ingresosmensuales'])) ? $da['ingresosmensuales'] : '13', 
 			':otrosingresos'=> (isset($da['otrosingresos']) && !empty($da['otrosingresos'])) ? $da['otrosingresos'] : '13', 
 			':egresosmensuales'=> (isset($da['egresosmensuales']) && !empty($da['egresosmensuales'])) ? $da['egresosmensuales'] : '13', 
+			':ingresos_mensuales_pesos'=> (isset($da['ingresos_mensuales_pesos']) && !empty($da['ingresos_mensuales_pesos'])) ? $da['ingresos_mensuales_pesos'] : '0', 
+			':otros_ingresos_pesos'=> (isset($da['otros_ingresos_pesos']) && !empty($da['otros_ingresos_pesos'])) ? $da['otros_ingresos_pesos'] : '0', 
+			':egresos_mensuales_pesos'=> (isset($da['egresos_mensuales_pesos']) && !empty($da['egresos_mensuales_pesos'])) ? $da['egresos_mensuales_pesos'] : '0',
 			':conceptosotrosingresos'=> (isset($da['conceptosotrosingresos']) && !empty($da['conceptosotrosingresos'])) ? $da['conceptosotrosingresos'] : 'SD', 
 			':tipoactividad'=> (isset($da['tipoactividad']) && !empty($da['tipoactividad'])) ? $da['tipoactividad'] : '900', 
 			':detalletipoactividad'=> (isset($da['detalletipoactividad']) && !empty($da['detalletipoactividad'])) ? $da['detalletipoactividad'] : 'SD', 
+			':sector_actividad'=> (isset($da['sector_actividad']) && !empty($da['sector_actividad'])) ? $da['sector_actividad'] : '9', 
+			':sector_actividad_cual'=> (isset($da['sector_actividad_cual']) && !empty($da['sector_actividad_cual'])) ? $da['sector_actividad_cual'] : 'NULL', 
 			':nivelestudios'=> (isset($da['nivelestudios']) && !empty($da['nivelestudios'])) ? $da['nivelestudios'] : '6', 
 			':tipovivienda'=> (isset($da['tipovivienda']) && !empty($da['tipovivienda'])) ? $da['tipovivienda'] : '5', 
 			':estrato'=> (isset($da['estrato']) && !empty($da['estrato'])) ? $da['estrato'] : 'SD', 
@@ -1282,9 +1288,12 @@ class Formulario
 			':tipoempresaemp'=> (isset($da['tipoempresaemp']) && !empty($da['tipoempresaemp'])) ? $da['tipoempresaemp'] : '4', 
 			':activosemp'=> (isset($da['activosemp']) && !empty($da['activosemp'])) ? $da['activosemp'] : '*', 
 			':pasivosemp'=> (isset($da['pasivosemp']) && !empty($da['pasivosemp'])) ? $da['pasivosemp'] : '*', 
-			':ingresosmensualesemp'=> (isset($da['ingresosmensualesemp']) && !empty($da['ingresosmensualesemp'])) ? $da['ingresosmensualesemp'] : '7', 
-			':egresosmensualesemp'=> (isset($da['egresosmensualesemp']) && !empty($da['egresosmensualesemp'])) ? $da['egresosmensualesemp'] : '7', 
+			':ingresosmensualesemp'=> (isset($da['ingresosmensualesemp']) && !empty($da['ingresosmensualesemp'])) ? $da['ingresosmensualesemp'] : '13', 
+			':egresosmensualesemp'=> (isset($da['egresosmensualesemp']) && !empty($da['egresosmensualesemp'])) ? $da['egresosmensualesemp'] : '13', 
 			':otrosingresosemp'=> (isset($da['otrosingresosemp']) && !empty($da['otrosingresosemp'])) ? $da['otrosingresosemp'] : '13', 
+			':ingresos_mensuales_emp_pesos'=> (isset($da['ingresos_mensuales_emp_pesos']) && !empty($da['ingresos_mensuales_emp_pesos'])) ? $da['ingresos_mensuales_emp_pesos'] : '0', 
+			':egresos_mensuales_emp_pesos'=> (isset($da['egresos_mensuales_emp_pesos']) && !empty($da['egresos_mensuales_emp_pesos'])) ? $da['egresos_mensuales_emp_pesos'] : '0', 
+			':otros_ingresos_emp_pesos'=> (isset($da['otros_ingresos_emp_pesos']) && !empty($da['otros_ingresos_emp_pesos'])) ? $da['otros_ingresos_emp_pesos'] : '0',
 			':concepto_otrosingresosemp'=> (isset($da['concepto_otrosingresosemp']) && !empty($da['concepto_otrosingresosemp'])) ? $da['concepto_otrosingresosemp'] : 'SD', 
 			':monedaextranjera'=> $da['monedaextranjera'], 
 			':tipotransacciones'=> $da['tipotransacciones'], 
@@ -1344,6 +1353,7 @@ class Formulario
 			':verificacion_firma'=> (isset($da['verificacion_firma']) && $da['verificacion_firma'] != '') ? $da['verificacion_firma'] : '2',
 			':auto_correo'=> (isset($da['auto_correo']) && $da['auto_correo'] != '') ? $da['auto_correo'] : '2', 
 			':auto_sms'=> (isset($da['auto_sms']) && $da['auto_sms'] != '') ? $da['auto_sms'] : '2',
+			':sin_contacto_canal'=> (isset($da['sin_contacto_canal']) && $da['sin_contacto_canal'] != '') ? $da['sin_contacto_canal'] : 'SD',
 			':producto_seguro'=> (isset($da['producto_seguro']) && !empty($da['producto_seguro'])) ? $da['producto_seguro'] : 'SD', 
 			':pep_expuesto'=> (isset($da['pep_expuesto']) && !empty($da['pep_expuesto'])) ? $da['pep_expuesto'] : '2', 
 			':expuesta_extrangero'=> (isset($da['expuesta_extrangero']) && $da['expuesta_extrangero'] != '') ? $da['expuesta_extrangero'] : '2', 
@@ -1356,7 +1366,8 @@ class Formulario
 			':accionista_beneficios'=> (isset($da['accionista_beneficios']) && $da['accionista_beneficios'] != '') ? $da['accionista_beneficios'] : '2', 
 			':cotiza_rnve'=> (isset($da['cotiza_rnve']) && $da['cotiza_rnve'] != '') ? $da['cotiza_rnve'] : '2', 
 			':beneficiarios_diferentes'=> (isset($da['beneficiarios_diferentes']) && $da['beneficiarios_diferentes'] != '') ? $da['beneficiarios_diferentes'] : '2', 
-			':beneficiarios_naturales'=> (isset($da['beneficiarios_naturales']) && $da['beneficiarios_naturales'] != '') ? $da['beneficiarios_naturales'] : '2', 
+			':beneficiarios_naturales'=> (isset($da['beneficiarios_naturales']) && $da['beneficiarios_naturales'] != '') ? $da['beneficiarios_naturales'] : '2',
+			':ben_nat_obligacion_paises'=> (isset($da['ben_nat_obligacion_paises']) && $da['ben_nat_obligacion_paises'] != '') ? $da['ben_nat_obligacion_paises'] : 'NULL',
 			':beneficiarios_jur'=> (isset($da['beneficiarios_jur']) && $da['beneficiarios_jur'] != '') ? $da['beneficiarios_jur'] : '2',
 			':verificacion_cargo'=> (isset($da['verificacion_cargo']) && !empty($da['verificacion_cargo'])) ? $da['verificacion_cargo'] : 'SD', 
 			':verificacion_documento'=> (isset($da['verificacion_documento']) && $da['verificacion_documento'] != '') ? $da['verificacion_documento'] : '0',
@@ -1626,6 +1637,48 @@ class Formulario
 			return array('error'=> 'Ocurrio un error al momento de insertar la data de renovacion, contacte con el administrador.');
 		}
 	}
+	public static function insertarFormSolicitudCredito($datos){
+		$conn = new Conexion();
+		$SQL = "INSERT INTO data_solicitud_credito
+				(
+					cliente_id, tipo_documento, documento, nombre_contratante, contacto_fecha, contacto_medio, numero_tramite, 
+					tiene_llamada, tiene_correo, tiene_sms, tiene_correo_fisico, tiene_mensajeria_app, tiene_debito_automatico, 
+					correo_electronico, direccion, telefono_fijo, celular, nacimiento_fecha, numero_credito
+
+				) 
+				VALUES 
+				(
+					:cliente_id, :tipo_documento, :documento, :nombre_contratante, :contacto_fecha, :contacto_medio, :numero_tramite,
+					:tiene_llamada, :tiene_correo, :tiene_sms, :tiene_correo_fisico, :tiene_mensajeria_app, :tiene_debito_automatico,
+					:correo_electronico, :direccion, :telefono_fijo, :celular, :nacimiento_fecha, :numero_credito
+				)";
+		$data = [
+			'cliente_id'=> (isset($datos['cliente_id']) && !empty($datos['cliente_id'])) ?$datos['cliente_id'] : 'NULL',
+			'tipo_documento'=> (isset($datos['tipo_documento']) && !empty($datos['tipo_documento'])) ?$datos['tipo_documento'] : 'NULL',
+			'documento'=> (isset($datos['documento']) && !empty($datos['documento'])) ?$datos['documento'] : 'NULL',
+			'nombre_contratante'=> (isset($datos['nombre_contratante']) && !empty($datos['nombre_contratante'])) ? strtoupper($datos['nombre_contratante']) : 'NULL',
+			'contacto_fecha'=> (isset($datos['contacto_fecha']) && !empty($datos['contacto_fecha'])) ?$datos['contacto_fecha'] : 'NULL',
+			'contacto_medio'=> (isset($datos['contacto_medio']) && !empty($datos['contacto_medio'])) ?$datos['contacto_medio'] : 'NULL',
+			'numero_tramite'=> (isset($datos['numero_tramite']) && !empty($datos['numero_tramite'])) ?$datos['numero_tramite'] : 'NULL',
+			'tiene_llamada'=> (isset($datos['tiene_llamada']) && !empty($datos['tiene_llamada'])) ?$datos['tiene_llamada'] : 'NULL',
+			'tiene_correo'=> (isset($datos['tiene_correo']) && !empty($datos['tiene_correo'])) ?$datos['tiene_correo'] : 'NULL',
+			'tiene_sms'=> (isset($datos['tiene_sms']) && !empty($datos['tiene_sms'])) ?$datos['tiene_sms'] : 'NULL',
+			'tiene_correo_fisico'=> (isset($datos['tiene_correo_fisico']) && !empty($datos['tiene_correo_fisico'])) ?$datos['tiene_correo_fisico'] : 'NULL',
+			'tiene_mensajeria_app'=> (isset($datos['tiene_mensajeria_app']) && !empty($datos['tiene_mensajeria_app'])) ?$datos['tiene_mensajeria_app'] : 'NULL',
+			'tiene_debito_automatico'=> (isset($datos['tiene_debito_automatico']) && !empty($datos['tiene_debito_automatico'])) ?$datos['tiene_debito_automatico'] : 'NULL',
+			'correo_electronico'=> (isset($datos['correo_electronico']) && !empty($datos['correo_electronico'])) ?$datos['correo_electronico'] : 'NULL',
+			'direccion'=> (isset($datos['direccion']) && !empty($datos['direccion'])) ?$datos['direccion'] : 'NULL',
+			'telefono_fijo'=> (isset($datos['telefono_fijo']) && !empty($datos['telefono_fijo'])) ?$datos['telefono_fijo'] : 'NULL',
+			'celular'=> (isset($datos['celular']) && !empty($datos['celular'])) ?$datos['celular'] : 'NULL',
+			'nacimiento_fecha'=> (isset($datos['nacimiento_fecha']) && !empty($datos['nacimiento_fecha'])) ?$datos['nacimiento_fecha'] : 'NULL',
+			'numero_credito'=> (isset($datos['numero_credito']) && !empty($datos['numero_credito'])) ?$datos['numero_credito'] : 'NULL',
+		];
+		if (!$conn->ejecutar($SQL, $data)) {
+			$conn->desconectar();
+			return ['error'=> 'Ocurrio un error al momento de insertar la data de renovacion, contacte con el administrador.'];
+		}
+		return ['exito'=> 'La insercion de la data de renovacion fue satisfactoria.'];
+	}
 	public static function actualizarData($dat, $form_id){
 		$conn = new Conexion();
 		$data = array(
@@ -1795,17 +1848,17 @@ class Formulario
 			return false;
 		}
 	}
-	public static function insertAccionistas($data_id, $tipo_id, $identificacion, $nombre_accionista, $porcentaje, $publico_recursos, $publico_reconocimiento, $publico_expuesta, $declaracion_tributaria){
+	public static function insertAccionistas($data_id, $tipo_id, $identificacion, $nombre_accionista, $porcentaje, $publico_recursos, $publico_reconocimiento, $publico_expuesta, $declaracion_tributaria, $beneficiario_final="NULL"){
 		$conn = new Conexion();
 		$SQL = "INSERT INTO data_socios 
 				(
 					data_id, tipo_id, identificacion, nombre_accionista, porcentaje, 
-					publico_recursos, publico_reconocimiento, publico_expuesta, declaracion_tributaria
+					publico_recursos, publico_reconocimiento, publico_expuesta, declaracion_tributaria, beneficiario_final
 				) 
 				VALUES 
 				(
 					:data_id, :tipo_id, :identificacion, :nombre_accionista, :porcentaje, 
-					:publico_recursos, :publico_reconocimiento, :publico_expuesta, :declaracion_tributaria
+					:publico_recursos, :publico_reconocimiento, :publico_expuesta, :declaracion_tributaria, :beneficiario_final
 				)";
 		$data = array(
 			':data_id'=> $data_id,
@@ -1816,7 +1869,8 @@ class Formulario
 			':publico_recursos'=> $publico_recursos,
 			':publico_reconocimiento'=> $publico_reconocimiento,
 			':publico_expuesta'=> $publico_expuesta,
-			':declaracion_tributaria'=> $declaracion_tributaria
+			':declaracion_tributaria'=> $declaracion_tributaria,
+			':beneficiario_final'=> $beneficiario_final
 		);
 		if($conn->ejecutar($SQL, $data)){
 			//$lastId = $conn->ultimaId();

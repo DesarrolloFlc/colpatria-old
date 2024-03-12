@@ -191,7 +191,8 @@ if(isset($paises) && !empty($paises) && is_array($paises)){
 	<tr>
 		<td style="width: 100px;display: table-cell;">Ingresos mensuales:</td>
 		<td>
-			<select id="ingresosmensuales" name="ingresosmensuales" style="font-size: 12px; margin-right: 5px" title="Ingresos mensuales">
+			<input type="text" id="ingresos_mensuales_pesos" name="ingresos_mensuales_pesos" style="width: 100px; margin-right: 20px" title="Ingresos mensuales" onkeypress="return validar_num(event)">
+			<!-- <select id="ingresosmensuales" name="ingresosmensuales" style="font-size: 12px; margin-right: 5px" title="Ingresos mensuales">
 				<option value="">Seleccione...</option>
 <?php
 if(isset($ingresos) && !empty($ingresos) && is_array($ingresos)){
@@ -202,9 +203,11 @@ if(isset($ingresos) && !empty($ingresos) && is_array($ingresos)){
 	}
 }
 ?>
-			</select>
+			</select> -->
 			Egresos mensuales:
-			<select id="egresosmensuales" name="egresosmensuales" style="font-size: 12px; margin-right: 5px" title="Egresos mensuales">
+			<input type="text" id="egresos_mensuales_pesos" name="egresos_mensuales_pesos" style="width: 100px; margin-right: 20px" title="egresos mensuales" onkeypress="return validar_num(event)">
+
+			<!-- <select id="egresosmensuales" name="egresosmensuales" style="font-size: 12px; margin-right: 5px" title="Egresos mensuales">
 				<option value="">Seleccione...</option>
 <?php
 if(isset($egresos) && !empty($egresos) && is_array($egresos)){
@@ -215,7 +218,7 @@ if(isset($egresos) && !empty($egresos) && is_array($egresos)){
 	}
 }
 ?>
-			</select>
+			</select> -->
 		</td>
 	</tr>
 	<tr>
@@ -233,7 +236,9 @@ if(isset($egresos) && !empty($egresos) && is_array($egresos)){
 	<tr>
 		<td style="width: 100px;display: table-cell;">Otros ingresos:</td>
 		<td>
-			<select id="otrosingresos" name="otrosingresos" style="font-size: 12px; margin-right: 5px" title="Otros ingresos">
+			<input type="text" id="otros_ingresos_pesos" name="otros_ingresos_pesos" style="width: 100px; margin-right: 20px" title="Otros ingresos" onkeypress="return validar_num(event)">
+
+			<!-- <select id="otrosingresos" name="otrosingresos" style="font-size: 12px; margin-right: 5px" title="Otros ingresos">
 				<option value="">Seleccione...</option>
 <?php
 if(isset($ingresos) && !empty($ingresos) && is_array($ingresos)){
@@ -245,7 +250,7 @@ if(isset($ingresos) && !empty($ingresos) && is_array($ingresos)){
 }
 ?>
 				<option value="13">SD</option>
-			</select>
+			</select> -->
 		</td>
 	</tr>
 	<tr>
@@ -256,6 +261,22 @@ if(isset($ingresos) && !empty($ingresos) && is_array($ingresos)){
 		<td style="width: 100px;display: table-cell;">Concepto otros ingresos:</td>
 		<td>
 			<input type="text" id="conceptosotrosingresos" name="conceptosotrosingresos" style="width: 300px" onkeypress="return validar_letra(event)" title="Concepto otros ingresos">
+		</td>
+	</tr>
+	<tr>
+		<td style="width: 100px;display: table-cell;">El pago de la prima sera en moneda extranjera?</td>
+		<td>
+			<select id="monedaextranjera" name="monedaextranjera" style="font-size: 12px; margin-right: 15px" title="pago de la prima sera en moneda extranjera?">
+				<option value="">Seleccion...</option>
+				<option value="-1">SI</option>
+				<option value="0">NO</option>
+			</select>
+			El pago de la prima se hara desde una cuenta del exterior?
+			<select id="cuentas_monedaextranjera" name="cuentas_monedaextranjera" style="font-size: 12px; margin-right: 15px" title="pago de la prima se hara desde una cuenta del exterior">
+				<option value="">Seleccion...</option>
+				<option value="-1">SI</option>
+				<option value="0">NO</option>
+			</select>
 		</td>
 	</tr>
 </table>

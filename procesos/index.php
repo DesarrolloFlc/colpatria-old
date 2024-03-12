@@ -1,7 +1,7 @@
 <?php
 session_start();
 if (!isset($_SESSION['group']) || !in_array($_SESSION['group'], ["1", "2", "9", "3", "4", "5", "6", "7", "8", "10", "11"]) ) {
-    echo "<h2>No tiene permisos para acceder a esta �rea</h2>";
+    echo "<h2>No tiene permisos para acceder a esta �rea " . $_SESSION['group'] . "</h2>";
     exit;
 }
 require_once dirname(dirname(__FILE__)) . '/template/general/header.php';
@@ -72,13 +72,11 @@ if ((isset($_GET['msg'])) AND ($_GET['msg'] == "1")) {
                         <input class="text-input medium-input" type="text" id="texto" name="texto" /> <span class="input-notification attention png_bg">Campo obligatorio</span>
                         <br /><small>Escriba la información que desea buscar(p.e: 8023656)</small>
                     </p>
-                    <div>
+                    <div style="display: flex; align-items: center;">
                         <input class="button" type="submit" id="search_client" value="Realizar búsqueda " />
-                        <?php
-                        if($_SESSION['id'] == 1){
-                            echo "<div id='img_loadin_searchiCliente' style='width: 18px; display: inline;'><img style='display: none;' src='../images/icons/loading.gif' height='16' width='16'></div>";
-                        }
-                        ?>
+                        <div style="width: 16px; height: 16px; padding-left: 5px;">
+                            <img id="imgloading-buscar-cliente" src="<?=SITE_ROOT?>/images/icons/loading.gif" style="display: none;" />
+                        </div>
                     </div>
                 </fieldset>
                 <div class="clear"></div><!-- End .clear -->

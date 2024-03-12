@@ -55,7 +55,7 @@ require_once PATH_CCLASS . DS . 'general.class.php';
 							<td colspan="2" style="text-align: right;"><!--style="padding-left: 82%;" -->
 								<div style="display: inline;">&nbsp;</div>
 								<input type="submit" class="button" value="Cargar base >>" id="botoncargueBaseGestorVentas">
-								<div style="display: inline; width: 16px; height: 16px;"><img id="imgloading" src="../../images/icons/loading.gif" style="display: none;" /></div>
+								<div style="display: inline; width: 16px; height: 16px;"><img id="imgloading" src="<?=SITE_ROOT?>/images/icons/loading.gif" style="display: none;" /></div>
 							</td>
 						</tr>
 					</tfoot>

@@ -36,13 +36,13 @@ $sucursales2 = $general->getSucursales();
         <div class="tab-content default-tab" id="tab2">
             <div class="notification attention png_bg"> 
                 <a href="#" class="close">
-                    <img src="../../resources/images/icons/cross_grey_small.png" title="Close this notification" alt="close" />
+                    <img src="<?=SITE_ROOT?>/resources/images/icons/cross_grey_small.png" title="Close this notification" alt="close" />
                 </a>
                 <div id="msg_erradduser">No olvide diligenciar todos los campos.</div>
             </div>
             <div class="notification success  png_bg" id="result_notif" style="display:none;"> 
                 <a href="#" class="close">
-                    <img src="../../resources/images/icons/cross_grey_small.png" title="Close this notification" alt="close" />
+                    <img src="<?=SITE_ROOT?>/resources/images/icons/cross_grey_small.png" title="Close this notification" alt="close" />
                 </a>
                 <div id="msg_adduser"></div>
             </div>
@@ -92,7 +92,7 @@ $sucursales2 = $general->getSucursales();
                                 <td colspan="2" style="text-align: right;"><!--style="padding-left: 82%;" margin-left: 86%;" -->
                                     <div style="display: inline;">&nbsp;</div>
                                     <input type="submit" class="button" value="Creaci&oacute;n de radicado >>" id="botoncrearRadicado"/>
-                                    <div style="display: inline; width: 16px; height: 16px;"><img id="imgloading" src="../../images/icons/loading.gif" style="display: none;" /></div>
+                                    <div style="display: inline; width: 16px; height: 16px;"><img id="imgloading" src="<?=SITE_ROOT?>/images/icons/loading.gif" style="display: none;" /></div>
                                 </td>
                             </tr>
                         </tfoot>
@@ -176,7 +176,7 @@ $sucursales2 = $general->getSucursales();
         <div class="tab-content" id="tab4">
             <div class="notification success  png_bg" id="result_notif_busradicofi" style="display:none;"> 
                 <a href="#" class="close">
-                    <img src="../../resources/images/icons/cross_grey_small.png" title="Close this notification" alt="close" />
+                    <img src="<?=SITE_ROOT?>/resources/images/icons/cross_grey_small.png" title="Close this notification" alt="close" />
                 </a>
                 <div id="msg_notieneradicados"></div>
             </div>
@@ -217,13 +217,13 @@ $sucursales2 = $general->getSucursales();
         <div class="tab-content" id="tab5">
             <div class="notification attention png_bg"> 
                 <a href="#" class="close">
-                    <img src="../../resources/images/icons/cross_grey_small.png" title="Close this notification" alt="close" />
+                    <img src="<?=SITE_ROOT?>/resources/images/icons/cross_grey_small.png" title="Close this notification" alt="close" />
                 </a>
                 <div id="msg_erradduser">No olvide diligenciar todos los campos, tenga en cuenta que el archivo a subir debe tener un minimo de 5 clientes</div>
             </div>
             <div class="notification success  png_bg" id="result_notif" style="display:none;"> 
                 <a href="#" class="close">
-                    <img src="../../resources/images/icons/cross_grey_small.png" title="Close this notification" alt="close" />
+                    <img src="<?=SITE_ROOT?>/resources/images/icons/cross_grey_small.png" title="Close this notification" alt="close" />
                 </a>
                 <div id="msg_adduser"></div>
             </div>
@@ -289,12 +289,12 @@ $sucursales2 = $general->getSucursales();
                                 <td colspan="2" style="text-align: right;"><!--style="padding-left: 82%;" margin-left: 86%;" -->
                                     <div style="display: inline;">&nbsp;</div>
                                     <input type="submit" class="button" value="Creaci&oacute;n de radicado >>" id="botoncrearRadicado"/>
-                                    <div style="display: inline; width: 16px; height: 16px;"><img id="imgloading" src="../../images/icons/loading.gif" style="display: none;" /></div>
+                                    <div style="display: inline; width: 16px; height: 16px;"><img id="imgloading" src="<?=SITE_ROOT?>/images/icons/loading.gif" style="display: none;" /></div>
                                 </td>
                             </tr>
                         </tfoot>
                     </table>
-                    <p id="page-intro">&nbsp;&nbsp;Cargar listado de clientes para este radicado. (descarga estructura de cargue <a href="../../lib/ApachePOIImplements/download.php">aqui</a>)</p>
+                    <p id="page-intro">&nbsp;&nbsp;Cargar listado de clientes para este radicado. (descarga estructura de cargue <a href="<?=SITE_ROOT?>/lib/ApachePOIImplements/download.php">aqui</a>)</p>
                     <table id="files_loaders">
                         <tr>
                             <td width="5%">Archivo:</td>

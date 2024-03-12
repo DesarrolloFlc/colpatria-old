@@ -1,3 +1,10 @@
+<?php
+session_start();
+if (isset($_SESSION['id']) && !empty($_SESSION['id'])) {
+    header('Location: procesos/index.php');
+    exit;
+}
+?>
 <!DOCTYPE html>
 <html>
     <head>
@@ -37,25 +44,52 @@
         <!--<script type="text/javascript" src="resources/scripts/nieve.js"></script>-->
         <script type="text/javascript">
             $(document).ready(function() {
-                $("form#login_form").submit(function() {
-                    if ($('input[name="username"]', this).val() == "") {
+                $("form#login_form").submit(function(event) {
+                    (event.preventDefault) ? event.preventDefault() : event.returnValue = false;
+                    if ($('input[name="username"]', this).val().trim() === "") {
                         alert("Por favor complete el campo de usuario.");
                         $('input[name="username"]', this).focus();
                         return false;
                     } 
-                    if ($('input[name="password"]', this).val() == "") {
+                    if ($('input[name="password"]', this).val().trim() === "") {
                         alert("Por favor complete el campo de contraseña.");
                         $('input[name="password"]', this).focus();
                         return false;
                     }
-                    $.post('lib/general/validacion.php', $("#login_form").serialize(), function(data) {
-                        if (data == "102") {
-                            $('#msg').html("Por favor valide los datos de acceso.");
-                            return false;
+                    const form = this;
+                    $.ajax({
+                        beforeSend: function(){
+                            $('input#entrar').attr('disabled', true);
+                            $.facebox.loading();
+                        },
+                        data: $(form).serialize(),
+                        type: 'GET',
+                        url: 'lib/general/validacion.php',
+                        dataType: 'json',
+                        success: function(dato){
+                            if ((!dato.exito)) {
+                                alert(dato.error ? dato.error : 'Ocurrio un error al momento de realizar la consulta, contacte con el administrador.');
+                                if (!dato.error) console.log(dato);
+                                return false;
+                            }
+                            if (dato.user.change_password === 0) {
+                                window.location.replace("procesos/change_password.php");
+                                return false;
+                            }
+                            window.location.replace("procesos/index.php");
+                        },
+                        complete: function(jqXHR, textStatus){
+                            $('input#entrar').removeAttr('disabled');
+                            $.facebox.close();
+                        },
+                        error: function(xhr, ajaxOptions, thrownError){
+                            console.log(xhr, ajaxOptions, thrownError);
+                            $('p.text-center > span').html(`Error(cargueBaseGestorVentas): ${xhr.status} Error: ${xhr.responseText}`);
+                            $.facebox({
+                                div: '#box-errores'
+                            });
                         }
-                        location.href = "procesos/change_password.php";
                     });
-                    return false;
                 });
             });
         </script>
@@ -71,7 +105,7 @@
 
             <div id="login-content">
 
-                <form name="login_form" method="POST" id="login_form" action="lib/general/validacion.php">
+                <form name="login_form" method="GET" id="login_form" action="lib/general/validacion.php">
                     <div class="notification information png_bg">
                         <div id="msg">
                             Por favor complete los campos y haga click en "Acceder".

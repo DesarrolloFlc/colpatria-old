@@ -50,7 +50,7 @@ require_once PATH_CCLASS . DS . 'ordenproduccion.class.php';
                 <p style="display: initial;">
                     <input type="hidden" name="action" id="action" value="search_orden0">
                     <input class="button" type="submit" id="search_orden" value="Realizar búsqueda">
-                    <div id="search_orden_loading" style="width: 16px; height: 16px; display: initial;"><img style="display: none;" src="../../images/icons/loading.gif"><div>
+                    <div id="search_orden_loading" style="width: 16px; height: 16px; display: initial;"><img style="display: none;" src="<?=SITE_ROOT?>/images/icons/loading.gif"><div>
                 </p>
             </form>
         </div>
@@ -86,7 +86,7 @@ require_once PATH_CCLASS . DS . 'ordenproduccion.class.php';
 		<small style="padding-bottom: 5px; display: block; margin-left: 14px;">Selecci&oacute;n masiva p&aacute;gina actual</small>
 	    <input type="checkbox" name="aprobacion_masiva" id="aprobacion_masiva" value="aprobacion_masiva" onchange="$(this).chequearMasivos(event);" style="margin-left: 14px;">
 	    <input class="button" type="submit" id="search_orden" value="Aprobaci&oacute;n masiva" onclick="$(this).aprobacionMasiva(event);">
-	    <div id="search_orden_loading" style="width: 16px; height: 16px; display: initial;"><img style="display: none;" src="../../images/icons/loading.gif"><div>
+	    <div id="search_orden_loading" style="width: 16px; height: 16px; display: initial;"><img style="display: none;" src="<?=SITE_ROOT?>/images/icons/loading.gif"><div>
 <?php
 	//}
 ?>

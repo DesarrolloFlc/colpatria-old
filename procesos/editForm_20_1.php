@@ -305,25 +305,25 @@ if(isset($ciius) && !empty($ciius) && is_array($ciius)){
 		</td>
 	</tr>
 	<tr>
-		<td style="width: 100px;display: table-cell;">Tipo empresa</td>
+		<td style="width: 100px;display: table-cell;">Sector y tipo de actividad</td>
 		<td>
-			<select id="tipoempresaemp" name="tipoempresaemp" style="font-size: 12px; margin-right: 5px" title="Tipo empresa" data-oldvalue="<?=$dataform['tipoempresaemp']?>">
+			<select id="sector_actividad" name="sector_actividad" style="font-size: 12px; margin-right: 5px" title="Sector y tipo de actividad" data-oldvalue="<?=$dataform['sector_actividad']?>">
 				<option value="">Seleccione...</option>
 <?php
-if(isset($tipoempresas) && !empty($tipoempresas) && is_array($tipoempresas)){
-	foreach($tipoempresas as $tipoempresa){
+if(isset($tipoActividad) && !empty($tipoActividad) && is_array($tipoActividad)){
+	foreach($tipoActividad as $tipoAct){
 	    $slect = '';
-	    if($dataform['tipoempresaemp'] == $tipoempresa['id'])
+	    if($dataform['sector_actividad'] == $tipoAct['id'])
 	        $slect = ' selected';
 ?>
-				<option value="<?=$tipoempresa['id']?>"<?=$slect?>><?=$tipoempresa['description']?></option>
+				<option value="<?=$tipoAct['id']?>"<?=$slect?>><?=$tipoAct['description']?></option>
 <?php
 	}
 }
 ?>
 			</select>
 			Cual?
-			<input type="text" id="tipoempresaemp_cual" name="tipoempresaemp_cual" style="width: 100px" disabled onkeypress="return validar_letra(event)" title="Cual tipo empresa" value="<?=$dataform['tipoempresaemp_cual']?>" data-oldvalue="<?=$dataform['tipoempresaemp_cual']?>">
+			<input type="text" id="sector_actividad_cual" name="sector_actividad_cual" style="width: 100px" disabled onkeypress="return validar_letra(event)" title="Cual tipo empresa" value="<?=$dataform['sector_actividad_cual']?>" data-oldvalue="<?=$dataform['sector_actividad_cual']?>">
 		</td>
 	</tr>
 	<tr>
@@ -465,6 +465,20 @@ if($dataform['egresosmensuales'] == '13')
 		</td>
 	</tr>
 	<tr>
+		<td style="width: 100px;display: table-cell;">Ingresos mensuales Pesos:</td>
+		<td>
+			<input type="text" id="ingresos_mensuales_pesos" name="ingresos_mensuales_pesos" style="width: 300px" onkeypress="return validar_letra(event)" title="Ingresos mensuales Pesos" value="<?=$dataform['ingresos_mensuales_pesos']?>" data-oldvalue="<?=$dataform['ingresos_mensuales_pesos']?>">
+			Egresos mensuales:
+			<input type="text" id="egresos_mensuales_pesos" name="egresos_mensuales_pesos" style="width: 300px" onkeypress="return validar_letra(event)" title="egresos_mensuales_pesos" value="<?=$dataform['egresos_mensuales_pesos']?>" data-oldvalue="<?=$dataform['egresos_mensuales_pesos']?>">
+		</td>
+	</tr>
+	<tr>
+		<td style="width: 100px;display: table-cell;">Otros ingresos pesos:</td>
+		<td>
+			<input type="text" id="otros_ingresos_pesos" name="otros_ingresos_pesos" style="width: 300px" onkeypress="return validar_letra(event)" title="Otros ingresos pesos:" value="<?=$dataform['otros_ingresos_pesos']?>" data-oldvalue="<?=$dataform['otros_ingresos_pesos']?>">
+		</td>
+	</tr>
+	<tr>
 		<td style="width: 100px;display: table-cell;">Concepto otros ingresos:</td>
 		<td>
 			<input type="text" id="conceptosotrosingresos" name="conceptosotrosingresos" style="width: 300px" onkeypress="return validar_letra(event)" title="Concepto otros ingresos" value="<?=$dataform['conceptosotrosingresos']?>" data-oldvalue="<?=$dataform['conceptosotrosingresos']?>">
@@ -497,13 +511,19 @@ if($dataform['egresosmensuales'] == '13')
 				<option value="0"<?=(($dataform['recursos_publicos'] == "0") ? "selected" : "")?>>NO</option>
 				<option value="2"<?=(($dataform['recursos_publicos'] == "2") ? "selected" : "")?>>SD</option>
 			</select>
-			Obligaciones tributarias en otro pais?
+		</td>
+	</tr>
+	<tr>
+		<td style="width: 100px;display: table-cell;">Obligaciones tributarias en otro pais?</td>
+		<td>
 			<select id="tributarias_otro_pais" name="tributarias_otro_pais" style="font-size: 12px; margin-right: 15px" title="Obligaciones fiscales en otro pais" data-oldvalue="<?=$dataform['tributarias_otro_pais']?>">
 				<option value="">Seleccion...</option>
 				<option value="-1"<?=(($dataform['tributarias_otro_pais'] == "-1") ? "selected" : "")?>>SI</option>
 				<option value="0"<?=(($dataform['tributarias_otro_pais'] == "0") ? "selected" : "")?>>NO</option>
 				<option value="2"<?=(($dataform['tributarias_otro_pais'] == "2") ? "selected" : "")?>>SD</option>
 			</select>
+			Indique:
+			<input type="text" id="tributarias_paises" name="tributarias_paises" style="width: 300px" disabled onkeypress="return validar_letra(event)" title="En que paises?" value="<?=$dataform['tributarias_paises']?>" data-oldvalue="<?=$dataform['tributarias_paises']?>">
 		</td>
 	</tr>
 	<tr>
