@@ -249,11 +249,14 @@ function generarDataMatriz()
 				   da.telefonoficinappal, 
 				   da.detalletipoactividad, 
 				   in1.description AS ingresosmensuales, 
+				   da.ingresos_mensuales_pesos,
 				   da.totalactivos,
 				   da.totalpasivos, 
 				   eg1.description AS egresosmensuales, 
+				   da.egresos_mensuales_pesos,
 				   da.patrimonio,
 				   in2.description AS otrosingresos1, /*da.formulario = '15'*/
+				   da.otros_ingresos_pesos,
 				   poi.value AS otrosingresos2, /*da.formulario != '15' && c.persontype = '1'*/ 
 				   da.conceptosotrosingresos, 
 				   IF(c.persontype = '1', pes.description, 'NA') AS nivelestudios,
@@ -283,12 +286,15 @@ function generarDataMatriz()
 				   da.faxsucursal,
 				   in3.description AS ingresosmensualesemp1, /*da.formulario = '15'*/
 				   pine.value AS ingresosmensualesemp2, /*da.formulario != '15'*/
+				   da.ingresos_mensuales_emp_pesos,
 				   da.activosemp, 
 				   da.pasivosemp, 
 				   eg2.description AS egresosmensualesemp1, /*da.formulario = '15'*/
 				   peme.value AS egresosmensualesemp2, /*da.formulario != '15'*/
+				   da.egresos_mensuales_emp_pesos,
 				   da.patrimonio, 
 				   in4.description AS otrosingresosemp,
+				   da.otros_ingresos_emp_pesos,
 				   da.concepto_otrosingresosemp, 
 				   da.origen_fondos, 
 				   da.procedencia_fondos,
@@ -415,6 +421,12 @@ function generarDataMatriz()
 		$ingMen = (!empty($d['ingresosmensualesemp1']) && $d['ingresosmensualesemp1'] != 'SD' && $d['ingresosmensualesemp1'] != 'NA') ? $d['ingresosmensualesemp1'] : $d['ingresosmensualesemp2'];
 		$egrMen = (!empty($d['egresosmensualesemp1']) && $d['egresosmensualesemp1'] != 'SD' && $d['egresosmensualesemp1'] != 'NA') ? $d['egresosmensualesemp1'] : $d['egresosmensualesemp2'];
 		$proSeg = (!empty($d['producto_seguro'])) ? $d['producto_seguro'] : 'SD';
+		$ingMenNat = ($d['ingresosmensuales'] == 'SD' && !empty($d['ingresos_mensuales_pesos'])) ? $d['ingresos_mensuales_pesos'] : $d['ingresosmensuales'];
+		$egrMenNat = ($d['egresosmensuales'] == 'SD' && !empty($d['egresos_mensuales_pesos'])) ? $d['egresos_mensuales_pesos'] : $d['egresosmensuales'];
+		$otrIngNat = ($otrIng == 'SD' && !empty($d['otros_ingresos_pesos'])) ? $d['otros_ingresos_pesos'] : $otrIng;
+		$ingMenEmpPesos = (($ingMen == 'SD' || empty($ingMen)) && !empty($d['ingresos_mensuales_emp_pesos'])) ? $d['ingresos_mensuales_emp_pesos'] : $ingMen;
+		$egrMenEmpPesos = (($egrMen == 'SD' || empty($egrMen)) && !empty($d['egresos_mensuales_emp_pesos'])) ? $d['egresos_mensuales_emp_pesos'] : $egrMen;
+		$otrIngEmpPesos = ($d['otrosingresosemp'] == 'SD' && !empty($d['otros_ingresos_emp_pesos'])) ? $d['otrosingresosemp'] : $d['otros_ingresos_emp_pesos'];
 		$c = [
 			$d['persontype'],
 			$d['document'],
@@ -494,12 +506,12 @@ function generarDataMatriz()
 			$d['nomenclatura_emp'],
 			$d['telefonoficinappal'],
 			trim(preg_replace("/\s+/", " ", $d['detalletipoactividad'])),
-			$d['ingresosmensuales'],
+			$ingMenNat,
 			$d['totalactivos'],
 			$d['totalpasivos'],
-			$d['egresosmensuales'],
+			$egrMenNat,
 			$d['patrimonio'],
-			$otrIng,
+			$otrIngNat,
 			trim(preg_replace("/\s+/", " ", $d['conceptosotrosingresos'])),
 			$d['nivelestudios'],
 			$d['tipovivienda'],
@@ -523,12 +535,12 @@ function generarDataMatriz()
 			$d['nomenclatura_emp2'],
 			$d['telefonosucursal'],
 			$d['faxsucursal'],
-			$ingMen,
+			$ingMenEmpPesos,
 			$d['activosemp'],
 			$d['pasivosemp'],
-			$egrMen,
+			$egrMenEmpPesos,
 			$d['patrimonio'],
-			$d['otrosingresosemp'],
+			$otrIngEmpPesos,
 			trim(preg_replace("/\s+/", " ", $d['concepto_otrosingresosemp'])),
 			trim(preg_replace("/\s+/", " ", $d['origen_fondos'])),
 			$d['paisnacimiento2'],

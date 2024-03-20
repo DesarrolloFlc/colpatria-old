@@ -810,18 +810,11 @@ if(isset($dat[2]) && !empty($dat[2]))
 				
 				if (titulo && titulo.toLowerCase().indexOf('(accionista') !== -1) {
 					ultimo = " table#accionistas_nat_table "+ultimo;
-					// console.log(ultimo);
 				}
 				if (titulo && titulo.toLowerCase().indexOf('(beneficiario juridico') !== -1) {
 					ultimo = " table#accionistas_jur_table "+ultimo;
-					// console.log(ultimo);
 				}
 			}
-			// if ($('#'+ultimo).closest('#accionistas_nat_table').length > 0 || $('#'+ultimo).closest('#accionistas_jur_table').length > 0) {
-			// 	console.log('aqui esta accionistas nat');
-			// } else if ($('#'+ultimo).closest('#beneficiarios_nat_table').length > 0 || $('#'+ultimo).closest('#beneficiarios_jur_table').length > 0) {
-			// 	console.log('aqui esta beneficiarios nat o jur');
-			// }
 			
 			if(nop)
 				return false;
